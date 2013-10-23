@@ -21,10 +21,10 @@
     "autoload": {
         "psr-0": { "Rz\\BlockBundle": "" }
     },
-    "target-dir": "Rz/BlockBundle",
+    "target-dir": "Rz/ClassificationBundle",
     "extra": {
         "branch-alias": {
-            "dev-master": "2.3.x-dev"
+            "dev-2.3.1": "2.3.1.x-dev"
         }
     }
 }
