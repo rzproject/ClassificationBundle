@@ -24,7 +24,7 @@
     "target-dir": "Rz/BlockBundle",
     "extra": {
         "branch-alias": {
-            "dev-2.3": "2.3.x-dev"
+            "dev-master": "2.3.x-dev"
         }
     }
 }
