@@ -1,0 +1,30 @@
+{
+    "name": "rz/classification-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony2 Bundle SonataClassificationBundle Extension",
+    "keywords": ["symfony2", "Sonata Project", "RZProject"],
+    "homepage": "https://github.com/rzproject/ClassificationBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "mell zamora",
+            "email": "mell@rzproject.org",
+            "homepage": "http://www.rzproject.org"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "rmzamora/classification-bundle": "2.3.*@dev",
+        "rz/admin-bundle": "2.3.1.*@dev",
+        "rz/doctrine-orm-admin-bundle": "2.3.1.*@dev"
+    },
+    "autoload": {
+        "psr-0": { "Rz\\BlockBundle": "" }
+    },
+    "target-dir": "Rz/BlockBundle",
+    "extra": {
+        "branch-alias": {
+            "dev-2.3": "2.3.x-dev"
+        }
+    }
+}
