@@ -32,9 +32,9 @@ class CategorySelectorType extends AbstractTypeExtension
     {
         //* TODO: enable via config
         if (!$options['expanded'] && $options['multiple']) {
-            $view->vars['chosen_enabled'] = $options['chosen_enabled'];
+            $view->vars['select2'] = $options['select2'];
             //enable selectpicker by default
-            if ($view->vars['chosen_enabled']) {
+            if ($view->vars['select2']) {
                 $view->vars['selectpicker_enabled'] = false;
             } elseif ($options['multiselect_enabled']) {
                 $view->vars['selectpicker_enabled'] = false;
@@ -62,7 +62,7 @@ class CategorySelectorType extends AbstractTypeExtension
                                      'selectpicker_data_size',
                                      'selectpicker_disabled',
                                      'selectpicker_dropup',
-                                     'chosen_enabled',
+                                     'select2',
                                      'chosen_data_placeholder',
                                      'chosen_no_results_text',
                                      'multiselect_enabled',
@@ -73,7 +73,7 @@ class CategorySelectorType extends AbstractTypeExtension
         $resolver->setDefaults(array('compound' => function (Options $options) {
                                        return isset($options['expanded']) ? ($options['expanded'] ? true: false) : false;
                                      },
-                                     'chosen_enabled' => false,
+                                     'select2' => false,
                                      'selectpicker_enabled' => true,
                                      'multiselect_enabled' => false,
                                      'multiselect_search_enabled' => false,
