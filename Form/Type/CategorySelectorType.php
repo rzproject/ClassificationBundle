@@ -3,13 +3,14 @@
 namespace Rz\ClassificationBundle\Form\Type;
 
 use Sonata\ClassificationBundle\Model\CategoryInterface;
-use Sonata\ClassificationBundle\Model\CategoryManagerInterface;
+use Sonata\CoreBundle\Entity\ManagerInterface;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\ChoiceList\SimpleChoiceList;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
+
 
 /**
  * Select a category
@@ -21,9 +22,9 @@ class CategorySelectorType extends AbstractTypeExtension
     protected $manager;
 
     /**
-     * @param CategoryManagerInterface $manager
+     * @param ManagerInterface $manager
      */
-    public function __construct(CategoryManagerInterface $manager)
+    public function __construct(ManagerInterface $manager)
     {
         $this->manager = $manager;
     }
