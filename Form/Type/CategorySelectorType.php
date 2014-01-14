@@ -3,7 +3,7 @@
 namespace Rz\ClassificationBundle\Form\Type;
 
 use Sonata\ClassificationBundle\Model\CategoryInterface;
-use Sonata\CoreBundle\Entity\ManagerInterface;
+use Sonata\CoreBundle\Model\ManagerInterface;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Form\AbstractTypeExtension;
