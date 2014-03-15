@@ -21,7 +21,6 @@
     "autoload": {
         "psr-4": { "Rz\\ClassificationBundle\\": "" }
     },
-    "target-dir": "Rz/ClassificationBundle",
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.x-dev"
