@@ -57,6 +57,7 @@ class CategoryAdmin extends BaseAdmin
                     'category'      => $this->getSubject() ?: null,
                     'model_manager' => $this->getModelManager(),
                     'class'         => $this->getClass(),
+                    'select2'       => true,
                     'required'      => false
                 ))
             ->end()
