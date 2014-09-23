@@ -24,8 +24,8 @@ class CategoryAdmin extends BaseAdmin
     {
         $listMapper
             ->add('name', null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
-            ->add('context', null,  array('footable'=>array('attr'=>array('data_hide'=>'phone'))))
-            ->add('parent', null,  array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
+            ->add('parent.name', null,  array('footable'=>array('attr'=>array('data_hide'=>'phone'))))
+            ->add('context.name', null,  array('footable'=>array('attr'=>array('data_hide'=>'phone, tablet'))))
             ->add('enabled', null, array('editable' => true, 'footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
             ->add('_action', 'actions', array(
                 'actions' => array(
@@ -47,42 +47,7 @@ class CategoryAdmin extends BaseAdmin
             ->with('Category', array('class' => 'col-md-6'))
                 ->add('name')
                 ->add('description', 'textarea', array('required' => false))
-            ->end()
-            ->with('Options', array('class' => 'col-md-6'))
-                ->add('enabled')
-                ->add('position', 'integer', array('required' => false, 'data' => 0))
-            ->end()
-        ;
-
-        //if ($this->getPersistentParameter('is_parent') == 1  || $this->getIsCreateParent()) {
-
-//        if ($this->getPersistentParameter('is_parent') == 1  || $this->getIsCreateParent()) {
-//
-//            $em = $this->getModelManager()->getEntityManager('Application\Sonata\ClassificationBundle\Entity\Context');
-//
-//            $query = $em->createQueryBuilder('c');
-//            $query
-//                ->select('c')
-//                ->from('ApplicationSonataClassificationBundle:Context', 'c')
-//                ->where($query->expr()->notIn('c.name',$this->getCategoryManager()->getContexts()))
-//                ->orderBy('c.name', 'ASC');
-//
-//                $formMapper
-//                    ->with('Category', array('class' => 'col-md-6'))
-//                        ->add('context', 'sonata_type_model', array(
-//                            'query'      => $query,
-//                            'required'   => false,
-//                            'select2' => true,
-//                            'btn_add' => false,
-//                            'btn_list' => false,
-//                            'btn_delete' => false,
-//                        ))
-//                    ->end()
-//                    ;
-//        } else {
-            $formMapper
-                ->with('Category', array('class' => 'col-md-6'))
-                    ->if_true($this->getSubject()->getParent() !== null || $this->getSubject()->getId() === null || $this->isGranted('ROLE_ALLOWED_TO_SWITCH')) // root category cannot have a parent
+                ->if_true($this->getSubject()->getParent() !== null || $this->getSubject()->getId() === null || $this->isGranted('ROLE_ALLOWED_TO_SWITCH')) // root category cannot have a parent
                         ->add('parent', 'sonata_category_selector', array(
                                 'category'      => $this->getSubject() ?: null,
                                 'model_manager' => $this->getModelManager(),
@@ -90,24 +55,24 @@ class CategoryAdmin extends BaseAdmin
                                 'required'      => false,
                                 'context'       => $this->getSubject()->getContext()
                             ))
-                    ->end_if()
-                ->end();
-//        }
-
-      $formMapper
-        ->with('Category', array('class' => 'col-md-6'))
-            ->add('content', 'sonata_formatter_type', array(
-                'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
-                'format_field'   => 'contentFormatter',
-                'source_field'   => 'rawContent',
-                'ckeditor_context' => 'news',
-                'source_field_options'      => array(
-                    'attr' => array('class' => 'span12', 'rows' => 20)
-                ),
-                'target_field'   => 'content',
-                'listener'       => true,
-            ))
-        ->end();
+                ->end_if()
+                ->add('content', 'sonata_formatter_type', array(
+                    'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
+                    'format_field'   => 'contentFormatter',
+                    'source_field'   => 'rawContent',
+                    'ckeditor_context' => 'news',
+                    'source_field_options'      => array(
+                        'attr' => array('class' => 'span12', 'rows' => 20)
+                    ),
+                    'target_field'   => 'content',
+                    'listener'       => true,
+                ))
+            ->end()
+            ->with('Options', array('class' => 'col-md-6'))
+                ->add('enabled')
+                ->add('position', 'integer', array('required' => false, 'data' => 0))
+            ->end()
+        ;
 
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
             $formMapper

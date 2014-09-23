@@ -79,6 +79,7 @@ class CategorySelectorType extends AbstractTypeExtension
                                      'multiselect_enabled' => false,
                                      'multiselect_search_enabled' => false,
                                      'error_bubbling'=> true,
+                                     'context'           => null,
                                      'category'          => null,
                                      'choice_list'       => function (Options $opts, $previousValue) use ($that) {
                                              return new SimpleChoiceList($that->getChoices($opts));
@@ -94,9 +95,12 @@ class CategorySelectorType extends AbstractTypeExtension
      */
     public function getChoices(Options $options)
     {
+
+
         if (!$options['category'] instanceof CategoryInterface) {
             return array();
         }
+
 
         if ($options['context'] === null) {
             $categories = $this->manager->getRootCategories();

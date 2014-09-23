@@ -194,34 +194,34 @@
                 <source>breadcrumb.link_context_list</source>
                 <target>Contexts</target>
             </trans-unit>
-
             <trans-unit id="classification.list_mode">
                 <source>classification.list_mode</source>
                 <target>List</target>
             </trans-unit>
-
             <trans-unit id="classification.tree_mode">
                 <source>classification.tree_mode</source>
                 <target>Tree</target>
             </trans-unit>
-
             <trans-unit id="tree_catalog_title">
                 <source>tree_catalog_title</source>
                 <target>Context</target>
             </trans-unit>
-
             <trans-unit id="breadcrumb.link_category_tree">
                 <source>breadcrumb.link_category_tree</source>
                 <target>Category Tree</target>
             </trans-unit>
-
-
             <trans-unit id="category_create_parent">
                 <source>category_create_parent</source>
                 <target>Create Parent</target>
             </trans-unit>
-
-
+            <trans-unit id="list.label_parent_name">
+                <source>list.label_parent_name</source>
+                <target>Parent</target>
+            </trans-unit>
+            <trans-unit id="list.label_context_name">
+                <source>list.label_context_name</source>
+                <target>Context</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
