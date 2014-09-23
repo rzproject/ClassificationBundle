@@ -43,7 +43,7 @@
             {% set batchactions = admin.batchactions %}
             <div class="tab-content nopadding tab-content-inline tab-content-bottom">
                 <div class="tab-pane active" id="data">
-                    <div {% if not app.request.isxmlhttprequest %}class="rz-admin-list-main-data"{% endif %}>
+                    <div class="rz-admin-list-main-data">
                         {% if admin.hasRoute('batch') %}
                         <form action="{{ admin.generateUrl('batch', {'filter': admin.filterParameters}) }}" method="POST" class="rz-datagird-form">
                             <input type="hidden" name="_sonata_csrf_token" value="{{ csrf_token }}" />
