@@ -7,9 +7,16 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Sonata\AdminBundle\Route\RouteCollection;
+use Sonata\ClassificationBundle\Entity\ContextManager;
+use Sonata\ClassificationBundle\Model\ContextInterface;
+use Sonata\ClassificationBundle\Model\CategoryManagerInterface;
+use Sonata\ClassificationBundle\Model\ContextManagerInterface;
 
 class CategoryAdmin extends BaseAdmin
 {
+    protected $categoryManager;
+
     /**
      * {@inheritdoc}
      */
@@ -17,7 +24,7 @@ class CategoryAdmin extends BaseAdmin
     {
         $listMapper
             ->add('name', null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
-            ->add('description', null,  array('footable'=>array('attr'=>array('data_hide'=>'phone'))))
+            ->add('context', null,  array('footable'=>array('attr'=>array('data_hide'=>'phone'))))
             ->add('parent', null,  array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
             ->add('enabled', null, array('editable' => true, 'footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
             ->add('_action', 'actions', array(
@@ -35,37 +42,76 @@ class CategoryAdmin extends BaseAdmin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
+
         $formMapper
-            ->with('General', array('class' => 'col-md-6'))
+            ->with('Category', array('class' => 'col-md-6'))
                 ->add('name')
                 ->add('description', 'textarea', array('required' => false))
-                ->add('content', 'sonata_formatter_type', array(
-                    'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
-                    'format_field'   => 'contentFormatter',
-                    'source_field'   => 'rawContent',
-                    'ckeditor_context' => 'news',
-                    'source_field_options'      => array(
-                        'attr' => array('class' => 'span12', 'rows' => 20)
-                    ),
-                    'target_field'   => 'content',
-                    'listener'       => true,
-                ))
             ->end()
             ->with('Options', array('class' => 'col-md-6'))
+                ->add('enabled')
                 ->add('position', 'integer', array('required' => false, 'data' => 0))
-                ->add('parent', 'sonata_category_selector', array(
-                    'category'      => $this->getSubject() ?: null,
-                    'model_manager' => $this->getModelManager(),
-                    'class'         => $this->getClass(),
-                    'select2'       => true,
-                    'required'      => false
-                ))
             ->end()
         ;
 
+        //if ($this->getPersistentParameter('is_parent') == 1  || $this->getIsCreateParent()) {
+
+//        if ($this->getPersistentParameter('is_parent') == 1  || $this->getIsCreateParent()) {
+//
+//            $em = $this->getModelManager()->getEntityManager('Application\Sonata\ClassificationBundle\Entity\Context');
+//
+//            $query = $em->createQueryBuilder('c');
+//            $query
+//                ->select('c')
+//                ->from('ApplicationSonataClassificationBundle:Context', 'c')
+//                ->where($query->expr()->notIn('c.name',$this->getCategoryManager()->getContexts()))
+//                ->orderBy('c.name', 'ASC');
+//
+//                $formMapper
+//                    ->with('Category', array('class' => 'col-md-6'))
+//                        ->add('context', 'sonata_type_model', array(
+//                            'query'      => $query,
+//                            'required'   => false,
+//                            'select2' => true,
+//                            'btn_add' => false,
+//                            'btn_list' => false,
+//                            'btn_delete' => false,
+//                        ))
+//                    ->end()
+//                    ;
+//        } else {
+            $formMapper
+                ->with('Category', array('class' => 'col-md-6'))
+                    ->if_true($this->getSubject()->getParent() !== null || $this->getSubject()->getId() === null || $this->isGranted('ROLE_ALLOWED_TO_SWITCH')) // root category cannot have a parent
+                        ->add('parent', 'sonata_category_selector', array(
+                                'category'      => $this->getSubject() ?: null,
+                                'model_manager' => $this->getModelManager(),
+                                'class'         => $this->getClass(),
+                                'required'      => false,
+                                'context'       => $this->getSubject()->getContext()
+                            ))
+                    ->end_if()
+                ->end();
+//        }
+
+      $formMapper
+        ->with('Category', array('class' => 'col-md-6'))
+            ->add('content', 'sonata_formatter_type', array(
+                'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
+                'format_field'   => 'contentFormatter',
+                'source_field'   => 'rawContent',
+                'ckeditor_context' => 'news',
+                'source_field_options'      => array(
+                    'attr' => array('class' => 'span12', 'rows' => 20)
+                ),
+                'target_field'   => 'content',
+                'listener'       => true,
+            ))
+        ->end();
+
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
             $formMapper
-                ->with('General')
+                ->with('Category')
                     ->add('media', 'sonata_type_model_list',
                         array('required' => false),
                         array(
@@ -96,7 +142,7 @@ class CategoryAdmin extends BaseAdmin
             ->end()
             ->with('Options', array('class' => 'col-md-6'))
                 ->add('position')
-                ->add('parent')
+                //->add('parent')
             ->end()
         ;
 
@@ -107,4 +153,48 @@ class CategoryAdmin extends BaseAdmin
                 ->end();
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPersistentParameters()
+    {
+        $parameters = array(
+            'context'      => '',
+            'hide_context' => (int)$this->getRequest()->get('hide_context', 0)
+        );
+
+        if ($this->getSubject()) {
+            $parameters['context'] = $this->getSubject()->getContext() ? $this->getSubject()->getContext()->getId() : '';
+
+            return $parameters;
+        }
+
+        if ($this->hasRequest()) {
+            $parameters['context'] = $this->getRequest()->get('context');
+
+            return $parameters;
+        }
+
+        return $parameters;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCategoryManager()
+    {
+        return $this->categoryManager;
+    }
+
+    /**
+     * @param mixed $categoryManager
+     */
+    public function setCategoryManager(CategoryManagerInterface $categoryManager)
+    {
+        $this->categoryManager = $categoryManager;
+    }
+
+
+
 }

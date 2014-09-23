@@ -1,0 +1,6 @@
+<a type="button" class="btn btn-primary {% if mode == 'list' %} active{% endif %} sonata-action-element" href="{{ admin.generateUrl('list', { 'filter': { 'site': { 'value': current_context.id|default('') }}}) }}">
+    <i class="icon-table"></i> {{ 'classification.list_mode'|trans({}, 'RzClassificationBundle') }}
+</a>
+<a type="button" class="btn btn-primary {% if mode == 'tree' %} active{% endif %} sonata-action-element" href="{{ admin.generateUrl('tree') }}">
+    <i class="icon-sitemap"></i> {{ 'classification.tree_mode'|trans({}, 'RzClassificationBundle') }}
+</a>

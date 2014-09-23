@@ -17,8 +17,7 @@ class CollectionAdmin extends BaseClass
     {
         $listMapper
             ->add('name',null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
-            ->add('slug', null,  array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
-            ->add('description', null,  array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
+            ->add('context', null,  array('footable'=>array('attr'=>array('data_hide'=>'phone'))))
             ->add('enabled', null, array('editable' => true, 'footable'=>array('attr'=>array('data_hide'=>'phone'))))
             ->add('_action', 'actions', array(
                 'actions' => array(
@@ -37,6 +36,7 @@ class CollectionAdmin extends BaseClass
     {
         $formMapper
             ->add('enabled', null, array('required' => false))
+            ->add('context')
             ->add('name')
             ->add('description', 'textarea', array('required' => false))
             ->add('content', 'sonata_formatter_type', array(

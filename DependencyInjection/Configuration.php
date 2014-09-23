@@ -23,6 +23,7 @@ class Configuration implements ConfigurationInterface
 
         $this->addBundleSettings($node);
         $this->addModelSection($node);
+        $this->addManagerClassSection($node);
 
         return $treeBuilder;
     }
@@ -41,12 +42,13 @@ class Configuration implements ConfigurationInterface
                             ->addDefaultsIfNotSet()
                             ->children()
                                 ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\ClassificationBundle\\Admin\\CategoryAdmin')->end()
-                                ->scalarNode('controller')->cannotBeEmpty()->defaultValue('SonataAdminBundle:CRUD')->end()
+                                ->scalarNode('controller')->cannotBeEmpty()->defaultValue('RzClassificationBundle:CategoryAdmin')->end()
                                 ->scalarNode('translation')->cannotBeEmpty()->defaultValue('RzClassificationBundle')->end()
                                 ->arrayNode('templates')
                                     ->addDefaultsIfNotSet()
                                     ->children()
-                                        ->scalarNode('edit')->defaultValue('RzClassificationBundle:CRUD:edit.html.twig')->cannotBeEmpty()->end()
+                                        ->scalarNode('list')->defaultValue('RzClassificationBundle:CategoryAdmin:list.html.twig')->cannotBeEmpty()->end()
+                                        ->scalarNode('edit')->defaultValue('RzClassificationBundle:CategoryAdmin:edit.html.twig')->cannotBeEmpty()->end()
                                     ->end()
                                 ->end()
                             ->end()
@@ -79,6 +81,20 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                         ->end()
+                        ->arrayNode('context')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\ClassificationBundle\\Admin\\ContextAdmin')->end()
+                                ->scalarNode('controller')->cannotBeEmpty()->defaultValue('SonataAdminBundle:CRUD')->end()
+                                ->scalarNode('translation')->cannotBeEmpty()->defaultValue('RzClassificationBundle')->end()
+                                ->arrayNode('templates')
+                                    ->addDefaultsIfNotSet()
+                                    ->children()
+                                        ->scalarNode('edit')->defaultValue('RzClassificationBundle:CRUD:edit.html.twig')->cannotBeEmpty()->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
                     ->end()
                 ->end()
             ->end()
@@ -98,7 +114,28 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('tag')->defaultValue('Application\\Sonata\\ClassificationBundle\\Entity\\Tag')->end()
                         ->scalarNode('category')->defaultValue('Application\\Sonata\\ClassificationBundle\\Entity\\Category')->end()
                         ->scalarNode('collection')->defaultValue('Application\\Sonata\\ClassificationBundle\\Entity\\Collection')->end()
+                        ->scalarNode('context')->defaultValue('Application\\Sonata\\ClassificationBundle\\Entity\\Context')->end()
                         ->scalarNode('media')->defaultValue('Application\\Sonata\\MediaBundle\\Entity\\Media')->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+            /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     */
+    private function addManagerClassSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode('manager_class')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('tag')->defaultValue('Sonata\\ClassificationBundle\\Entity\\TagManager')->end()
+                        ->scalarNode('category')->defaultValue('Rz\\ClassificationBundle\\Entity\\CategoryManager')->end()
+                        ->scalarNode('collection')->defaultValue('Sonata\\ClassificationBundle\\Entity\\CollectionManager')->end()
+                        ->scalarNode('context')->defaultValue('Rz\\ClassificationBundle\\Entity\\ContextManager')->end()
                     ->end()
                 ->end()
             ->end()
