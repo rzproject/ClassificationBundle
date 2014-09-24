@@ -31,4 +31,46 @@ class CategoryManager extends BaseCategoryManager
         return $query->getResult();
     }
 
+    /**
+     * @param ContextInterface $context
+     *
+     * @return CategoryInterface
+     */
+    public function getRootCategory($context = null)
+    {
+        $context = $this->getContext($context);
+        $this->loadCategories($context);
+        return $this->categories[$context->getId()][0];
+    }
+
+    /**
+     * @param $contextCode
+     *
+     * @return ContextInterface
+     */
+    private function getContext($contextCode)
+    {
+        
+        if ($contextCode === null || $contextCode === '') {
+            $contextCode = ContextInterface::DEFAULT_CONTEXT;
+        }
+
+        if ($contextCode instanceof ContextInterface) {
+            return $contextCode;
+        }
+
+        $context = $this->contextManager->find($contextCode);
+
+        if (!$context instanceof ContextInterface) {
+            $context = $this->contextManager->create();
+
+            $context->setId($contextCode);
+            $context->setName(ucwords(strtolower(str_replace('_', ' ',$contextCode))));
+            $context->setEnabled(true);
+
+            $this->contextManager->save($context);
+        }
+
+        return $context;
+    }
 }

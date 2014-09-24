@@ -47,7 +47,7 @@ class CategoryAdmin extends BaseAdmin
             ->with('Category', array('class' => 'col-md-6'))
                 ->add('name')
                 ->add('description', 'textarea', array('required' => false))
-                ->if_true($this->getSubject()->getParent() !== null || $this->getSubject()->getId() === null || $this->isGranted('ROLE_ALLOWED_TO_SWITCH')) // root category cannot have a parent
+                ->if_true($this->getSubject()->getParent() !== null || $this->getSubject()->getId() === null) // root category cannot have a parent
                         ->add('parent', 'sonata_category_selector', array(
                                 'category'      => $this->getSubject() ?: null,
                                 'model_manager' => $this->getModelManager(),
