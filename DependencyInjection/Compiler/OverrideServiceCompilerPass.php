@@ -41,15 +41,15 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
 
         //override ORM Manager
         $definition = $container->getDefinition('sonata.classification.manager.tag');
-        $definition->setClass($container->getParameter('sonata.classification.manager.tag.class'));
+        $definition->setClass($container->getParameter('rz.classification.manager.tag.class'));
 
         $definition = $container->getDefinition('sonata.classification.manager.category');
-        $definition->setClass($container->getParameter('sonata.classification.manager.category.class'));
+        $definition->setClass($container->getParameter('rz.classification.manager.category.class'));
 
         $definition = $container->getDefinition('sonata.classification.manager.collection');
-        $definition->setClass($container->getParameter('sonata.classification.manager.collection.class'));
+        $definition->setClass($container->getParameter('rz.classification.manager.collection.class'));
 
         $definition = $container->getDefinition('sonata.classification.manager.context');
-        $definition->setClass($container->getParameter('sonata.classification.manager.context.class'));
+        $definition->setClass($container->getParameter('rz.classification.manager.context.class'));
     }
 }

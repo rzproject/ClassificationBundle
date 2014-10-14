@@ -57,10 +57,10 @@ class RzClassificationExtension extends Extension
      */
     public function configureManagerClass($config, ContainerBuilder $container)
     {
-        $container->setParameter('sonata.classification.manager.tag.class',        $config['manager_class']['tag']);
-        $container->setParameter('sonata.classification.manager.category.class',   $config['manager_class']['category']);
-        $container->setParameter('sonata.classification.manager.collection.class', $config['manager_class']['collection']);
-        $container->setParameter('sonata.classification.manager.context.class',    $config['manager_class']['context']);
+        $container->setParameter('rz.classification.manager.tag.class',        $config['manager_class']['tag']);
+        $container->setParameter('rz.classification.manager.category.class',   $config['manager_class']['category']);
+        $container->setParameter('rz.classification.manager.collection.class', $config['manager_class']['collection']);
+        $container->setParameter('rz.classification.manager.context.class',    $config['manager_class']['context']);
 
 
     }
