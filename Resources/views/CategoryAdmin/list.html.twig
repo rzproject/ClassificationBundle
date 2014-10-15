@@ -59,18 +59,25 @@
                                         {% for context in contexts %}
                                             <li>
                                                 <a class="rz-admin-filter-reset-button" href="{{ admin.generateUrl('list', { 'context': context.id,  'filter': { 'site': { 'value': context.id|default('') } } } ) }}">
-                                                    {{ context.name }}
                                                     {% if current_context and context.id == current_context.id %}
-                                                        <span class="pull-right">
-                                            <i class="fa fa-check"></i>
-                                        </span>
+                                                        <i class="icon-circle"></i>
+                                                    {% else %}
+                                                        <i class="icon-circle-blank"></i>
                                                     {% endif %}
+                                                    {{ context.name }}
                                                 </a>
                                             </li>
                                         {% endfor %}
                                     </ul>
                                 </div>
+                            {% else %}
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                        <strong class="text-info">{{ current_context.name }}</strong> <span class="caret"></span>
+                                    </button>
+                                </div>
                             {% endif %}
+
                             {% if not app.request.isxmlhttprequest %}
                                     {% if admin.hasRoute('batch') %}
                                         <a href="#"

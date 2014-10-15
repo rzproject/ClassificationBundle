@@ -27,6 +27,10 @@ class CategoryAdminController extends Controller
             $currentContext = $this->getContextManager()->find($context);
         }
 
+        if ($listMode = $this->getRequest()->get('_list_mode')) {
+            $this->admin->setListMode($listMode);
+        }
+
         if (!$currentContext) {
             $contexts = $this->getContextManager()->findAll();
             $currentContext = current($contexts);
@@ -40,6 +44,8 @@ class CategoryAdminController extends Controller
 
         if ($this->admin->getPersistentParameter('context')) {
             $datagrid->setValue('context', ChoiceType::TYPE_EQUAL, $this->admin->getPersistentParameter('context'));
+        } else {
+            $datagrid->setValue('context', ChoiceType::TYPE_EQUAL, $currentContext->getId());
         }
 
         $formView = $datagrid->getForm()->createView();
@@ -65,18 +71,12 @@ class CategoryAdminController extends Controller
     {
         $request = $this->get('request_stack')->getCurrentRequest();
 
-        if (!$request->get('filter') && !$this->isXmlHttpRequest()) {
+        if ((!$request->get('filter') && !$this->isXmlHttpRequest()) || ($this->isXmlHttpRequest() && $request->get('mode') =='tree')) {
             return new RedirectResponse($this->admin->generateUrl('tree'));
         }
 
         if ($listMode = $this->getRequest()->get('_list_mode')) {
             $this->admin->setListMode($listMode);
-        }
-
-        $datagrid = $this->admin->getDatagrid();
-
-        if ($this->admin->getPersistentParameter('context')) {
-            $datagrid->setValue('context', null, $this->admin->getPersistentParameter('context'));
         }
 
         $currentContext = false;
@@ -92,11 +92,10 @@ class CategoryAdminController extends Controller
             $contexts = $this->getContextManager()->findAllExcept(array('id'=>$currentContext->getId()));
         }
 
-
-
         $mainCategory   =  $this->get('sonata.classification.manager.category')->findOneBy(array('context'=>$currentContext, 'parent'=>null));
 
         $datagrid = $this->admin->getDatagrid();
+
 
         if ($this->admin->getPersistentParameter('context')) {
             $datagrid->setValue('context', ChoiceType::TYPE_EQUAL, $this->admin->getPersistentParameter('context'));
@@ -110,13 +109,13 @@ class CategoryAdminController extends Controller
         $this->get('twig')->getExtension('form')->renderer->setTheme($formView, $this->admin->getFilterTheme());
 
         return $this->render($this->admin->getTemplate('list'), array(
-            'action'     => 'list',
+            'action'           => 'list',
             'main_category'    => $mainCategory,
             'current_context'  => $currentContext,
             'contexts'         =>$contexts,
-            'form'       => $formView,
-            'datagrid'   => $datagrid,
-            'csrf_token' => $this->getCsrfToken('sonata.batch'),
+            'form'             => $formView,
+            'datagrid'         => $datagrid,
+            'csrf_token'       => $this->getCsrfToken('sonata.batch'),
         ));
     }
 
