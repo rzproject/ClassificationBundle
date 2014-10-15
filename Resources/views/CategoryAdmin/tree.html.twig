@@ -5,12 +5,12 @@
     <ul{% if root %} class="page-tree"{% endif %}>
         {% for element in collection %}
             <li  objectId="{{ element.id }}" >
-                <div class="page-tree__item">
+                <div class="page-tree__item sonata-ba-list-field" objectid="{{ element.id }}">
                     {% if element.parent %}<i class="icon-chevron-right" data-treeview-toggler></i>{% endif %}
-                    <a class="page-tree__item__edit" href="{{ admin.generateObjectUrl('edit', element) }}">{{ element.name }}</a>
+                    <a class="{% if not app.request.isxmlhttprequest %}page-tree__item__edit{% else %}rz-admin-filter-reset-button{% endif %}" href="{{ admin.generateObjectUrl('edit', element) }}">{{ element.name }}</a>
                     <i class="text-muted">{{ element.description }}</i>
                     {#<a class="label label-default pull-right" href="{{ admin.generateObjectUrl('edit', element) }}">edit <i class="fa fa-magic"></i></a>#}
-                    {% if element.enabled %}<span class="label label-success pull-right">active <i class="fa fa-check"></i></span>{% endif %}
+                    {% if element.enabled %}<span class="label label-success pull-right">active <i class="icon-check"></i></span>{% endif %}
                 </div>
 
                 {% if element.children|length %}
@@ -61,49 +61,56 @@
     </div>
 {% endblock %}
 
-{% block list_table %}
+{% block list_table_standard %}
     <div class="box box-color box-bordered">
-    <div class="box-title">
-        <h3>
-            <i class="icon-table"></i>
-            {# TODO: set on configuration #}
-        </h3>
-    </div>
-    <div class="box-content nopadding">
-        <div class="row-fluid">
-            <div class="span12 page-tree-selector">
-                {{ admin.trans('tree_catalog_title') }}
-                {% if not app.request.get('hide_context') %}
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            <strong class="text-info">{{ current_context.name }}</strong> <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            {% for context in contexts %}
-                                <li>
-                                    <a class="rz-admin-filter-reset-button" href="{% if current_context and context.id == current_context.id %}{{ admin.generateUrl('list', { 'context': context.id,  'filter': { 'site': { 'value': context.id|default('') } } } ) }}{% else %}#{% endif %}">
-                                        {% if current_context and context.id == current_context.id %}
-                                            <i class="icon-circle"></i>
-                                        {% else %}
-                                            <i class="icon-circle-blank"></i>
-                                        {% endif %}
-                                        {{ context.name }}
-                                    </a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% else %}
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            <strong class="text-info">{{ current_context.name }}</strong> <span class="caret"></span>
-                        </button>
-                    </div>
-                {% endif %}
-            </div>
+        <div class="box-title">
+            <h3>
+                <i class="icon-table"></i>
+                {# TODO: set on configuration #}
+            </h3>
         </div>
-        {% if main_category %}
-        {{ tree.navigate_child(main_category.children, admin, true) }}
-        {% endif %}
+        <div class="box-content nopadding">
+            <div class="row-fluid">
+                <div class="span12 page-tree-selector">
+                    {{ admin.trans('tree_catalog_title') }}
+                    {% if not app.request.get('hide_context') %}
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                <strong class="text-info">{{ current_context.name }}</strong> <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                {% for context in contexts %}
+                                    <li>
+                                        {% if not app.request.isxmlhttprequest %}
+                                            {% set link_url = admin.generateUrl('list', { 'context': context.id,  'filter': { 'site': { 'value': context.id|default('') } } }  ) %}
+                                        {% else %}
+                                            {% set link_url = admin.generateUrl('list', { 'context': context.id,  'mode':'tree', 'filter': { 'site': { 'value': context.id|default('') } } }  ) %}
+                                        {% endif %}
+
+                                        <a class="rz-admin-filter-reset-button" href="{% if current_context and context.id == current_context.id %}#{% else %}{{ link_url }}{% endif %}">
+                                            {% if current_context and context.id == current_context.id %}
+                                                <i class="icon-circle"></i>
+                                            {% else %}
+                                                <i class="icon-circle-blank"></i>
+                                            {% endif %}
+                                            {{ context.name }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                <strong class="text-info">{{ current_context.name }}</strong> <span class="caret"></span>
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% if main_category %}
+            {{ tree.navigate_child(main_category.children, admin, true) }}
+            {% endif %}
+        </div>
     </div>
 {% endblock %}

@@ -72,7 +72,7 @@ class CategoryAdminController extends Controller
         $request = $this->get('request_stack')->getCurrentRequest();
 
         if ((!$request->get('filter') && !$this->isXmlHttpRequest()) || ($this->isXmlHttpRequest() && $request->get('mode') =='tree')) {
-            return new RedirectResponse($this->admin->generateUrl('tree'));
+            return new RedirectResponse($this->admin->generateUrl('tree', $request->query->all()));
         }
 
         if ($listMode = $this->getRequest()->get('_list_mode')) {
