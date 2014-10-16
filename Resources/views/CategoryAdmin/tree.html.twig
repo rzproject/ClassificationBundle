@@ -82,9 +82,9 @@
                                 {% for context in contexts %}
                                     <li>
                                         {% if not app.request.isxmlhttprequest %}
-                                            {% set link_url = admin.generateUrl('list', { 'context': context.id,  'filter': { 'site': { 'value': context.id|default('') } } }  ) %}
+                                            {% set link_url = admin.generateUrl('list', { 'context': context.id }  ) %}
                                         {% else %}
-                                            {% set link_url = admin.generateUrl('list', { 'context': context.id,  'mode':'tree', 'filter': { 'site': { 'value': context.id|default('') } } }  ) %}
+                                            {% set link_url = admin.generateUrl('list', { 'context': context.id,  'mode':'tree'}  ) %}
                                         {% endif %}
 
                                         <a class="rz-admin-filter-reset-button" href="{% if current_context and context.id == current_context.id %}#{% else %}{{ link_url }}{% endif %}">
@@ -114,3 +114,5 @@
         </div>
     </div>
 {% endblock %}
+
+{% block list_filters_standard %}{% endblock %}
