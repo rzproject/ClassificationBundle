@@ -53,7 +53,7 @@
                             {% if not app.request.get('hide_context') %}
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                        <strong class="text-info">{{ current_context.name }}</strong> <span class="caret"></span>
+                                        <strong class="text-info">{{ current_context.name|trans({}, admin.translationdomain) }}</strong> <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" role="menu">
                                         {% for context in contexts %}
@@ -64,7 +64,7 @@
                                                     {% else %}
                                                         <i class="icon-circle-blank"></i>
                                                     {% endif %}
-                                                    {{ context.name }}
+                                                    {{ context.name|trans({}, admin.translationdomain) }}
                                                 </a>
                                             </li>
                                         {% endfor %}
@@ -73,7 +73,7 @@
                             {% else %}
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                        <strong class="text-info">{{ current_context.name }}</strong> <span class="caret"></span>
+                                        <strong class="text-info">{{ current_context.name|trans({}, admin.translationdomain) }}</strong> <span class="caret"></span>
                                     </button>
                                 </div>
                             {% endif %}
