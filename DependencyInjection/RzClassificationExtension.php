@@ -26,6 +26,7 @@ class RzClassificationExtension extends Extension
         $loader->load('services.xml');
         $loader->load('form.xml');
         $this->configureClass($config, $container);
+        $this->configureManagerClass($config, $container);
         $this->configureAdmin($config, $container);
         $this->configureRzTemplates($config, $container);
     }
@@ -40,11 +41,28 @@ class RzClassificationExtension extends Extension
         $container->setParameter('sonata.classification.admin.tag.entity',        $config['class']['tag']);
         $container->setParameter('sonata.classification.admin.category.entity',   $config['class']['category']);
         $container->setParameter('sonata.classification.admin.collection.entity', $config['class']['collection']);
+        $container->setParameter('sonata.classification.admin.context.entity', $config['class']['context']);
 
         // manager configuration
         $container->setParameter('sonata.classification.manager.tag.entity',        $config['class']['tag']);
         $container->setParameter('sonata.classification.manager.category.entity',   $config['class']['category']);
         $container->setParameter('sonata.classification.manager.collection.entity', $config['class']['collection']);
+        $container->setParameter('sonata.classification.manager.context.entity', $config['class']['context']);
+
+    }
+
+    /**
+     * @param array            $config
+     * @param ContainerBuilder $container
+     */
+    public function configureManagerClass($config, ContainerBuilder $container)
+    {
+        $container->setParameter('rz.classification.manager.tag.class',        $config['manager_class']['tag']);
+        $container->setParameter('rz.classification.manager.category.class',   $config['manager_class']['category']);
+        $container->setParameter('rz.classification.manager.collection.class', $config['manager_class']['collection']);
+        $container->setParameter('rz.classification.manager.context.class',    $config['manager_class']['context']);
+
+
     }
 
     /**
@@ -64,6 +82,10 @@ class RzClassificationExtension extends Extension
         $container->setParameter('sonata.classification.admin.collection.class',              $config['admin']['collection']['class']);
         $container->setParameter('sonata.classification.admin.collection.controller',         $config['admin']['collection']['controller']);
         $container->setParameter('sonata.classification.admin.collection.translation_domain', $config['admin']['collection']['translation']);
+
+        $container->setParameter('sonata.classification.admin.context.class',              $config['admin']['context']['class']);
+        $container->setParameter('sonata.classification.admin.context.controller',         $config['admin']['context']['controller']);
+        $container->setParameter('sonata.classification.admin.context.translation_domain', $config['admin']['context']['translation']);
     }
 
     /**
@@ -77,5 +99,6 @@ class RzClassificationExtension extends Extension
         $container->setParameter('rz_classification.configuration.category.templates', $config['admin']['category']['templates']);
         $container->setParameter('rz_classification.configuration.tag.templates', $config['admin']['tag']['templates']);
         $container->setParameter('rz_classification.configuration.collection.templates', $config['admin']['collection']['templates']);
+        $container->setParameter('rz_classification.configuration.context.templates', $config['admin']['context']['templates']);
     }
 }
