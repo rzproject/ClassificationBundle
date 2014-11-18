@@ -4,6 +4,7 @@ namespace Rz\ClassificationBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 class OverrideServiceCompilerPass implements CompilerPassInterface
 {
@@ -45,6 +46,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
 
         $definition = $container->getDefinition('sonata.classification.manager.category');
         $definition->setClass($container->getParameter('rz.classification.manager.category.class'));
+        $definition->addMethodCall('setPermalinkGenerator', array(new Reference('rz_classificaiton.permalink.category')));
 
         $definition = $container->getDefinition('sonata.classification.manager.collection');
         $definition->setClass($container->getParameter('rz.classification.manager.collection.class'));

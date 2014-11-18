@@ -16,9 +16,61 @@ use Sonata\CoreBundle\Model\BaseEntityManager;
 
 use Sonata\DatagridBundle\Pager\Doctrine\Pager;
 use Sonata\DatagridBundle\ProxyQuery\Doctrine\ProxyQuery;
+use Rz\ClassificationBundle\Permalink\PermalinkInterface;
 
 class CategoryManager extends BaseCategoryManager
 {
+
+
+    /**
+     * @var \Rz\ClassificationBundle\Permalink\PermalinkInterface
+     */
+    protected $permalinkGenerator;
+
+    public function setPermalinkGenerator(PermalinkInterface $permalinkGenerator)
+    {
+        $this->permalinkGenerator = $permalinkGenerator;
+    }
+
+    public function getPermalinkGenerator()
+    {
+        return $this->permalinkGenerator;
+    }
+
+    /**
+     * Returns a category with the given permalink
+     *
+     * @param string $permalink
+     *
+     * @return CategoryInterface
+     */
+    public function getCategoryByPermalink($permalink)
+    {
+        try {
+            $repository = $this->getRepository();
+            $query = $repository->createQueryBuilder('p');
+
+            $urlParameters = $this->getPermalinkGenerator()->getParameters($permalink);
+
+            $parameters = array();
+
+            if (isset($urlParameters['slug'])) {
+                $query->andWhere('p.slug = :slug');
+                $parameters['slug'] = $urlParameters['slug'];
+            }
+
+            if (count($parameters) == 0) {
+                return null;
+            }
+
+            $query->setParameters($parameters);
+
+            return $query->getQuery()->getSingleResult();
+
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            return null;
+        }
+    }
 
 
     public function getContexts() {
@@ -72,5 +124,22 @@ class CategoryManager extends BaseCategoryManager
         }
 
         return $context;
+    }
+
+    /**
+     * @param integer $categoryId
+     * @param array $criteria
+     *
+     * @return PagerInterface
+     */
+    public function getSubCategories($categoryId, $criteria = array())
+    {
+        $queryBuilder = $this->getObjectManager()->createQueryBuilder()
+            ->select('c')
+            ->from($this->class, 'c')
+            ->where('c.parent = :categoryId')
+            ->setParameter('categoryId', $categoryId);
+
+        return $queryBuilder->getQuery()->getResult();
     }
 }
