@@ -25,6 +25,7 @@ class RzClassificationExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('form.xml');
         $loader->load('permalink.xml');
+        $loader->load('twig.xml');
         $this->configureClass($config, $container);
         $this->configureManagerClass($config, $container);
         $this->configureAdmin($config, $container);
