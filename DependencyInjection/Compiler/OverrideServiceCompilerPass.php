@@ -31,6 +31,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         $definedTemplates = array_merge($container->getParameter('sonata.admin.configuration.templates'),
                                         $container->getParameter('rz_classification.configuration.tag.templates'));
         $definition->addMethodCall('setTemplates', array($definedTemplates));
+        $definition->addMethodCall('setContextManager', array(new Reference('sonata.classification.manager.context')));
 
         //override Collection Admin
         $definition = $container->getDefinition('sonata.classification.admin.collection');
@@ -38,6 +39,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         $definedTemplates = array_merge($container->getParameter('sonata.admin.configuration.templates'),
                                         $container->getParameter('rz_classification.configuration.collection.templates'));
         $definition->addMethodCall('setTemplates', array($definedTemplates));
+        $definition->addMethodCall('setContextManager', array(new Reference('sonata.classification.manager.context')));
 
 
         //override ORM Manager

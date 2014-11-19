@@ -8,11 +8,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
-/**
- * Page Admin Controller
- *
- * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
- */
 class CategoryAdminController extends Controller
 {
     /**

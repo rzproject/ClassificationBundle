@@ -7,9 +7,13 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Sonata\ClassificationBundle\Model\ContextManagerInterface;
 
 class CollectionAdmin extends BaseClass
 {
+
+    protected $contextManager;
+
     /**
      * {@inheritdoc}
      */
@@ -17,8 +21,9 @@ class CollectionAdmin extends BaseClass
     {
         $listMapper
             ->add('name',null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
-            ->add('context', null,  array('footable'=>array('attr'=>array('data_hide'=>'phone'))))
             ->add('enabled', null, array('editable' => true, 'footable'=>array('attr'=>array('data_hide'=>'phone'))))
+            ->add('createdAt', null,  array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
+            ->add('updatedAt', null,  array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
             ->add('_action', 'actions', array(
                 'actions' => array(
                     'Show' => array('template' => 'SonataAdminBundle:CRUD:list__action_show.html.twig'),
@@ -36,7 +41,6 @@ class CollectionAdmin extends BaseClass
     {
         $formMapper
             ->add('enabled', null, array('required' => false))
-            ->add('context')
             ->add('name')
             ->add('description', 'textarea', array('required' => false))
             ->add('content', 'sonata_formatter_type', array(
@@ -80,5 +84,82 @@ class CollectionAdmin extends BaseClass
             ->add('createdAt')
             ->add('updatedAt')
         ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getNewInstance()
+    {
+        $instance = parent::getNewInstance();
+
+        if ($contextId = $this->getPersistentParameter('context')) {
+            $context = $this->contextManager->find($contextId);
+
+            if (!$context) {
+                $context = $this->contextManager->create();
+                $context->setEnabled(true);
+                $context->setId($context);
+                $context->setName($context);
+
+                $this->contextManager->save($context);
+            }
+
+            $instance->setContext($context);
+        }
+
+        return $instance;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configureDatagridFilters(DatagridMapper $datagridMapper)
+    {
+        $datagridMapper
+            ->add('name')
+            ->add('enabled')
+            ->add('context')
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPersistentParameters()
+    {
+        $parameters = array(
+            'context'      => '',
+            'hide_context' => (int)$this->getRequest()->get('hide_context', 0)
+        );
+
+        if ($this->getSubject()) {
+            $parameters['context'] = $this->getSubject()->getContext() ? $this->getSubject()->getContext()->getId() : '';
+
+            return $parameters;
+        }
+
+        if ($this->hasRequest()) {
+            $parameters['context'] = $this->getRequest()->get('context');
+
+            return $parameters;
+        }
+
+        return $parameters;
+    }
+
+    public function setContextManager(ContextManagerInterface $contextManager) {
+        $this->contextManager = $contextManager;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prePersist($collection)
+    {
+        $parameters = $this->getPersistentParameters();
+        $parameters['context'] = $parameters['context']?:'default';
+        $context = $this->contextManager->find($parameters['context']);
+        $collection->setContext($context);
     }
 }
