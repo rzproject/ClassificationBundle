@@ -135,7 +135,7 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('tag')->defaultValue('Sonata\\ClassificationBundle\\Entity\\TagManager')->end()
                         ->scalarNode('category')->defaultValue('Rz\\ClassificationBundle\\Entity\\CategoryManager')->end()
-                        ->scalarNode('collection')->defaultValue('Sonata\\ClassificationBundle\\Entity\\CollectionManager')->end()
+                        ->scalarNode('collection')->defaultValue('Rz\\ClassificationBundle\\Entity\\CollectionManager')->end()
                         ->scalarNode('context')->defaultValue('Rz\\ClassificationBundle\\Entity\\ContextManager')->end()
                     ->end()
                 ->end()
