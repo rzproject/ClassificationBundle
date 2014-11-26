@@ -70,7 +70,7 @@ class CategoryAdmin extends BaseAdmin
             ->end()
             ->with('Options', array('class' => 'col-md-6'))
                 ->add('enabled')
-                ->add('position', 'integer', array('required' => false, 'data' => 0))
+                ->add('position', 'hidden', array('required' => false, 'data' => 0))
             ->end()
         ;
 
