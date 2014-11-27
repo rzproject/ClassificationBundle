@@ -26,10 +26,88 @@ class RzClassificationExtension extends Extension
         $loader->load('form.xml');
         $loader->load('permalink.xml');
         $loader->load('twig.xml');
+        $loader->load('provider.xml');
         $this->configureClass($config, $container);
         $this->configureManagerClass($config, $container);
         $this->configureAdmin($config, $container);
         $this->configureRzTemplates($config, $container);
+        $this->configureCategoryProviders($container, $config['providers']['category']);
+        $this->configureCollectionProviders($container, $config['providers']['collection']);
+        $this->configureTagProviders($container, $config['providers']['tag']);
+    }
+
+    /**
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param array                                                   $config
+     */
+    public function configureCategoryProviders(ContainerBuilder $container, $config) {
+
+        //category
+        $pool = $container->getDefinition('rz_classification.pool.category');
+        $pool->replaceArgument(0, $config['default_context']);
+
+        foreach ($config['contexts'] as $name => $settings) {
+            $templates = array();
+
+            foreach ($settings['templates'] as $template => $value) {
+                $templates[$template] = $value;
+            }
+            $pool->addMethodCall('addContext', array($name, $settings['provider'], $settings['default_template'], $templates));
+
+            if ($container->hasDefinition($settings['provider'])) {
+                $provider = $container->getDefinition($settings['provider']);
+                $provider->addMethodCall('setTemplates', array($templates));
+            }
+        }
+    }
+
+    /**
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param array                                                   $config
+     */
+    public function configureCollectionProviders(ContainerBuilder $container, $config) {
+            //collection
+            $pool = $container->getDefinition('rz_classification.pool.collection');
+            $pool->replaceArgument(0, $config['default_context']);
+
+            foreach ($config['contexts'] as $name => $settings) {
+                $templates = array();
+
+                foreach ($settings['templates'] as $template => $value) {
+                    $templates[$template] = $value;
+                }
+                $pool->addMethodCall('addContext', array($name, $settings['provider'], $settings['default_template'], $templates));
+
+                if ($container->hasDefinition($settings['provider'])) {
+                    $provider = $container->getDefinition($settings['provider']);
+                    $provider->addMethodCall('setTemplates', array($templates));
+                }
+            }
+        }
+
+    /**
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param array                                                   $config
+     */
+    public function configureTagProviders(ContainerBuilder $container, $config)
+    {
+        //tag
+        $pool = $container->getDefinition('rz_classification.pool.tag');
+        $pool->replaceArgument(0, $config['default_context']);
+
+        foreach ($config['contexts'] as $name => $settings) {
+            $templates = array();
+
+            foreach ($settings['templates'] as $template => $value) {
+                $templates[$template] = $value;
+            }
+            $pool->addMethodCall('addContext', array($name, $settings['provider'], $settings['default_template'], $templates));
+
+            if($container->hasDefinition($settings['provider'])) {
+                $provider =$container->getDefinition($settings['provider']);
+                $provider->addMethodCall('setTemplates', array($templates));
+            }
+        }
     }
 
         /**

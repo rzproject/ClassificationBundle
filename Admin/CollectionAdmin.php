@@ -8,11 +8,14 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\ClassificationBundle\Model\ContextManagerInterface;
+use Rz\ClassificationBundle\Provider\CollectionPool;
 
 class CollectionAdmin extends BaseClass
 {
 
+    const COLLECTION_DEFAULT_CONTEXT = 'default';
     protected $contextManager;
+    protected $pool;
 
     /**
      * {@inheritdoc}
@@ -39,6 +42,8 @@ class CollectionAdmin extends BaseClass
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
+
+        $collection = $this->getSubject();
         $formMapper
             ->add('enabled', null, array('required' => false))
             ->add('name')
@@ -66,6 +71,14 @@ class CollectionAdmin extends BaseClass
                     )
                 )
             );
+        }
+
+        if($provider = $this->getPoolProvider()) {
+            if ($collection->getId()) {
+                $provider->buildEditForm($formMapper);
+            } else {
+                $provider->buildCreateForm($formMapper);
+            }
         }
     }
 
@@ -161,5 +174,36 @@ class CollectionAdmin extends BaseClass
         $parameters['context'] = $parameters['context']?:'default';
         $context = $this->contextManager->find($parameters['context']);
         $collection->setContext($context);
+    }
+
+    public function setPool(CollectionPool $pool) {
+        $this->pool = $pool;
+    }
+
+    protected function fetchCurrentContext() {
+
+        $context_param = $this->getPersistentParameter('context');
+        $context = null;
+        if($context_param) {
+            $context = $this->contextManager->find($context_param);
+        } else {
+            $context = $this->contextManager->findOneBy(array('id'=>self::COLLECTION_DEFAULT_CONTEXT));
+        }
+
+        if($context) {
+            return $context;
+        } else {
+            return;
+        }
+    }
+
+    protected function getPoolProvider() {
+        $currentContext = $this->fetchCurrentContext();
+        if ($this->pool->hasContext($currentContext->getId())) {
+            $providerName = $this->pool->getProviderNameByContext($currentContext->getId());
+            return $this->pool->getProvider($providerName);
+        }
+
+        return;
     }
 }

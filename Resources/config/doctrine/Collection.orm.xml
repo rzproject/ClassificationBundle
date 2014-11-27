@@ -4,5 +4,6 @@
         <field name="content"                 type="text"   column="content"   nullable="true"/>
         <field name="rawContent"              type="text"   column="raw_content"  nullable="true"/>
         <field name="contentFormatter"        type="string" column="content_formatter" nullable="true"/>
+        <field name="settings"      type="json"       column="settings" nullable="true"/>
     </mapped-superclass>
 </doctrine-mapping>

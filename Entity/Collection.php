@@ -5,14 +5,15 @@ namespace Rz\ClassificationBundle\Entity;
 use Sonata\ClassificationBundle\Entity\BaseCollection;
 
 
-class Collection extends BaseCollection
+abstract class Collection extends BaseCollection
 {
     protected $content;
     protected $rawContent;
     protected $contentFormatter;
+    protected $settings;
 
     public function __construct(){
-        $this->enabled = false;
+        $this->enabled = true;
     }
 
     /**
@@ -61,5 +62,29 @@ class Collection extends BaseCollection
     public function getRawContent()
     {
         return $this->rawContent;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSettings()
+    {
+        return $this->settings;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSetting($name, $value)
+    {
+        $this->settings[$name] = $value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSettings($settings)
+    {
+        $this->settings = $settings;
     }
 }

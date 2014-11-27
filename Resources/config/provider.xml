@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="rz_classification.provider.tag.default.class">Rz\ClassificationBundle\Provider\TagDefaultProvider</parameter>
+        <parameter key="rz_classification.provider.category.default.class">Rz\ClassificationBundle\Provider\CategoryDefaultProvider</parameter>
+        <parameter key="rz_classification.provider.collection.default.class">Rz\ClassificationBundle\Provider\CollectionDefaultProvider</parameter>
+        <parameter key="rz_classification.pool.category.class">Rz\ClassificationBundle\Provider\CategoryPool</parameter>
+        <parameter key="rz_classification.pool.collection.class">Rz\ClassificationBundle\Provider\CollectionPool</parameter>
+        <parameter key="rz_classification.pool.tag.class">Rz\ClassificationBundle\Provider\TagPool</parameter>
+    </parameters>
+
+    <services>
+
+        <service id="rz_classification.pool.category" class="%rz_classification.pool.category.class%">
+            <argument />
+        </service>
+
+        <service id="rz_classification.pool.collection" class="%rz_classification.pool.collection.class%">
+            <argument />
+        </service>
+
+        <service id="rz_classification.pool.tag" class="%rz_classification.pool.tag.class%">
+            <argument />
+        </service>
+
+        <service id="rz_classification.provider.tag.default" class="%rz_classification.provider.tag.default.class%">
+            <tag name="rz_classification.provider.tag" />
+            <argument>rz_classification.provider.tag.default</argument>
+        </service>
+
+        <service id="rz_classification.provider.category.default" class="%rz_classification.provider.category.default.class%">
+            <tag name="rz_classification.provider.category" />
+            <argument>rz_classification.provider.category.default</argument>
+        </service>
+
+        <service id="rz_classification.provider.collection.default" class="%rz_classification.provider.collection.default.class%">
+            <tag name="rz_classification.provider.collection" />
+            <argument>rz_classification.provider.collection.default</argument>
+        </service>
+
+    </services>
+</container>

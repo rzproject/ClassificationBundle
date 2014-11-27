@@ -5,14 +5,15 @@ namespace Rz\ClassificationBundle\Entity;
 use Sonata\ClassificationBundle\Entity\BaseCategory as BaseCategory;
 
 
-class Category extends BaseCategory
+abstract class Category extends BaseCategory
 {
     protected $content;
     protected $rawContent;
     protected $contentFormatter;
+    protected $settings;
 
     public function __construct(){
-        $this->enabled = false;
+        $this->enabled = true;
     }
 
     /**
@@ -61,5 +62,29 @@ class Category extends BaseCategory
     public function getRawContent()
     {
         return $this->rawContent;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSettings()
+    {
+        return $this->settings;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSetting($name, $value)
+    {
+        $this->settings[$name] = $value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSettings($settings)
+    {
+        $this->settings = $settings;
     }
 }

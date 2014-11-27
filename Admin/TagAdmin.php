@@ -8,10 +8,14 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\ClassificationBundle\Model\ContextManagerInterface;
+use Rz\ClassificationBundle\Provider\TagPool;
 
 class TagAdmin extends BaseAdmin
 {
+    const TAG_DEFAULT_CONTEXT = 'default';
     protected $contextManager;
+    protected $pool;
+
     /**
      * {@inheritdoc}
      */
@@ -128,6 +132,7 @@ class TagAdmin extends BaseAdmin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
+        $tag = $this->getSubject();
         $formMapper->add('name');
 
         if ($this->hasSubject() && $this->getSubject()->getId()) {
@@ -135,5 +140,44 @@ class TagAdmin extends BaseAdmin
         }
 
         $formMapper->add('enabled', null, array('required' => false));
+
+        if($provider = $this->getPoolProvider()) {
+            if ($tag->getId()) {
+                $provider->buildEditForm($formMapper);
+            } else {
+                $provider->buildCreateForm($formMapper);
+            }
+        }
+    }
+
+    public function setPool(TagPool $pool) {
+        $this->pool = $pool;
+    }
+
+    protected function fetchCurrentContext() {
+
+        $context_param = $this->getPersistentParameter('context');
+        $context = null;
+        if($context_param) {
+            $context = $this->contextManager->find($context_param);
+        } else {
+            $context = $this->contextManager->findOneBy(array('id'=>self::TAG_DEFAULT_CONTEXT));
+        }
+
+        if($context) {
+            return $context;
+        } else {
+            return;
+        }
+    }
+
+    protected function getPoolProvider() {
+        $currentContext = $this->fetchCurrentContext();
+        if ($this->pool->hasContext($currentContext->getId())) {
+            $providerName = $this->pool->getProviderNameByContext($currentContext->getId());
+            return $this->pool->getProvider($providerName);
+        }
+
+        return;
     }
 }

@@ -12,10 +12,14 @@ use Sonata\ClassificationBundle\Entity\ContextManager;
 use Sonata\ClassificationBundle\Model\ContextInterface;
 use Sonata\ClassificationBundle\Model\CategoryManagerInterface;
 use Sonata\ClassificationBundle\Model\ContextManagerInterface;
+use Rz\ClassificationBundle\Provider\CategoryPool;
 
 class CategoryAdmin extends BaseAdmin
 {
+    const CATEGORY_DEFAULT_CONTEXT = 'default';
+    protected $contextManager;
     protected $categoryManager;
+    protected $pool;
 
     /**
      * {@inheritdoc}
@@ -42,7 +46,7 @@ class CategoryAdmin extends BaseAdmin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-
+        $category = $this->getSubject();
         $formMapper
             ->with('Category', array('class' => 'col-md-6'))
                 ->add('name')
@@ -87,6 +91,14 @@ class CategoryAdmin extends BaseAdmin
                         )
                     )
                 ->end();
+        }
+
+        if($provider = $this->getPoolProvider()) {
+            if ($category->getId()) {
+                $provider->buildEditForm($formMapper);
+            } else {
+                $provider->buildCreateForm($formMapper);
+            }
         }
     }
 
@@ -160,6 +172,38 @@ class CategoryAdmin extends BaseAdmin
         $this->categoryManager = $categoryManager;
     }
 
+    public function setPool(CategoryPool $pool) {
+        $this->pool = $pool;
+    }
 
+    public function setContextManager(ContextManagerInterface $contextManager) {
+        $this->contextManager = $contextManager;
+    }
 
+    protected function fetchCurrentContext() {
+
+        $context_param = $this->getPersistentParameter('context');
+        $context = null;
+        if($context_param) {
+            $context = $this->contextManager->find($context_param);
+        } else {
+            $context = $this->contextManager->findOneBy(array('id'=>self::CATEGORY_DEFAULT_CONTEXT));
+        }
+
+        if($context) {
+            return $context;
+        } else {
+            return;
+        }
+    }
+
+    protected function getPoolProvider() {
+        $currentContext = $this->fetchCurrentContext();
+        if ($this->pool->hasContext($currentContext->getId())) {
+            $providerName = $this->pool->getProviderNameByContext($currentContext->getId());
+            return $this->pool->getProvider($providerName);
+        }
+
+        return;
+    }
 }

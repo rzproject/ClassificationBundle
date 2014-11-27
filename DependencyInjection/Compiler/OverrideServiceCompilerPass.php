@@ -21,9 +21,11 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         $definition = $container->getDefinition('sonata.classification.admin.category');
         $definition->setClass($container->getParameter('sonata.classification.admin.category.class'));
         $definition->addMethodCall('setCategoryManager', array($container->getDefinition('sonata.classification.manager.category')));
+        $definition->addMethodCall('setContextManager', array(new Reference('sonata.classification.manager.context')));
         $definedTemplates = array_merge($container->getParameter('sonata.admin.configuration.templates'),
                                         $container->getParameter('rz_classification.configuration.category.templates'));
         $definition->addMethodCall('setTemplates', array($definedTemplates));
+        $definition->addMethodCall('setPool', array(new Reference('rz_classification.pool.category')));
 
         //override Tag Admin
         $definition = $container->getDefinition('sonata.classification.admin.tag');
@@ -32,6 +34,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
                                         $container->getParameter('rz_classification.configuration.tag.templates'));
         $definition->addMethodCall('setTemplates', array($definedTemplates));
         $definition->addMethodCall('setContextManager', array(new Reference('sonata.classification.manager.context')));
+        $definition->addMethodCall('setPool', array(new Reference('rz_classification.pool.tag')));
 
         //override Collection Admin
         $definition = $container->getDefinition('sonata.classification.admin.collection');
@@ -40,6 +43,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
                                         $container->getParameter('rz_classification.configuration.collection.templates'));
         $definition->addMethodCall('setTemplates', array($definedTemplates));
         $definition->addMethodCall('setContextManager', array(new Reference('sonata.classification.manager.context')));
+        $definition->addMethodCall('setPool', array(new Reference('rz_classification.pool.collection')));
 
 
         //override ORM Manager
