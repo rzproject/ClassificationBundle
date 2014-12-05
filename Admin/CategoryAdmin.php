@@ -206,4 +206,24 @@ class CategoryAdmin extends BaseAdmin
 
         return;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function preRemove($object)
+    {
+
+        if($object->getParent()) {
+            $children = $object->getChildren();
+            if(count($children) > 0) {
+                foreach($children as $child) {
+                    $child->setParent(null);
+                    $object->removeChild($child);
+                }
+                $object->setParent(null);
+            } else {
+                $object->setParent(null);
+            }
+        }
+    }
 }
