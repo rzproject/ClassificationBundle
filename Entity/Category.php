@@ -87,4 +87,12 @@ abstract class Category extends BaseCategory
     {
         $this->settings = $settings;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSetting($name, $default = null)
+    {
+        return isset($this->settings[$name]) ? $this->settings[$name] : $default;
+    }
 }

@@ -68,9 +68,10 @@ class CategoryPermalink implements PermalinkInterface
     /**
      * @param string $permalink
      *
+     * @param bool $singleParam
      * @return array
      */
-    public function getSlugParameters($permalink)
+    public function getSlugParameters($permalink, $singleParam = false)
     {
         $parameters = explode('/', $permalink);
 
@@ -84,7 +85,12 @@ class CategoryPermalink implements PermalinkInterface
             $slug = $parameters;
         }
 
-        return $slug;
+        if($singleParam) {
+
+            return is_array($slug) ? array_pop($slug) : $slug;
+        } else {
+            return $slug;
+        }
     }
 
     public function validatePermalink(CategoryInterface $category, $permalink)

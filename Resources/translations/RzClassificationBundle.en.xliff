@@ -232,6 +232,11 @@
                 <source>sonata_collection</source>
                 <target>Sonata Collection</target>
             </trans-unit>
+
+            <trans-unit id="form.label_settings">
+                <source>form.label_settings</source>
+                <target>Settings</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
