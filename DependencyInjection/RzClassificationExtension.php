@@ -76,6 +76,7 @@ class RzClassificationExtension extends Extension
                 foreach ($settings['templates'] as $template => $value) {
                     $templates[$template] = $value;
                 }
+
                 $pool->addMethodCall('addContext', array($name, $settings['provider'], $settings['default_template'], $templates));
 
                 if ($container->hasDefinition($settings['provider'])) {
