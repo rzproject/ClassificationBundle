@@ -142,4 +142,25 @@ class CategoryManager extends BaseCategoryManager
 
         return $queryBuilder->getQuery()->getResult();
     }
+
+    public function getCategoriesByIds($ids) {
+
+        $queryBuilder = $this->getObjectManager()->createQueryBuilder()
+            ->select('c')
+            ->from($this->class, 'c')
+            ->where('c.id in (:ids)')
+            ->setParameter('ids', $ids);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function getCategoriesByContextQuery($context) {
+        $queryBuilder = $this->getObjectManager()->createQueryBuilder()
+            ->select('c')
+            ->from($this->class, 'c')
+            ->where('c.context = :context')
+            ->setParameter('context', $context);
+
+        return $queryBuilder->getQuery();
+    }
 }
