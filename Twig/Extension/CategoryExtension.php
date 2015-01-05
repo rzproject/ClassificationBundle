@@ -37,7 +37,8 @@ class CategoryExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            'rz_classification_category_permalink'    => new \Twig_Function_Method($this, 'generatePermalink')
+            'rz_classification_category_permalink'    => new \Twig_Function_Method($this, 'generatePermalink'),
+            'rz_classification_category_object'    => new \Twig_Function_Method($this, 'getCategoryObject')
         );
     }
 
@@ -67,5 +68,16 @@ class CategoryExtension extends \Twig_Extension
     public function generatePermalink(CategoryInterface $category)
     {
         return $this->categoryManager->getPermalinkGenerator()->generate($category);
+    }
+
+    public function getCategoryObject($id) {
+
+        $object = null;
+
+        if ($id) {
+            $object =  $this->categoryManager->find($id);
+        }
+
+        return $object;
     }
 }
