@@ -16,10 +16,11 @@ class ContextAdmin extends BaseClass
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
+
+        if($this->getSubject()->getId() === null) {
+            $formMapper->add('id');
+        }
         $formMapper
-            ->ifTrue($this->getSubject()->getId() === null)
-                ->add('id')
-            ->end()
             ->add('name')
             ->add('enabled', null, array('required' => false))
         ;
