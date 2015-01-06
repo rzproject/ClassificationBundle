@@ -51,7 +51,7 @@ class CategoryAdmin extends BaseAdmin
             ->with('Category', array('class' => 'col-md-6'))
                 ->add('name')
                 ->add('description', 'textarea', array('required' => false))
-                ->if_true($this->getSubject()->getParent() !== null || $this->getSubject()->getId() === null) // root category cannot have a parent
+                ->ifTrue($this->getSubject()->getParent() !== null || $this->getSubject()->getId() === null) // root category cannot have a parent
                         ->add('parent', 'sonata_category_selector', array(
                                 'category'      => $this->getSubject() ?: null,
                                 'model_manager' => $this->getModelManager(),
@@ -59,7 +59,7 @@ class CategoryAdmin extends BaseAdmin
                                 'required'      => false,
                                 'context'       => $this->getSubject()->getContext()
                             ))
-                ->end_if()
+                ->end()
                 ->add('content', 'sonata_formatter_type', array(
                     'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
                     'format_field'   => 'contentFormatter',
