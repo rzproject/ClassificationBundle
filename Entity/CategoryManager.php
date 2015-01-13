@@ -163,4 +163,37 @@ class CategoryManager extends BaseCategoryManager
 
         return $queryBuilder->getQuery();
     }
+
+    public function getSubCategoriesByContextExceptRoot($context, $criteria = null) {
+
+        $parameters['context'] = $context;
+        $queryBuilder = $this->getObjectManager()->createQueryBuilder()
+            ->select('c')
+            ->from($this->class, 'c')
+            ->where('c.context = :context')
+            ->andWhere('c.parent IS NOT null');
+
+        if (isset($criteria['category'])) {
+            $queryBuilder->andWhere('c.id != :category');
+            $parameters['category'] = $criteria['category'];
+        }
+
+        $queryBuilder->setParameters($parameters);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function getFirstSubCategoryByContext($context) {
+
+        $parameters['context'] = $context;
+        $queryBuilder = $this->getObjectManager()->createQueryBuilder()
+            ->select('c')
+            ->from($this->class, 'c')
+            ->where('c.context = :context')
+            ->andWhere('c.parent IS NOT null')
+            ->setMaxResults(1)
+            ->setParameters($parameters);
+
+        return $queryBuilder->getQuery()->getSingleResult();
+    }
 }
