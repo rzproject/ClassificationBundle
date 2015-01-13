@@ -200,8 +200,11 @@ class CollectionAdmin extends BaseClass
     protected function getPoolProvider() {
 
         $currentContext = $this->fetchCurrentContext();
-        if ($this->pool->hasContext($currentContext->getId())) {
-            $providerName = $this->pool->getProviderNameByContext($currentContext->getId());
+
+        $context = str_replace('-', '_', $currentContext->getId());
+
+        if ($this->pool->hasContext($context)) {
+            $providerName = $this->pool->getProviderNameByContext($context);
             return $this->pool->getProvider($providerName);
         }
 
