@@ -46,19 +46,8 @@ class RzClassificationExtension extends Extension
         $pool = $container->getDefinition('rz_classification.pool.category');
         $pool->replaceArgument(0, $config['default_context']);
 
-        foreach ($config['contexts'] as $name => $settings) {
-            $templates = array();
-
-            foreach ($settings['templates'] as $template => $value) {
-                $templates[$template] = $value;
-            }
-            $pool->addMethodCall('addContext', array($name, $settings['provider'], $settings['default_template'], $templates));
-
-            if ($container->hasDefinition($settings['provider'])) {
-                $provider = $container->getDefinition($settings['provider']);
-                $provider->addMethodCall('setTemplates', array($templates));
-            }
-        }
+        $container->setParameter('rz_classification.category.default_context', $config['default_context']);
+        $container->setParameter('rz_classification.provider.category.context', $config['contexts']);
     }
 
     /**
@@ -66,25 +55,15 @@ class RzClassificationExtension extends Extension
      * @param array                                                   $config
      */
     public function configureCollectionProviders(ContainerBuilder $container, $config) {
-            //collection
-            $pool = $container->getDefinition('rz_classification.pool.collection');
-            $pool->replaceArgument(0, $config['default_context']);
 
-            foreach ($config['contexts'] as $name => $settings) {
-                $templates = array();
+        //collection
+        $pool = $container->getDefinition('rz_classification.pool.collection');
+        $pool->replaceArgument(0, $config['default_context']);
 
-                foreach ($settings['templates'] as $template => $value) {
-                    $templates[$template] = $value;
-                }
+        $container->setParameter('rz_classification.collection.default_context', $config['default_context']);
+        $container->setParameter('rz_classification.provider.collection.context', $config['contexts']);
 
-                $pool->addMethodCall('addContext', array($name, $settings['provider'], $settings['default_template'], $templates));
-
-                if ($container->hasDefinition($settings['provider'])) {
-                    $provider = $container->getDefinition($settings['provider']);
-                    $provider->addMethodCall('setTemplates', array($templates));
-                }
-            }
-        }
+    }
 
     /**
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
@@ -96,19 +75,8 @@ class RzClassificationExtension extends Extension
         $pool = $container->getDefinition('rz_classification.pool.tag');
         $pool->replaceArgument(0, $config['default_context']);
 
-        foreach ($config['contexts'] as $name => $settings) {
-            $templates = array();
-
-            foreach ($settings['templates'] as $template => $value) {
-                $templates[$template] = $value;
-            }
-            $pool->addMethodCall('addContext', array($name, $settings['provider'], $settings['default_template'], $templates));
-
-            if($container->hasDefinition($settings['provider'])) {
-                $provider =$container->getDefinition($settings['provider']);
-                $provider->addMethodCall('setTemplates', array($templates));
-            }
-        }
+        $container->setParameter('rz_classification.tag.default_context', $config['default_context']);
+        $container->setParameter('rz_classification.provider.tag.context', $config['contexts']);
     }
 
         /**

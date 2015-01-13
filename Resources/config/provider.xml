@@ -17,15 +17,15 @@
 
     <services>
 
-        <service id="rz_classification.pool.category" class="%rz_classification.pool.category.class%">
+        <service id="rz_classification.pool.category" class="%rz_classification.pool.category.class%" scope="prototype">
             <argument />
         </service>
 
-        <service id="rz_classification.pool.collection" class="%rz_classification.pool.collection.class%">
+        <service id="rz_classification.pool.collection" class="%rz_classification.pool.collection.class%" scope="prototype">
             <argument />
         </service>
 
-        <service id="rz_classification.pool.tag" class="%rz_classification.pool.tag.class%">
+        <service id="rz_classification.pool.tag" class="%rz_classification.pool.tag.class%" scope="prototype">
             <argument />
         </service>
 
