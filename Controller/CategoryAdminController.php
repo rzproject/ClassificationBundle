@@ -28,7 +28,7 @@ class CategoryAdminController extends Controller
 
         if (!$currentContext) {
             $contexts = $this->getContextManager()->findAll();
-            $currentContext = current($contexts);
+            $currentContext = array_shift($contexts);
         } else {
             $contexts = $this->getContextManager()->findAllExcept(array('id'=>$currentContext->getId()));
         }
@@ -66,11 +66,11 @@ class CategoryAdminController extends Controller
     {
         $request = $this->get('request_stack')->getCurrentRequest();
 
-        if ((!$this->getRequest()->get('filter') && !$this->getRequest()->get('filters')) || ($this->isXmlHttpRequest() && $request->get('mode') =='tree')) {
+        if ((!$request->get('filter') && !$request->get('filters')) || ($this->isXmlHttpRequest() && $request->get('mode') =='tree')) {
             return new RedirectResponse($this->admin->generateUrl('tree'));
         }
 
-        if ($listMode = $this->getRequest()->get('_list_mode')) {
+        if ($listMode = $request->get('_list_mode')) {
             $this->admin->setListMode($listMode);
         }
 

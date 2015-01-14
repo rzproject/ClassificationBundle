@@ -13,6 +13,7 @@ use Sonata\ClassificationBundle\Model\ContextInterface;
 use Sonata\ClassificationBundle\Model\CategoryManagerInterface;
 use Sonata\ClassificationBundle\Model\ContextManagerInterface;
 use Rz\ClassificationBundle\Provider\CategoryPool;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoryAdmin extends BaseAdmin
 {
@@ -139,19 +140,26 @@ class CategoryAdmin extends BaseAdmin
      */
     public function getPersistentParameters()
     {
+
+        $defaultContext = $this->contextManager->find('default');
+
+        if (!$defaultContext) {
+            throw new NotFoundHttpException('Default context should be defined');
+        }
+
         $parameters = array(
-            'context'      => '',
+            'context'      => $defaultContext->getId(),
             'hide_context' => (int)$this->getRequest()->get('hide_context', 0)
         );
 
-        if ($this->getSubject()) {
-            $parameters['context'] = $this->getSubject()->getContext() ? $this->getSubject()->getContext()->getId() : '';
 
+        if ($this->getSubject()) {
+            $parameters['context'] = $this->getSubject()->getContext() ? $this->getSubject()->getContext()->getId() : $defaultContext->getId();
             return $parameters;
         }
 
         if ($this->hasRequest()) {
-            $parameters['context'] = $this->getRequest()->get('context');
+            $parameters['context'] = $this->getRequest()->get('context') ?: $defaultContext->getId();
 
             return $parameters;
         }

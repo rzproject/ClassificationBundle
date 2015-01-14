@@ -9,6 +9,7 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\ClassificationBundle\Model\ContextManagerInterface;
 use Rz\ClassificationBundle\Provider\CollectionPool;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CollectionAdmin extends BaseClass
 {
@@ -46,6 +47,7 @@ class CollectionAdmin extends BaseClass
         $collection = $this->getSubject();
         $formMapper
             ->add('enabled', null, array('required' => false))
+            ->add('context', 'sonata_type_model_list', array('required' => false,))
             ->add('name')
             ->add('description', 'textarea', array('required' => false))
             ->add('content', 'sonata_formatter_type', array(
@@ -141,19 +143,25 @@ class CollectionAdmin extends BaseClass
      */
     public function getPersistentParameters()
     {
+        $defaultContext = $this->contextManager->find('default');
+
+        if (!$defaultContext) {
+            throw new NotFoundHttpException('Default context should be defined');
+        }
+
         $parameters = array(
-            'context'      => '',
+            'context'      => $defaultContext->getId(),
             'hide_context' => (int)$this->getRequest()->get('hide_context', 0)
         );
 
-        if ($this->getSubject()) {
-            $parameters['context'] = $this->getSubject()->getContext() ? $this->getSubject()->getContext()->getId() : '';
 
+        if ($this->getSubject()) {
+            $parameters['context'] = $this->getSubject()->getContext() ? $this->getSubject()->getContext()->getId() : $defaultContext->getId();
             return $parameters;
         }
 
         if ($this->hasRequest()) {
-            $parameters['context'] = $this->getRequest()->get('context');
+            $parameters['context'] = $this->getRequest()->get('context') ?: $defaultContext->getId();
 
             return $parameters;
         }

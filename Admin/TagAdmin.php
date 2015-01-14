@@ -9,6 +9,7 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\ClassificationBundle\Model\ContextManagerInterface;
 use Rz\ClassificationBundle\Provider\TagPool;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TagAdmin extends BaseAdmin
 {
@@ -92,19 +93,25 @@ class TagAdmin extends BaseAdmin
      */
     public function getPersistentParameters()
     {
+        $defaultContext = $this->contextManager->find('default');
+
+        if (!$defaultContext) {
+            throw new NotFoundHttpException('Default context should be defined');
+        }
+
         $parameters = array(
-            'context'      => '',
+            'context'      => $defaultContext->getId(),
             'hide_context' => (int)$this->getRequest()->get('hide_context', 0)
         );
 
-        if ($this->getSubject()) {
-            $parameters['context'] = $this->getSubject()->getContext() ? $this->getSubject()->getContext()->getId() : '';
 
+        if ($this->getSubject()) {
+            $parameters['context'] = $this->getSubject()->getContext() ? $this->getSubject()->getContext()->getId() : $defaultContext->getId();
             return $parameters;
         }
 
         if ($this->hasRequest()) {
-            $parameters['context'] = $this->getRequest()->get('context');
+            $parameters['context'] = $this->getRequest()->get('context') ?: $defaultContext->getId();
 
             return $parameters;
         }
