@@ -77,6 +77,7 @@ class CollectionAdmin extends BaseClass
 
         if($provider = $this->getPoolProvider()) {
             if ($collection->getId()) {
+                $provider->load($collection);
                 $provider->buildEditForm($formMapper);
             } else {
                 $provider->buildCreateForm($formMapper);
@@ -217,5 +218,23 @@ class CollectionAdmin extends BaseClass
         }
 
         return;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postUpdate($object)
+    {
+        parent::postUpdate($object);
+        $this->getPoolProvider()->postUpdate($object);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postPersist($object)
+    {
+        parent::postPersist($object);
+        $this->getPoolProvider()->postPersist($object);
     }
 }

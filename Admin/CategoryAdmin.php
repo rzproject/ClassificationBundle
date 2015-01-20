@@ -99,6 +99,7 @@ class CategoryAdmin extends BaseAdmin
 
         if($provider = $this->getPoolProvider()) {
             if ($category->getId()) {
+                $provider->load($category);
                 $provider->buildEditForm($formMapper);
             } else {
                 $provider->buildCreateForm($formMapper);
@@ -219,6 +220,24 @@ class CategoryAdmin extends BaseAdmin
         }
 
         return;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postUpdate($object)
+    {
+        parent::postUpdate($object);
+        $this->getPoolProvider()->postUpdate($object);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postPersist($object)
+    {
+        parent::postPersist($object);
+        $this->getPoolProvider()->postPersist($object);
     }
 
     /**

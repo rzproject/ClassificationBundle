@@ -40,7 +40,7 @@ interface ClassificationProviderInterface
     /**
      * @return array
      */
-    public function getFormSettingsKeys();
+    public function getFormSettingsKeys(FormMapper $formMapper);
 
     /**
      * build the related create form

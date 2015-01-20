@@ -43,6 +43,9 @@ class AddProviderCompilerPass implements CompilerPassInterface
             if ($container->hasDefinition($settings['provider'])) {
                 $provider = $container->getDefinition($settings['provider']);
                 $provider->addMethodCall('setTemplates', array($templates));
+                $provider->addMethodCall('setMediaAdmin', array(new Reference('sonata.media.admin.media')));
+                $provider->addMethodCall('setMediaManager', array(new Reference('sonata.media.manager.media')));
+                $provider->addMethodCall('setMetatagChoices', array($container->getParameter('rz_seo.metatags')));
             }
         }
 
@@ -65,6 +68,9 @@ class AddProviderCompilerPass implements CompilerPassInterface
             if ($container->hasDefinition($settings['provider'])) {
                 $provider = $container->getDefinition($settings['provider']);
                 $provider->addMethodCall('setTemplates', array($templates));
+                $provider->addMethodCall('setMediaAdmin', array(new Reference('sonata.media.admin.media')));
+                $provider->addMethodCall('setMediaManager', array(new Reference('sonata.media.manager.media')));
+                $provider->addMethodCall('setMetatagChoices', array($container->getParameter('rz_seo.metatags')));
             }
         }
 
@@ -86,6 +92,9 @@ class AddProviderCompilerPass implements CompilerPassInterface
             if ($container->hasDefinition($settings['provider'])) {
                 $provider = $container->getDefinition($settings['provider']);
                 $provider->addMethodCall('setTemplates', array($templates));
+                $provider->addMethodCall('setMediaAdmin', array(new Reference('sonata.media.admin.media')));
+                $provider->addMethodCall('setMediaManager', array(new Reference('sonata.media.manager.media')));
+                $provider->addMethodCall('setMetatagChoices', array($container->getParameter('rz_seo.metatags')));
             }
         }
     }

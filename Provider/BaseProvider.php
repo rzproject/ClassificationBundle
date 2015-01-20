@@ -8,6 +8,7 @@ use Sonata\ClassificationBundle\Model\PostInterface;
 abstract class BaseProvider implements ClassificationProviderInterface
 {
     protected $templates = array();
+    protected $metatagChoices = array();
 
     /**
      * @param string                                           $name
@@ -78,5 +79,21 @@ abstract class BaseProvider implements ClassificationProviderInterface
     public function getTemplate($name)
     {
         return isset($this->templates[$name]) ? $this->templates[$name] : null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMetatagChoices()
+    {
+        return $this->metatagChoices;
+    }
+
+    /**
+     * @param array $metatagChoices
+     */
+    public function setMetatagChoices($metatagChoices)
+    {
+        $this->metatagChoices = $metatagChoices;
     }
 }
