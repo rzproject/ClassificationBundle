@@ -46,33 +46,39 @@ class CollectionAdmin extends BaseClass
 
         $collection = $this->getSubject();
         $formMapper
-            ->add('enabled', null, array('required' => false))
-            ->add('context', 'sonata_type_model_list', array('required' => false,))
-            ->add('name')
-            ->add('description', 'textarea', array('required' => false))
-            ->add('content', 'sonata_formatter_type', array(
-                'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
-                'format_field'   => 'contentFormatter',
-                'source_field'   => 'rawContent',
-                'ckeditor_context' => 'news',
-                'source_field_options'      => array(
-                    'attr' => array('class' => 'span12', 'rows' => 20)
-                ),
-                'target_field'   => 'content',
-                'listener'       => true,
-            ))
+            ->with('Collection', array('class' => 'col-md-6'))
+                ->add('enabled', null, array('required' => false))
+                ->add('context', 'sonata_type_model_list', array('required' => false,))
+                ->add('name')
+                ->add('description', 'textarea', array('required' => false))
+                ->add('content', 'sonata_formatter_type', array(
+                    'event_dispatcher' => $formMapper->getFormBuilder()->getEventDispatcher(),
+                    'format_field'   => 'contentFormatter',
+                    'source_field'   => 'rawContent',
+                    'ckeditor_context' => 'news',
+                    'source_field_options'      => array(
+                        'attr' => array('class' => 'span12', 'rows' => 20)
+                    ),
+                    'target_field'   => 'content',
+                    'listener'       => true,
+                ))
+            ->end()
         ;
 
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
-            $formMapper->add('media', 'sonata_type_model_list',
-                array('required' => false),
-                array(
-                    'link_parameters' => array(
-                        'provider' => 'sonata.media.provider.image',
-                        'context'  => 'sonata_collection'
-                    )
-                )
-            );
+
+            $formMapper
+                ->with('Collection', array('class' => 'col-md-6'))
+                    ->add('media', 'sonata_type_model_list',
+                    array('required' => false),
+                    array(
+                        'link_parameters' => array(
+                            'provider' => 'sonata.media.provider.image',
+                            'context'  => 'sonata_collection'
+                        )
+                    ))
+                ->end()
+            ;
         }
 
         if($provider = $this->getPoolProvider()) {

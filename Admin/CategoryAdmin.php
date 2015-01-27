@@ -52,6 +52,8 @@ class CategoryAdmin extends BaseAdmin
             ->with('Category', array('class' => 'col-md-6'))
                 ->add('name')
                 ->add('description', 'textarea', array('required' => false))
+                ->add('enabled')
+                ->add('position', 'hidden', array('required' => false, 'data' => 0))
             ;
 
             if($this->getSubject()->getParent() !== null || $this->getSubject()->getId() === null) {
@@ -75,10 +77,6 @@ class CategoryAdmin extends BaseAdmin
                     'target_field'   => 'content',
                     'listener'       => true,
                 ))
-            ->end()
-            ->with('Options', array('class' => 'col-md-6'))
-                ->add('enabled')
-                ->add('position', 'hidden', array('required' => false, 'data' => 0))
             ->end()
         ;
 

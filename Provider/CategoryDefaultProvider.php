@@ -34,7 +34,7 @@ class CategoryDefaultProvider extends BaseCategoryProvider
     public function buildCreateForm(FormMapper $formMapper)
     {
         $formMapper
-            ->with('Category', array('class' => 'col-md-6'))
+            ->with('Settings', array('class' => 'col-md-6'))
                 ->add('settings', 'sonata_type_immutable_array', array('keys' => $this->getFormSettingsKeys($formMapper)))
             ->end();
     }

@@ -140,13 +140,24 @@ class TagAdmin extends BaseAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $tag = $this->getSubject();
-        $formMapper->add('name');
+
+
+        $formMapper
+            ->with('Tag', array('class' => 'col-md-6'))
+                ->add('name')
+            ->end();
 
         if ($this->hasSubject() && $this->getSubject()->getId()) {
-            $formMapper->add('slug');
+            $formMapper
+                ->with('Tag', array('class' => 'col-md-6'))
+                    ->add('slug')
+                ->end();
         }
 
-        $formMapper->add('enabled', null, array('required' => false));
+        $formMapper
+            ->with('Tag', array('class' => 'col-md-6'))
+                ->add('enabled', null, array('required' => false))
+            ->end();
 
         if($provider = $this->getPoolProvider()) {
             if ($tag->getId()) {

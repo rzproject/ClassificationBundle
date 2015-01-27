@@ -33,7 +33,10 @@ class CollectionDefaultProvider extends BaseCollectionProvider
      */
     public function buildCreateForm(FormMapper $formMapper)
     {
-        $formMapper->add('settings', 'sonata_type_immutable_array', array('keys' => $this->getFormSettingsKeys($formMapper)));
+        $formMapper
+            ->with('Settings', array('class' => 'col-md-6'))
+                ->add('settings', 'sonata_type_immutable_array', array('keys' => $this->getFormSettingsKeys($formMapper)))
+            ->end();
     }
 
     /**
