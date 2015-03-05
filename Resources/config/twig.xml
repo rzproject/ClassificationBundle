@@ -10,5 +10,12 @@
             <argument type="service" id="router" />
             <argument type="service" id="sonata.classification.manager.category" />
         </service>
+        
+        <service id="rz_classification.collection.twig.extension" class="Rz\ClassificationBundle\Twig\Extension\CollectionExtension" public="false">
+            <tag name="twig.extension" />
+            <argument type="service" id="router" />
+            <argument type="service" id="sonata.classification.manager.collection" />
+        </service>
+        
     </services>
 </container>
