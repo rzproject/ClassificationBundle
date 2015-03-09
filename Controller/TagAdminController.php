@@ -4,6 +4,7 @@ namespace Rz\ClassificationBundle\Controller;
 
 use Sonata\AdminBundle\Controller\CRUDController as Controller;
 use Sonata\AdminBundle\Form\Type\Filter\ChoiceType;
+use Symfony\Component\HttpFoundation\Request;
 
 
 class TagAdminController extends Controller
@@ -11,13 +12,14 @@ class TagAdminController extends Controller
 
     /**
      *
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function listAction()
+    public function listAction(Request $request = null)
     {
 
         $currentContext = false;
-        if ($context = $this->get('request')->get('context')) {
+        if ($context = $request->get('context')) {
             $currentContext = $this->getContextManager()->find($context);
         }
 

@@ -60,12 +60,11 @@ class CategoryAdminController extends Controller
     /**
      * @internal param Request $request
      *
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function listAction()
+    public function listAction(Request $request = null)
     {
-        $request = $this->get('request_stack')->getCurrentRequest();
-
         if ((!$request->get('filter') && !$request->get('filters')) || ($this->isXmlHttpRequest() && $request->get('mode') =='tree')) {
             return new RedirectResponse($this->admin->generateUrl('tree'));
         }
