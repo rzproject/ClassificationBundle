@@ -4,6 +4,6 @@ namespace Rz\ClassificationBundle\Provider;
 
 
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
 
 class CollectionNewsProvider extends CollectionDefaultProvider{}

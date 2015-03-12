@@ -3,7 +3,7 @@
 namespace Rz\ClassificationBundle\Provider;
 
 use Sonata\ClassificationBundle\Model\CollectionInterface;
-use Sonata\AdminBundle\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
 
 class CollectionPool extends Pool
 {
@@ -20,7 +20,7 @@ class CollectionPool extends Pool
     }
 
     /**
-     * @param \Sonata\AdminBundle\Validator\ErrorElement $errorElement
+     * @param \Sonata\CoreBundle\Validator\ErrorElement $errorElement
      * @param \Sonata\ClassificationBundle\Model\CollectionInterface   $collection
      *
      * @return void

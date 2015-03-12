@@ -2,7 +2,7 @@
 
 namespace Rz\ClassificationBundle\Provider;
 
-use Sonata\AdminBundle\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
 use Sonata\ClassificationBundle\Model\CollectionInterface;
 
 abstract class BaseCollectionProvider extends BaseProvider implements CollectionProviderInterface

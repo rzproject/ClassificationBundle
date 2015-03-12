@@ -3,7 +3,7 @@
 namespace Rz\ClassificationBundle\Provider;
 
 use Sonata\ClassificationBundle\Model\TagInterface;
-use Sonata\AdminBundle\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
 
 class TagPool extends Pool
 {
@@ -20,7 +20,7 @@ class TagPool extends Pool
     }
 
     /**
-     * @param \Sonata\AdminBundle\Validator\ErrorElement $errorElement
+     * @param \Sonata\CoreBundle\Validator\ErrorElement $errorElement
      * @param \Sonata\ClassificationBundle\Model\TagInterface   $tag
      *
      * @return void

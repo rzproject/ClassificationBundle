@@ -3,7 +3,7 @@
 namespace Rz\ClassificationBundle\Provider;
 
 use Sonata\ClassificationBundle\Model\CategoryInterface;
-use Sonata\AdminBundle\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
 
 class CategoryPool extends Pool
 {
@@ -19,7 +19,7 @@ class CategoryPool extends Pool
     }
 
     /**
-     * @param \Sonata\AdminBundle\Validator\ErrorElement $errorElement
+     * @param \Sonata\CoreBundle\Validator\ErrorElement $errorElement
      * @param \Sonata\ClassificationBundle\Model\CategoryInterface   $category
      *
      * @return void

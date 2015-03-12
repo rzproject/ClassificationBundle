@@ -3,7 +3,7 @@ namespace Rz\ClassificationBundle\Provider;
 
 use Sonata\ClassificationBundle\Model\TagInterface;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
 
 interface TagProviderInterface extends ClassificationProviderInterface
 {

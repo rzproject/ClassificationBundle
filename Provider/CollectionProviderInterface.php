@@ -3,7 +3,7 @@ namespace Rz\ClassificationBundle\Provider;
 
 use Sonata\ClassificationBundle\Model\CollectionInterface;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
 
 interface CollectionProviderInterface extends ClassificationProviderInterface
 {

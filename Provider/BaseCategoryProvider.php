@@ -3,7 +3,7 @@
 namespace Rz\ClassificationBundle\Provider;
 
 
-use Sonata\AdminBundle\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
 use Sonata\ClassificationBundle\Model\CategoryInterface;
 
 abstract class BaseCategoryProvider extends BaseProvider implements CategoryProviderInterface
