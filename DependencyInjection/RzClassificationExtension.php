@@ -28,6 +28,7 @@ class RzClassificationExtension extends Extension
         $loader->load('permalink.xml');
         $loader->load('twig.xml');
         $loader->load('provider.xml');
+        $loader->load('block.xml');
         $this->configureClass($config, $container);
         $this->registerDoctrineMapping($config, $container);
         $this->configureManagerClass($config, $container);
@@ -36,6 +37,22 @@ class RzClassificationExtension extends Extension
         $this->configureCategoryProviders($container, $config['providers']['category']);
         $this->configureCollectionProviders($container, $config['providers']['collection']);
         $this->configureTagProviders($container, $config['providers']['tag']);
+
+        $this->configureCollectionBlocks($container, $config['blocks']['collection']['default_block']);
+    }
+
+    /**
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param array                                                   $config
+     */
+    public function configureCollectionBlocks(ContainerBuilder $container, $config) {
+        $container->setParameter('rz_classification.block.collection_list.class', $config['class']);
+        $temp = $config['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_classification.block.collection_list.templates', $templates);
     }
 
     /**
@@ -47,7 +64,6 @@ class RzClassificationExtension extends Extension
         //category
         $pool = $container->getDefinition('rz_classification.pool.category');
         $pool->replaceArgument(0, $config['default_context']);
-
         $container->setParameter('rz_classification.category.default_context', $config['default_context']);
         $container->setParameter('rz_classification.provider.category.context', $config['contexts']);
     }
