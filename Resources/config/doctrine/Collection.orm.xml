@@ -5,5 +5,6 @@
         <field name="rawContent"              type="text"   column="raw_content"  nullable="true"/>
         <field name="contentFormatter"        type="string" column="content_formatter" nullable="true"/>
         <field name="settings"      type="json"       column="settings" nullable="true"/>
+        <field name="hasPage"   type="boolean"  column="has_page"    default="false" />
     </mapped-superclass>
 </doctrine-mapping>

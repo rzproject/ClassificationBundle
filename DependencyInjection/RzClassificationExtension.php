@@ -6,6 +6,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
+use Sonata\EasyExtendsBundle\Mapper\DoctrineCollector;
 
 /**
  * This is the class that loads and manages your bundle configuration
@@ -28,6 +29,7 @@ class RzClassificationExtension extends Extension
         $loader->load('twig.xml');
         $loader->load('provider.xml');
         $this->configureClass($config, $container);
+        $this->registerDoctrineMapping($config, $container);
         $this->configureManagerClass($config, $container);
         $this->configureAdmin($config, $container);
         $this->configureRzTemplates($config, $container);
@@ -148,5 +150,47 @@ class RzClassificationExtension extends Extension
         $container->setParameter('rz_classification.configuration.tag.templates', $config['admin']['tag']['templates']);
         $container->setParameter('rz_classification.configuration.collection.templates', $config['admin']['collection']['templates']);
         $container->setParameter('rz_classification.configuration.context.templates', $config['admin']['context']['templates']);
+    }
+
+    /**
+     * @param array $config
+     */
+    public function registerDoctrineMapping(array $config)
+    {
+
+        foreach ($config['class'] as $type => $class) {
+            if (!class_exists($class)) {
+                return;
+            }
+        }
+
+        $collector = DoctrineCollector::getInstance();
+
+
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+
+            $collector->addAssociation($config['class']['collection'], 'mapManyToOne', array(
+                'fieldName' => 'page',
+                'targetEntity' => $config['class']['page'],
+                'cascade' =>
+                    array(
+                        0 => 'remove',
+                        1 => 'persist',
+                        2 => 'refresh',
+                        3 => 'merge',
+                        4 => 'detach',
+                    ),
+                'mappedBy' => NULL,
+                'inversedBy' => NULL,
+                'joinColumns' =>
+                    array(
+                        array(
+                            'name' => 'page_id',
+                            'referencedColumnName' => 'id',
+                        ),
+                    ),
+                'orphanRemoval' => false,
+            ));
+        }
     }
 }

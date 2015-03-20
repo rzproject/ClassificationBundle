@@ -11,9 +11,12 @@ abstract class Collection extends BaseCollection
     protected $rawContent;
     protected $contentFormatter;
     protected $settings;
+    protected $page;
+    protected $hasPage;
 
     public function __construct(){
         $this->enabled = true;
+        $this->hasPage = false;
     }
 
     /**
@@ -94,5 +97,37 @@ abstract class Collection extends BaseCollection
     public function getSetting($name, $default = null)
     {
         return isset($this->settings[$name]) ? $this->settings[$name] : $default;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPage()
+    {
+        return $this->page;
+    }
+
+    /**
+     * @param mixed $page
+     */
+    public function setPage($page)
+    {
+        $this->page = $page;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHasPage()
+    {
+        return $this->hasPage;
+    }
+
+    /**
+     * @param mixed $hasPage
+     */
+    public function setHasPage($hasPage = false)
+    {
+        $this->hasPage = $hasPage;
     }
 }

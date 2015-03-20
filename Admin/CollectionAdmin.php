@@ -16,6 +16,9 @@ class CollectionAdmin extends BaseClass
 
     const COLLECTION_DEFAULT_CONTEXT = 'default';
     protected $contextManager;
+    protected $pageManager;
+    protected $siteManager;
+    protected $mediaManager;
     protected $pool;
 
     /**
@@ -45,10 +48,27 @@ class CollectionAdmin extends BaseClass
     {
 
         $collection = $this->getSubject();
+
+
+
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $formMapper
+                ->with('Collection', array('class' => 'col-md-6'))
+                    ->add('hasPage', null, array('required' => false))
+                ->end();
+
+            if ($this->getSubject()->getHasPage()) {
+                $formMapper
+                    ->with('Collection', array('class' => 'col-md-6'))
+                    ->add('page', 'sonata_type_model_list', array('btn_list' => false, 'btn_add' => false, 'btn_delete' => false))
+                    ->end();
+            }
+        }
+
         $formMapper
             ->with('Collection', array('class' => 'col-md-6'))
                 ->add('enabled', null, array('required' => false))
-                ->add('context', 'sonata_type_model_list', array('required' => false,))
+                //->add('context', 'sonata_type_model_list', array('required' => false,))
                 ->add('name')
                 ->add('description', 'textarea', array('required' => false))
                 ->add('content', 'sonata_formatter_type', array(
@@ -191,6 +211,16 @@ class CollectionAdmin extends BaseClass
         $collection->setContext($context);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function preUpdate($collection)
+    {
+        if(!$collection->getHasPage()) {
+            $collection->setPage(null);
+        }
+    }
+
     public function setPool(CollectionPool $pool) {
         $this->pool = $pool;
     }
@@ -233,6 +263,30 @@ class CollectionAdmin extends BaseClass
     {
         parent::postUpdate($object);
         $this->getPoolProvider()->postUpdate($object);
+
+        // create page for collection list default collection is placed on localhost.
+        // for multi site is has to be moved via the Page module.
+        if ($object->getHasPage() && !$object->getPage()) {
+            $site = $this->siteManager->findOneBy(array('name'=>'localhost'));
+            $parent = $this->pageManager->findOneBy(array('name'=>'homepage'));
+            if($site) {
+                $page = $this->pageManager->create();
+                $this->setPageDetails($page, $object);
+                $page->setParent($parent);
+                $page->setSite($site);
+                $this->pageManager->save($page);
+            }
+            $object->setPage($page);
+        // delete reference if hasPage is set to false
+        } elseif(!$object->getHasPage()) {
+            $page = $this->pageManager->findOneBy(array('name'=>sprintf('rz_news_%s', str_replace('-', '_', $object->getSlug()))));
+            if ($page) {
+                $this->pageManager->delete($page);
+            }
+        } elseif($page = $object->getPage()) {
+            $this->setPageDetails($page, $object);
+            $object->setPage($page);
+        }
     }
 
     /**
@@ -242,5 +296,106 @@ class CollectionAdmin extends BaseClass
     {
         parent::postPersist($object);
         $this->getPoolProvider()->postPersist($object);
+        // create page for collection list default collection is placed on localhost.
+        // for multi site is has to be moved via the Page module.
+        if ($object->getHasPage() && !$object->getPage()) {
+            $site = $this->siteManager->findOneBy(array('name'=>'localhost'));
+            $parent = $this->pageManager->findOneBy(array('name'=>'homepage'));
+
+            if($site) {
+                $page = $this->pageManager->create();
+                $this->setPageDetails($page, $object);
+                $page->setParent($parent);
+                $page->setSite($site);
+                $this->pageManager->save($page);
+            }
+            $object->setPage($page);
+        }
     }
+
+    protected function setPageDetails($page, $object) {
+        $page->setSlug($object->getSlug());
+        $page->setUrl(sprintf('/%s', $object->getSlug()));
+        $page->setName($object->getName());
+        $page->setEnabled(true);
+        $page->setDecorate(1);
+        $page->setRequestMethod('GET|POST|HEAD|DELETE|PUT');
+        //TODO set default template on configuration
+        $page->setTemplateCode('rzcms_blog');
+        $page->setRouteName('page_slug');
+
+        $settings = $object->getSettings();
+        if ($settings) {
+
+            if(isset($settings['seoTitle'])) {
+                $page->setTitle($settings['seoTitle']);
+            }
+
+            if(isset($settings['seoMetaKeyword'])) {
+                $page->setMetaKeyword($settings['seoMetaKeyword']);
+            }
+
+            if(isset($settings['seoMetaDescription'])) {
+                $page->setMetaDescription($settings['seoMetaDescription']);
+            }
+
+            $page->setOgTitle(isset($settings['ogTitle']) ? $settings['ogTitle'] : null);
+            $page->setOgType(isset($settings['ogType']) ? $settings['ogType'] : null);
+            $page->setOgDescription(isset($settings['ogDescription']) ? $settings['ogDescription'] : null);
+            if(isset($settings['ogImage'])) {
+                $media = $this->mediaManager->findOneBy(array('id'=>$settings['ogImage']));
+                $page->setOgImage($media ?: null);
+            }
+        }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPageManager()
+    {
+        return $this->pageManager;
+    }
+
+    /**
+     * @param mixed $pageManager
+     */
+    public function setPageManager($pageManager)
+    {
+        $this->pageManager = $pageManager;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSiteManager()
+    {
+        return $this->siteManager;
+    }
+
+    /**
+     * @param mixed $siteManager
+     */
+    public function setSiteManager($siteManager)
+    {
+        $this->siteManager = $siteManager;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMediaManager()
+    {
+        return $this->mediaManager;
+    }
+
+    /**
+     * @param mixed $mediaManager
+     */
+    public function setMediaManager($mediaManager)
+    {
+        $this->mediaManager = $mediaManager;
+    }
+
+
 }
