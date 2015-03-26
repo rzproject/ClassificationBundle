@@ -2,6 +2,7 @@
 
 namespace Rz\ClassificationBundle\Admin;
 
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Sonata\ClassificationBundle\Admin\CollectionAdmin as BaseClass;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
@@ -9,7 +10,6 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\ClassificationBundle\Model\ContextManagerInterface;
 use Rz\ClassificationBundle\Provider\CollectionPool;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CollectionAdmin extends BaseClass
 {
@@ -20,6 +20,7 @@ class CollectionAdmin extends BaseClass
     protected $siteManager;
     protected $mediaManager;
     protected $pool;
+    protected $slugGenerator;
 
     /**
      * {@inheritdoc}
@@ -46,10 +47,7 @@ class CollectionAdmin extends BaseClass
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-
         $collection = $this->getSubject();
-
-
 
         if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
             $formMapper
@@ -262,30 +260,33 @@ class CollectionAdmin extends BaseClass
     public function postUpdate($object)
     {
         parent::postUpdate($object);
+
         $this->getPoolProvider()->postUpdate($object);
 
-        // create page for collection list default collection is placed on localhost.
-        // for multi site is has to be moved via the Page module.
-        if ($object->getHasPage() && !$object->getPage()) {
-            $site = $this->siteManager->findOneBy(array('name'=>'localhost'));
-            $parent = $this->pageManager->findOneBy(array('name'=>'homepage'));
-            if($site) {
-                $page = $this->pageManager->create();
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            // create page for collection list default collection is placed on localhost.
+            // for multi site is has to be moved via the Page module.
+            if ($object->getHasPage() && !$object->getPage()) {
+                $site = $this->siteManager->findOneBy(array('name' => 'localhost'));
+                $parent = $this->pageManager->findOneBy(array('name' => 'homepage'));
+                if ($site) {
+                    $page = $this->pageManager->create();
+                    $this->setPageDetails($page, $object);
+                    $page->setParent($parent);
+                    $page->setSite($site);
+                    $this->pageManager->save($page);
+                }
+                $object->setPage($page);
+                // delete reference if hasPage is set to false
+            } elseif (!$object->getHasPage()) {
+                $page = $this->pageManager->findOneBy(array('slug' => $object->getSlug()));
+                if ($page) {
+                    $this->pageManager->delete($page);
+                }
+            } elseif ($page = $object->getPage()) {
                 $this->setPageDetails($page, $object);
-                $page->setParent($parent);
-                $page->setSite($site);
-                $this->pageManager->save($page);
+                $object->setPage($page);
             }
-            $object->setPage($page);
-        // delete reference if hasPage is set to false
-        } elseif(!$object->getHasPage()) {
-            $page = $this->pageManager->findOneBy(array('name'=>sprintf('rz_news_%s', str_replace('-', '_', $object->getSlug()))));
-            if ($page) {
-                $this->pageManager->delete($page);
-            }
-        } elseif($page = $object->getPage()) {
-            $this->setPageDetails($page, $object);
-            $object->setPage($page);
         }
     }
 
@@ -295,28 +296,35 @@ class CollectionAdmin extends BaseClass
     public function postPersist($object)
     {
         parent::postPersist($object);
-        $this->getPoolProvider()->postPersist($object);
-        // create page for collection list default collection is placed on localhost.
-        // for multi site is has to be moved via the Page module.
-        if ($object->getHasPage() && !$object->getPage()) {
-            $site = $this->siteManager->findOneBy(array('name'=>'localhost'));
-            $parent = $this->pageManager->findOneBy(array('name'=>'homepage'));
 
-            if($site) {
-                $page = $this->pageManager->create();
-                $this->setPageDetails($page, $object);
-                $page->setParent($parent);
-                $page->setSite($site);
-                $this->pageManager->save($page);
+        $this->getPoolProvider()->postPersist($object);
+
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            // create page for collection list default collection is placed on localhost.
+            // for multi site is has to be moved via the Page module.
+            if ($object->getHasPage() && !$object->getPage()) {
+                $site = $this->siteManager->findOneBy(array('name' => 'localhost'));
+                $parent = $this->pageManager->findOneBy(array('name' => 'homepage'));
+
+                if ($site) {
+                    $page = $this->pageManager->create();
+                    $this->setPageDetails($page, $object);
+                    $page->setParent($parent);
+                    $page->setSite($site);
+                    $this->pageManager->save($page);
+                }
+
+                $object->setPage($page);
             }
-            $object->setPage($page);
         }
     }
 
     protected function setPageDetails($page, $object) {
+
         $page->setSlug($object->getSlug());
         $page->setUrl(sprintf('/%s', $object->getSlug()));
         $page->setName($object->getName());
+        $page->setPageAlias($this->slugGenerator->generateCollectionSlug($object, '_'));
         $page->setEnabled(true);
         $page->setDecorate(1);
         $page->setRequestMethod('GET|POST|HEAD|DELETE|PUT');
@@ -397,5 +405,20 @@ class CollectionAdmin extends BaseClass
         $this->mediaManager = $mediaManager;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getSlugGenerator()
+    {
+        return $this->slugGenerator;
+    }
+
+    /**
+     * @param mixed $slugGenerator
+     */
+    public function setSlugGenerator($slugGenerator)
+    {
+        $this->slugGenerator = $slugGenerator;
+    }
 
 }

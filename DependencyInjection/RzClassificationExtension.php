@@ -28,7 +28,7 @@ class RzClassificationExtension extends Extension
         $loader->load('permalink.xml');
         $loader->load('twig.xml');
         $loader->load('provider.xml');
-        $loader->load('block.xml');
+        $loader->load('slug_generator.xml');
         $this->configureClass($config, $container);
         $this->registerDoctrineMapping($config, $container);
         $this->configureManagerClass($config, $container);
@@ -37,22 +37,6 @@ class RzClassificationExtension extends Extension
         $this->configureCategoryProviders($container, $config['providers']['category']);
         $this->configureCollectionProviders($container, $config['providers']['collection']);
         $this->configureTagProviders($container, $config['providers']['tag']);
-
-        $this->configureCollectionBlocks($container, $config['blocks']['collection']['default_block']);
-    }
-
-    /**
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
-     * @param array                                                   $config
-     */
-    public function configureCollectionBlocks(ContainerBuilder $container, $config) {
-        $container->setParameter('rz_classification.block.collection_list.class', $config['class']);
-        $temp = $config['templates'];
-        $templates = array();
-        foreach ($temp as $template) {
-            $templates[$template['path']] = $template['name'];
-        }
-        $container->setParameter('rz_classification.block.collection_list.templates', $templates);
     }
 
     /**
@@ -115,6 +99,7 @@ class RzClassificationExtension extends Extension
         $container->setParameter('sonata.classification.manager.collection.entity', $config['class']['collection']);
         $container->setParameter('sonata.classification.manager.context.entity', $config['class']['context']);
 
+        $container->setParameter('rz_classification.slug_generator.class', $config['class']['slug_generator']);
     }
 
     /**

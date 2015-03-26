@@ -43,14 +43,17 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
                                         $container->getParameter('rz_classification.configuration.collection.templates'));
         $definition->addMethodCall('setTemplates', array($definedTemplates));
         $definition->addMethodCall('setContextManager', array(new Reference('sonata.classification.manager.context')));
+        $definition->addMethodCall('setSlugGenerator', array(new Reference('rz_classification.slug_generator')));
+
         if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
             $definition->addMethodCall('setPageManager', array(new Reference('sonata.page.manager.page')));
             $definition->addMethodCall('setSiteManager', array(new Reference('sonata.page.manager.site')));
-            $definition->addMethodCall('setMediaManager', array(new Reference('sonata.media.manager.media')));
-
         }
-        $definition->addMethodCall('setPool', array(new Reference('rz_classification.pool.collection')));
+        if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
+            $definition->addMethodCall('setMediaManager', array(new Reference('sonata.media.manager.media')));
+        }
 
+        $definition->addMethodCall('setPool', array(new Reference('rz_classification.pool.collection')));
 
         //override ORM Manager
         $definition = $container->getDefinition('sonata.classification.manager.tag');
