@@ -34,9 +34,23 @@ class RzClassificationExtension extends Extension
         $this->configureManagerClass($config, $container);
         $this->configureAdmin($config, $container);
         $this->configureRzTemplates($config, $container);
+        $this->configureSettings($container, $config);
         $this->configureCategoryProviders($container, $config['providers']['category']);
-        $this->configureCollectionProviders($container, $config['providers']['collection']);
+        //$this->configureCollectionProviders($container, $config['providers']['collection']);
         $this->configureTagProviders($container, $config['providers']['tag']);
+
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $loader->load('block.xml');
+            $this->configureBlocks($config['blocks'], $container);
+        }
+    }
+
+    /**
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param array                                                   $config
+     */
+    public function configureSettings(ContainerBuilder $container, $config) {
+        $container->setParameter('rz_classification.enable_controllers', $config['enable_controllers']);
     }
 
     /**
@@ -56,16 +70,16 @@ class RzClassificationExtension extends Extension
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
      * @param array                                                   $config
      */
-    public function configureCollectionProviders(ContainerBuilder $container, $config) {
-
-        //collection
-        $pool = $container->getDefinition('rz_classification.pool.collection');
-        $pool->replaceArgument(0, $config['default_context']);
-
-        $container->setParameter('rz_classification.collection.default_context', $config['default_context']);
-        $container->setParameter('rz_classification.provider.collection.context', $config['contexts']);
-
-    }
+//    public function configureCollectionProviders(ContainerBuilder $container, $config) {
+//
+//        //collection
+//        $pool = $container->getDefinition('rz_classification.pool.collection');
+//        $pool->replaceArgument(0, $config['default_context']);
+//
+//        $container->setParameter('rz_classification.collection.default_context', $config['default_context']);
+//        $container->setParameter('rz_classification.provider.collection.context', $config['contexts']);
+//
+//    }
 
     /**
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
@@ -154,6 +168,43 @@ class RzClassificationExtension extends Extension
     }
 
     /**
+     * @param array                                                   $config
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     *
+     * @return void
+     */
+    public function configureBlocks($config, ContainerBuilder $container)
+    {
+        $container->setParameter('rz_classification.block.category.class', $config['category']['class']);
+        $container->setParameter('rz_classification.settings.category_pager_max_per_page', $config['category']['category_pager_max_per_page']);
+
+        # template
+        $temp = $config['category']['templates'];
+        $templates = array();
+        foreach ($temp as $template) {
+            $templates[$template['path']] = $template['name'];
+        }
+        $container->setParameter('rz_classification.block.category.templates', $templates);
+
+        # ajax template
+        $ajaxTemp = $config['category']['ajax_templates'];
+        $ajaxTemplates = array();
+        foreach ($ajaxTemp as $ajaxTemplate) {
+            $ajaxTemplates[$ajaxTemplate['path']] = $ajaxTemplate['name'];
+        }
+        $container->setParameter('rz_classification.block.category.ajax_templates', $ajaxTemplates);
+
+        # ajax pager template
+        $ajaxPagerTemp = $config['category']['ajax_pager_templates'];
+        $ajaxPagerTemplates = array();
+        foreach ($ajaxPagerTemp as $ajaxPagerTemplate) {
+            $ajaxPagerTemplates[$ajaxPagerTemplate['path']] = $ajaxPagerTemplate['name'];
+        }
+        $container->setParameter('rz_classification.block.category.ajax_pager_templates', $ajaxPagerTemplates);
+
+    }
+
+    /**
      * @param array $config
      */
     public function registerDoctrineMapping(array $config)
@@ -169,17 +220,13 @@ class RzClassificationExtension extends Extension
 
 
         if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
-
-            $collector->addAssociation($config['class']['collection'], 'mapManyToOne', array(
+            $collector->addAssociation($config['class']['category'], 'mapManyToOne', array(
                 'fieldName' => 'page',
                 'targetEntity' => $config['class']['page'],
                 'cascade' =>
                     array(
-                        0 => 'remove',
-                        1 => 'persist',
-                        2 => 'refresh',
-                        3 => 'merge',
-                        4 => 'detach',
+                        0 => 'persist',
+                        1 => 'detach',
                     ),
                 'mappedBy' => NULL,
                 'inversedBy' => NULL,

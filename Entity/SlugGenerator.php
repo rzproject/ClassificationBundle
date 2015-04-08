@@ -21,11 +21,15 @@ class SlugGenerator
         return $this->slugify->slugify($collection->getName(), $delimeter);
     }
 
-    public function generateCategoryAlias(CategoryInterface $category) {
+    public function generateCategorySlug(CategoryInterface $category, $delimeter = '_') {
+        return $this->slugify->slugify($category->getName(), $delimeter);
+    }
+
+    public function generateTagSlug(TagInterface $tag, $delimeter = '_') {
         return;
     }
 
-    public function generateTagAlias(TagInterface $tag) {
-        return;
+    public function generateSlug($str, $delimeter = '_') {
+        return $this->slugify->slugify($str, $delimeter);
     }
 }

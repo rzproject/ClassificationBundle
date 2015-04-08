@@ -45,7 +45,6 @@ class TagDefaultProvider extends BaseTagProvider
     public function getFormSettingsKeys(FormMapper $formMapper)
     {
         $settings = array(
-            array('template', 'choice', array('choices'=>$this->getTemplateChoices())),
             array('seoTitle', 'text', array('required' => false, 'attr'=>array('class'=>'span8'))),
             array('seoMetaKeyword', 'textarea', array('required' => false, 'attr'=>array('class'=>'span8', 'rows'=>5))),
             array('seoMetaDescription', 'textarea', array('required' => false, 'attr'=>array('class'=>'span8', 'rows'=>5))),
@@ -53,6 +52,10 @@ class TagDefaultProvider extends BaseTagProvider
             array('ogType', 'choice', array('choices'=>$this->getMetatagChoices(), 'attr'=>array('class'=>'span4'))),
             array('ogDescription', 'textarea', array('required' => false, 'attr'=>array('class'=>'span8', 'rows'=>5))),
         );
+
+        if($this->controllerEnabled) {
+            $settings = array_merge(array(array('template', 'choice', array('choices'=>$this->getTemplateChoices()))), $settings);
+        }
 
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
             array_push($settings, array($this->getMediaBuilder($formMapper), null, array()));

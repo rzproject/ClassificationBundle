@@ -9,6 +9,7 @@ abstract class BaseProvider implements ClassificationProviderInterface
 {
     protected $templates = array();
     protected $metatagChoices = array();
+    protected $controllerEnabled = true;
 
     /**
      * @param string                                           $name
@@ -95,5 +96,21 @@ abstract class BaseProvider implements ClassificationProviderInterface
     public function setMetatagChoices($metatagChoices)
     {
         $this->metatagChoices = $metatagChoices;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isControllerEnabled()
+    {
+        return $this->controllerEnabled;
+    }
+
+    /**
+     * @param boolean $controllerEnabled
+     */
+    public function setControllerEnabled($controllerEnabled)
+    {
+        $this->controllerEnabled = $controllerEnabled;
     }
 }

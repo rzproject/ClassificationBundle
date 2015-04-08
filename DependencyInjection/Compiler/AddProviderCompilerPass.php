@@ -46,33 +46,35 @@ class AddProviderCompilerPass implements CompilerPassInterface
                 $provider->addMethodCall('setMediaAdmin', array(new Reference('sonata.media.admin.media')));
                 $provider->addMethodCall('setMediaManager', array(new Reference('sonata.media.manager.media')));
                 $provider->addMethodCall('setMetatagChoices', array($container->getParameter('rz_seo.metatags')));
+                $provider->addMethodCall('setControllerEnabled', array($container->getParameter('rz_classification.enable_controllers')));
             }
         }
 
 
         //collection
-        $pool = $container->getDefinition('rz_classification.pool.collection');
-        foreach ($container->findTaggedServiceIds('rz_classification.provider.collection') as $id => $attributes) {
-            $pool->addMethodCall('addProvider', array($id, new Reference($id)));
-        }
-
-        $contexts = $container->getParameter('rz_classification.provider.collection.context');
-        foreach ($contexts as $name => $settings) {
-            $templates = array();
-
-            foreach ($settings['templates'] as $template => $value) {
-                $templates[$template] = $value;
-            }
-            $pool->addMethodCall('addContext', array($name, $settings['provider'], $settings['default_template'], $templates));
-
-            if ($container->hasDefinition($settings['provider'])) {
-                $provider = $container->getDefinition($settings['provider']);
-                $provider->addMethodCall('setTemplates', array($templates));
-                $provider->addMethodCall('setMediaAdmin', array(new Reference('sonata.media.admin.media')));
-                $provider->addMethodCall('setMediaManager', array(new Reference('sonata.media.manager.media')));
-                $provider->addMethodCall('setMetatagChoices', array($container->getParameter('rz_seo.metatags')));
-            }
-        }
+//        $pool = $container->getDefinition('rz_classification.pool.collection');
+//        foreach ($container->findTaggedServiceIds('rz_classification.provider.collection') as $id => $attributes) {
+//            $pool->addMethodCall('addProvider', array($id, new Reference($id)));
+//        }
+//
+//        $contexts = $container->getParameter('rz_classification.provider.collection.context');
+//        foreach ($contexts as $name => $settings) {
+//            $templates = array();
+//
+//            foreach ($settings['templates'] as $template => $value) {
+//                $templates[$template] = $value;
+//            }
+//            $pool->addMethodCall('addContext', array($name, $settings['provider'], $settings['default_template'], $templates));
+//
+//            if ($container->hasDefinition($settings['provider'])) {
+//                $provider = $container->getDefinition($settings['provider']);
+//                $provider->addMethodCall('setTemplates', array($templates));
+//                $provider->addMethodCall('setMediaAdmin', array(new Reference('sonata.media.admin.media')));
+//                $provider->addMethodCall('setMediaManager', array(new Reference('sonata.media.manager.media')));
+//                $provider->addMethodCall('setMetatagChoices', array($container->getParameter('rz_seo.metatags')));
+//                $provider->addMethodCall('setControllerEnabled', array($container->getParameter('rz_classification.enable_controllers')));
+//            }
+//        }
 
         //tag
         $pool = $container->getDefinition('rz_classification.pool.tag');
@@ -95,6 +97,7 @@ class AddProviderCompilerPass implements CompilerPassInterface
                 $provider->addMethodCall('setMediaAdmin', array(new Reference('sonata.media.admin.media')));
                 $provider->addMethodCall('setMediaManager', array(new Reference('sonata.media.manager.media')));
                 $provider->addMethodCall('setMetatagChoices', array($container->getParameter('rz_seo.metatags')));
+                $provider->addMethodCall('setControllerEnabled', array($container->getParameter('rz_classification.enable_controllers')));
             }
         }
     }
