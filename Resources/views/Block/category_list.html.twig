@@ -22,6 +22,7 @@
             {% endif %}
             <h1 class="blog"><a href="{% if  url %}{{ path(url) }}{% else %}#{% endif %}">{{ category.name }}</a></h1>
             <p>{{ category.description }}</p>
+            {#<p>{{ category.content|raw }}</p>#}
             <h4><a href="{% if  url %}{{ path(url) }}{% else %}#{% endif %}"><b>READ &rarr;</b></a></h4>
 
             <!--end post-->
