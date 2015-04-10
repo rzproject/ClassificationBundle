@@ -51,6 +51,7 @@ class RzClassificationExtension extends Extension
      */
     public function configureSettings(ContainerBuilder $container, $config) {
         $container->setParameter('rz_classification.enable_controllers', $config['enable_controllers']);
+        $container->setParameter('rz_classification.settings.category.default_page_template', $config['settings']['category']['default_page_template']);
     }
 
     /**

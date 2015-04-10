@@ -4,24 +4,28 @@
     {% else %}
         {% set url = null %}
     {% endif %}
-    <div class="pad20"></div>
-    {% if category.media %}
-        {% if category.media.providerName  == 'sonata.media.provider.image' %}
-            <div class="hover_img">
-                <a href="{%  path category.media, 'reference' %}" data-rel="prettyPhoto"><img src="{%  path category.media, 'reference' %}" alt=""/></a>
+    <div class="category-item">
+        <div class="category">
+            {% if category.media %}
+                {% if category.media.providerName  == 'sonata.media.provider.image' %}
+                    <a href="{%  path category.media, 'reference' %}" data-rel="prettyPhoto">
+                        {% media category.media, 'reference' with {'style':'width:380px;', 'height': 'auto'} %}
+                    </a>
+                {% else %}
+                    <div class="vendor">
+                        {% media category.media, 'reference' %}
+                    </div>
+                {% endif %}
+            {% endif %}
+            <div class="item-description">
+                <h1 class="blog"><a href="{% if  url %}{{ path(url) }}{% else %}#{% endif %}">{{ category.name }}</a></h1>
+                <p>{{ category.description }}</p>
+                {#<p>{{ category.content|raw }}</p>#}
+                <h4><a href="{% if  url %}{{ path(url) }}{% else %}#{% endif %}"><b>READ &rarr;</b></a></h4>
             </div>
-        {% else %}
-            <div class="vendor">
-                {% media category.media, 'reference' %}
-            </div>
-        {% endif %}
-    {% endif %}
-    <h1 class="blog"><a href="{% if  url %}{{ path(url) }}{% else %}#{% endif %}">{{ category.name }}</a></h1>
-    <p>{{ category.description }}</p>
-    <h4><a href="{% if  url %}{{ path(url) }}{% else %}#{% endif %}"><b>READ &rarr;</b></a></h4>
-
-    <!--end post-->
-    <div class="pad30"></div>
+            <!--end post-->
+        </div>
+    </div>
 {% else %}
     <div class="row-fluid sonata-blog-post-list">
         <div class="span12">

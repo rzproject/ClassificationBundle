@@ -38,6 +38,18 @@ class Configuration implements ConfigurationInterface
         $node
             ->children()
                 ->scalarNode('enable_controllers')->defaultValue('true')->end()
+                ->arrayNode('settings')
+                ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('category')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('default_page_template')->defaultValue('rzcms_blog_category')->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+
                 ->arrayNode('providers')
                 ->addDefaultsIfNotSet()
                     ->children()
@@ -196,7 +208,7 @@ class Configuration implements ConfigurationInterface
         ;
     }
 
-        /**
+    /**
      * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
      */
     private function addModelSection(ArrayNodeDefinition $node)
@@ -219,7 +231,9 @@ class Configuration implements ConfigurationInterface
         ;
     }
 
-            /**
+
+
+    /**
      * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
      */
     private function addManagerClassSection(ArrayNodeDefinition $node)

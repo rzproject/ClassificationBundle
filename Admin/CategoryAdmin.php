@@ -26,6 +26,7 @@ class CategoryAdmin extends BaseAdmin
     protected $pool;
     protected $slugGenerator;
     protected $controllerEnabled = true;
+    protected $defaultPageTemplate;
 
 
     /**
