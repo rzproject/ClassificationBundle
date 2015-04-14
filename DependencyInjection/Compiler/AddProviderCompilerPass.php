@@ -34,15 +34,28 @@ class AddProviderCompilerPass implements CompilerPassInterface
         $contexts = $container->getParameter('rz_classification.provider.category.context');
         foreach ($contexts as $name => $settings) {
             $templates = array();
+            $ajaxTemplates = array();
+            $ajaxPagerTemplates = array();
 
             foreach ($settings['templates'] as $template => $value) {
                 $templates[$template] = $value;
             }
+
+            foreach ($settings['ajax_templates'] as $ajaxTemplate => $value) {
+                $ajaxTemplates[$ajaxTemplate] = $value;
+            }
+
+            foreach ($settings['ajax_pager_templates'] as $ajaxPagerTemplate => $value) {
+                $ajaxPagerTemplates[$ajaxPagerTemplate] = $value;
+            }
+
             $pool->addMethodCall('addContext', array($name, $settings['provider'], $settings['default_template'], $templates));
 
             if ($container->hasDefinition($settings['provider'])) {
                 $provider = $container->getDefinition($settings['provider']);
                 $provider->addMethodCall('setTemplates', array($templates));
+                $provider->addMethodCall('setAjaxTemplates', array($ajaxTemplates));
+                $provider->addMethodCall('setAjaxPagerTemplates', array($ajaxPagerTemplates));
                 $provider->addMethodCall('setMediaAdmin', array(new Reference('sonata.media.admin.media')));
                 $provider->addMethodCall('setMediaManager', array(new Reference('sonata.media.manager.media')));
                 $provider->addMethodCall('setMetatagChoices', array($container->getParameter('rz_seo.metatags')));

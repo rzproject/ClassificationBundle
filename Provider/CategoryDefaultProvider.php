@@ -53,9 +53,11 @@ class CategoryDefaultProvider extends BaseCategoryProvider
             array('ogDescription', 'textarea', array('required' => false, 'attr'=>array('class'=>'span8', 'rows'=>5))),
         );
 
-//        if($this->controllerEnabled) {
-//            $settings = array_merge(array(array('template', 'choice', array('choices'=>$this->getTemplateChoices()))), $settings);
-//        }
+        if($this->controllerEnabled) {
+            $settings = array_merge(array(array('template', 'choice', array('choices'=>$this->getTemplateChoices()))), $settings);
+            $settings = array_merge(array(array('ajaxTemplate', 'choice', array('choices'=>$this->getAjaxTemplateChoices()))), $settings);
+            $settings = array_merge(array(array('ajaxPagerTemplate', 'choice', array('choices'=>$this->getAjaxPagerTemplateChoices()))), $settings);
+        }
 
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
             array_push($settings, array($this->getMediaBuilder($formMapper), null, array()));

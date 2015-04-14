@@ -72,7 +72,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
             $definition->addMethodCall('setMediaManager', array(new Reference('sonata.media.manager.media')));
         }
 
-        $definition->addMethodCall('setPool', array(new Reference('rz_classification.pool.collection')));
+//        $definition->addMethodCall('setPool', array(new Reference('rz_classification.pool.collection')));
 
         //override ORM Manager
         $definition = $container->getDefinition('sonata.classification.manager.tag');

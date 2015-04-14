@@ -8,10 +8,10 @@
         <parameter key="rz_classification.provider.tag.news.class">Rz\ClassificationBundle\Provider\TagNewsProvider</parameter>
         <parameter key="rz_classification.provider.category.default.class">Rz\ClassificationBundle\Provider\CategoryDefaultProvider</parameter>
         <parameter key="rz_classification.provider.category.news.class">Rz\ClassificationBundle\Provider\CategoryNewsProvider</parameter>
-        <parameter key="rz_classification.provider.collection.default.class">Rz\ClassificationBundle\Provider\CollectionDefaultProvider</parameter>
-        <parameter key="rz_classification.provider.collection.news.class">Rz\ClassificationBundle\Provider\CollectionNewsProvider</parameter>
+        <!--<parameter key="rz_classification.provider.collection.default.class">Rz\ClassificationBundle\Provider\CollectionDefaultProvider</parameter>-->
+        <!--<parameter key="rz_classification.provider.collection.news.class">Rz\ClassificationBundle\Provider\CollectionNewsProvider</parameter>-->
         <parameter key="rz_classification.pool.category.class">Rz\ClassificationBundle\Provider\CategoryPool</parameter>
-        <parameter key="rz_classification.pool.collection.class">Rz\ClassificationBundle\Provider\CollectionPool</parameter>
+        <!--<parameter key="rz_classification.pool.collection.class">Rz\ClassificationBundle\Provider\CollectionPool</parameter>-->
         <parameter key="rz_classification.pool.tag.class">Rz\ClassificationBundle\Provider\TagPool</parameter>
     </parameters>
 
@@ -21,9 +21,9 @@
             <argument />
         </service>
 
-        <service id="rz_classification.pool.collection" class="%rz_classification.pool.collection.class%" scope="prototype">
-            <argument />
-        </service>
+        <!--<service id="rz_classification.pool.collection" class="%rz_classification.pool.collection.class%" scope="prototype">-->
+            <!--<argument />-->
+        <!--</service>-->
 
         <service id="rz_classification.pool.tag" class="%rz_classification.pool.tag.class%" scope="prototype">
             <argument />
@@ -49,15 +49,15 @@
             <argument>rz_classification.provider.category.news</argument>
         </service>
 
-        <service id="rz_classification.provider.collection.default" class="%rz_classification.provider.collection.default.class%" scope="prototype">
-            <tag name="rz_classification.provider.collection" />
-            <argument>rz_classification.provider.collection.default</argument>
-        </service>
+        <!--<service id="rz_classification.provider.collection.default" class="%rz_classification.provider.collection.default.class%" scope="prototype">-->
+            <!--<tag name="rz_classification.provider.collection" />-->
+            <!--<argument>rz_classification.provider.collection.default</argument>-->
+        <!--</service>-->
 
-        <service id="rz_classification.provider.collection.news" class="%rz_classification.provider.collection.news.class%" scope="prototype">
-            <tag name="rz_classification.provider.collection" />
-            <argument>rz_classification.provider.collection.news</argument>
-        </service>
+        <!--<service id="rz_classification.provider.collection.news" class="%rz_classification.provider.collection.news.class%" scope="prototype">-->
+            <!--<tag name="rz_classification.provider.collection" />-->
+            <!--<argument>rz_classification.provider.collection.news</argument>-->
+        <!--</service>-->
 
     </services>
 </container>

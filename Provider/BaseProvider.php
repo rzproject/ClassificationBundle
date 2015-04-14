@@ -8,6 +8,8 @@ use Sonata\ClassificationBundle\Model\PostInterface;
 abstract class BaseProvider implements ClassificationProviderInterface
 {
     protected $templates = array();
+    protected $ajaxTemplates = array();
+    protected $ajaxPagerTemplates = array();
     protected $metatagChoices = array();
     protected $controllerEnabled = true;
 
@@ -53,6 +55,38 @@ abstract class BaseProvider implements ClassificationProviderInterface
     }
 
     /**
+     * @return array
+     */
+    public function getAjaxTemplates()
+    {
+        return $this->ajaxTemplates;
+    }
+
+    /**
+     * @param array $ajaxTemplates
+     */
+    public function setAjaxTemplates($ajaxTemplates)
+    {
+        $this->ajaxTemplates = $ajaxTemplates;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAjaxPagerTemplates()
+    {
+        return $this->ajaxPagerTemplates;
+    }
+
+    /**
+     * @param array $ajaxPagerTemplates
+     */
+    public function setAjaxPagerTemplates($ajaxPagerTemplates)
+    {
+        $this->ajaxPagerTemplates = $ajaxPagerTemplates;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getTemplateChoices()
@@ -81,6 +115,68 @@ abstract class BaseProvider implements ClassificationProviderInterface
     {
         return isset($this->templates[$name]) ? $this->templates[$name] : null;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAjaxTemplateChoices()
+    {
+        $list = array();
+        foreach($this->ajaxTemplates as $key=>$value) {
+            $list[$value['path']] = $value['name'].' - '.$value['path'];
+        }
+        return $list;
+    }
+
+    public function getAjaxTemplatePath($name)
+    {
+        $ajaxTemplate = $this->getAjaxTemplate($name);
+        if($ajaxTemplate) {
+            return $ajaxTemplate['path'];
+        } else {
+            return;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAjaxTemplate($name)
+    {
+        return isset($this->ajaxTemplates[$name]) ? $this->ajaxTemplates[$name] : null;
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAjaxPagerTemplateChoices()
+    {
+        $list = array();
+        foreach($this->ajaxPagerTemplates as $key=>$value) {
+            $list[$value['path']] = $value['name'].' - '.$value['path'];
+        }
+        return $list;
+    }
+
+    public function getAjaxPagerTemplatePath($name)
+    {
+        $ajaxPagerTemplate = $this->getAjaxPagerTemplate($name);
+        if($ajaxPagerTemplate) {
+            return $ajaxPagerTemplate['path'];
+        } else {
+            return;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAjaxPagerTemplate($name)
+    {
+        return isset($this->ajaxPagerTemplates[$name]) ? $this->ajaxPagerTemplates[$name] : null;
+    }
+
 
     /**
      * @return array
