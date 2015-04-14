@@ -53,6 +53,9 @@ class RzClassificationExtension extends Extension
         $container->setParameter('rz_classification.enable_controllers', $config['enable_controllers']);
         $container->setParameter('rz_classification.settings.category.enable_category_canonical_page', $config['settings']['category']['enable_category_canonical_page']);
         $container->setParameter('rz_classification.settings.category.parent_category_page_template', $config['settings']['category']['parent_category_page_template']);
+        $container->setParameter('rz_classification.settings.category.category_list_max_per_page', $config['settings']['category']['category_list_max_per_page']);
+
+
     }
 
     /**

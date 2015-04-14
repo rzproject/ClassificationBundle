@@ -89,13 +89,9 @@ abstract class BaseProvider implements ClassificationProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function getTemplateChoices()
+    public function getTemplateChoices($object = null)
     {
-        $list = array();
-        foreach($this->templates as $key=>$value) {
-            $list[$value['path']] = $value['name'].' - '.$value['path'];
-        }
-        return $list;
+        return $this->getChoices($this->templates);
     }
 
     public function getTemplatePath($name)
@@ -119,13 +115,9 @@ abstract class BaseProvider implements ClassificationProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function getAjaxTemplateChoices()
+    public function getAjaxTemplateChoices($object = null)
     {
-        $list = array();
-        foreach($this->ajaxTemplates as $key=>$value) {
-            $list[$value['path']] = $value['name'].' - '.$value['path'];
-        }
-        return $list;
+        return $this->getChoices($this->ajaxTemplates);
     }
 
     public function getAjaxTemplatePath($name)
@@ -150,13 +142,9 @@ abstract class BaseProvider implements ClassificationProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function getAjaxPagerTemplateChoices()
+    public function getAjaxPagerTemplateChoices($object = null)
     {
-        $list = array();
-        foreach($this->ajaxPagerTemplates as $key=>$value) {
-            $list[$value['path']] = $value['name'].' - '.$value['path'];
-        }
-        return $list;
+        return $this->getChoices($this->ajaxPagerTemplates);
     }
 
     public function getAjaxPagerTemplatePath($name)
@@ -208,5 +196,13 @@ abstract class BaseProvider implements ClassificationProviderInterface
     public function setControllerEnabled($controllerEnabled)
     {
         $this->controllerEnabled = $controllerEnabled;
+    }
+
+    protected function getChoices($templates) {
+        $list = array();
+        foreach($templates as $key=>$value) {
+                $list[$value['path']] = $value['name'].' - '.$value['path'];
+        }
+        return $list;
     }
 }

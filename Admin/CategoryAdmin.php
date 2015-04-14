@@ -120,9 +120,9 @@ class CategoryAdmin extends BaseAdmin
         if($provider = $this->getPoolProvider()) {
             if ($category->getId()) {
                 $provider->load($category);
-                $provider->buildEditForm($formMapper);
+                $provider->buildEditForm($formMapper, $category);
             } else {
-                $provider->buildCreateForm($formMapper);
+                $provider->buildCreateForm($formMapper, $category);
             }
         }
     }

@@ -23,26 +23,28 @@ class CategoryDefaultProvider extends BaseCategoryProvider
     /**
      * {@inheritdoc}
      */
-    public function buildEditForm(FormMapper $formMapper)
+    public function buildEditForm(FormMapper $formMapper, $object = null)
     {
-        $this->buildCreateForm($formMapper);
+        $this->buildCreateForm($formMapper, $object);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function buildCreateForm(FormMapper $formMapper)
+    public function buildCreateForm(FormMapper $formMapper, $object = null)
     {
         $formMapper
             ->with('Settings', array('class' => 'col-md-6'))
-                ->add('settings', 'sonata_type_immutable_array', array('keys' => $this->getFormSettingsKeys($formMapper)))
+                ->add('settings', 'sonata_type_immutable_array', array('keys' => $this->getFormSettingsKeys($formMapper, $object)))
             ->end();
     }
 
     /**
+     * @param FormMapper $formMapper
+     * @param null $object
      * @return array
      */
-    public function getFormSettingsKeys(FormMapper $formMapper)
+    public function getFormSettingsKeys(FormMapper $formMapper, $object = null)
     {
         $settings = array(
             array('seoTitle', 'text', array('required' => false, 'attr'=>array('class'=>'span8'))),
@@ -54,9 +56,9 @@ class CategoryDefaultProvider extends BaseCategoryProvider
         );
 
         if($this->controllerEnabled) {
-            $settings = array_merge(array(array('template', 'choice', array('choices'=>$this->getTemplateChoices()))), $settings);
-            $settings = array_merge(array(array('ajaxTemplate', 'choice', array('choices'=>$this->getAjaxTemplateChoices()))), $settings);
-            $settings = array_merge(array(array('ajaxPagerTemplate', 'choice', array('choices'=>$this->getAjaxPagerTemplateChoices()))), $settings);
+            $settings = array_merge(array(array('template', 'choice', array('choices'=>$this->getTemplateChoices($object)))), $settings);
+            $settings = array_merge(array(array('ajaxTemplate', 'choice', array('choices'=>$this->getAjaxTemplateChoices($object)))), $settings);
+            $settings = array_merge(array(array('ajaxPagerTemplate', 'choice', array('choices'=>$this->getAjaxPagerTemplateChoices($object)))), $settings);
         }
 
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
@@ -124,9 +126,6 @@ class CategoryDefaultProvider extends BaseCategoryProvider
     }
 
     public function load(CategoryInterface $category) {
-
-
-
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
             //load media
             $media = $category->getSetting('ogImage', null);
@@ -157,4 +156,51 @@ class CategoryDefaultProvider extends BaseCategoryProvider
         );
     }
 
+    protected function getCategoryChoices($templates, $filter  = 'post') {
+        $list = array();
+
+        foreach($templates as $key=>$value) {
+            if ($value['type'] == $filter) {
+                $list[$value['path']] = $value['name'].' - '.$value['path'];
+            }
+        }
+        return $list;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTemplateChoices($object = null)
+    {
+        if($object->getParent() != null && $object->getParent()->getSlug() == 'news') {
+            return $this->getCategoryChoices($this->templates, 'category');
+        } else {
+            return $this->getCategoryChoices($this->templates, 'post');
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAjaxTemplateChoices($object = null)
+    {
+        if($object->getParent() != null && $object->getParent()->getSlug() == 'news') {
+            return $this->getCategoryChoices($this->ajaxTemplates, 'category');
+        } else {
+            return $this->getCategoryChoices($this->ajaxTemplates, 'post');
+        }
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAjaxPagerTemplateChoices($object = null)
+    {
+        if($object->getParent() != null && $object->getParent()->getSlug() == 'news') {
+            return $this->getCategoryChoices($this->ajaxPagerTemplates, 'category');
+        } else {
+            return $this->getCategoryChoices($this->ajaxPagerTemplates, 'post');
+        }
+    }
 }
