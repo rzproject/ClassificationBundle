@@ -21,10 +21,6 @@
             <argument />
         </service>
 
-        <!--<service id="rz_classification.pool.collection" class="%rz_classification.pool.collection.class%" scope="prototype">-->
-            <!--<argument />-->
-        <!--</service>-->
-
         <service id="rz_classification.pool.tag" class="%rz_classification.pool.tag.class%" scope="prototype">
             <argument />
         </service>
@@ -48,16 +44,6 @@
             <tag name="rz_classification.provider.category" />
             <argument>rz_classification.provider.category.news</argument>
         </service>
-
-        <!--<service id="rz_classification.provider.collection.default" class="%rz_classification.provider.collection.default.class%" scope="prototype">-->
-            <!--<tag name="rz_classification.provider.collection" />-->
-            <!--<argument>rz_classification.provider.collection.default</argument>-->
-        <!--</service>-->
-
-        <!--<service id="rz_classification.provider.collection.news" class="%rz_classification.provider.collection.news.class%" scope="prototype">-->
-            <!--<tag name="rz_classification.provider.collection" />-->
-            <!--<argument>rz_classification.provider.collection.news</argument>-->
-        <!--</service>-->
 
     </services>
 </container>

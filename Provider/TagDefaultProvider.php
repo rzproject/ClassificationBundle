@@ -55,6 +55,8 @@ class TagDefaultProvider extends BaseTagProvider
 
         if($this->controllerEnabled) {
             $settings = array_merge(array(array('template', 'choice', array('choices'=>$this->getTemplateChoices()))), $settings);
+            $settings = array_merge(array(array('ajaxTemplate', 'choice', array('choices'=>$this->getAjaxTemplateChoices()))), $settings);
+            $settings = array_merge(array(array('ajaxPagerTemplate', 'choice', array('choices'=>$this->getAjaxPagerTemplateChoices()))), $settings);
         }
 
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
