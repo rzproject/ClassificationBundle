@@ -328,7 +328,10 @@ class CategoryAdmin extends BaseAdmin
     public function postUpdate($object)
     {
         parent::postUpdate($object);
-        $this->getPoolProvider()->postUpdate($object);
+
+        if ($this->getPoolProvider()) {
+            $this->getPoolProvider()->postUpdate($object);
+        }
 
         if (!$this->controllerEnabled && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
             // create page for collection list default collection is placed on localhost.
@@ -383,7 +386,10 @@ class CategoryAdmin extends BaseAdmin
     public function postPersist($object)
     {
         parent::postPersist($object);
-        $this->getPoolProvider()->postPersist($object);
+
+        if ($this->getPoolProvider()) {
+            $this->getPoolProvider()->postPersist($object);
+        }
 
         if (!$this->controllerEnabled && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
             // create page for collection list default collection is placed on localhost.
