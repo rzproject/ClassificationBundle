@@ -210,6 +210,7 @@ class CategoryAdmin extends BaseAdmin
     protected function getPoolProvider() {
         $currentContext = $this->fetchCurrentContext();
 
+
         $context = str_replace('-', '_', $currentContext->getId());
 
         if ($this->pool->hasContext($context)) {
@@ -226,7 +227,9 @@ class CategoryAdmin extends BaseAdmin
     public function postUpdate($object)
     {
         parent::postUpdate($object);
-        $this->getPoolProvider()->postUpdate($object);
+        if($this->getPoolProvider()) {
+            $this->getPoolProvider()->postUpdate($object);
+        }
     }
 
     /**
@@ -235,7 +238,11 @@ class CategoryAdmin extends BaseAdmin
     public function postPersist($object)
     {
         parent::postPersist($object);
-        $this->getPoolProvider()->postPersist($object);
+
+        if($this->getPoolProvider()) {
+            $this->getPoolProvider()->postPersist($object);
+        }
+
     }
 
     /**
