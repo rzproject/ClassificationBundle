@@ -142,6 +142,7 @@ class TagDefaultProvider extends BaseTagProvider
         $fieldDescription->setAssociationAdmin($this->mediaAdmin);
         $fieldDescription->setAdmin($formMapper->getAdmin());
         $fieldDescription->setOption('edit', 'list');
+        $fieldDescription->setOptions(array('link_parameters' => array('context' => 'sonata_category', 'hide_context' => true)));
         $fieldDescription->setAssociationMapping(array(
             'fieldName' => 'media',
             'type'      => \Doctrine\ORM\Mapping\ClassMetadataInfo::MANY_TO_ONE

@@ -111,6 +111,7 @@ class CategoryAdmin extends BaseAdmin
                             'link_parameters' => array(
                                 'provider' => 'sonata.media.provider.image',
                                 'context'  => 'sonata_category',
+                                'hide_context' => true
                             )
                         )
                     )
