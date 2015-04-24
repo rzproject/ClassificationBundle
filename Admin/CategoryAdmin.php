@@ -361,17 +361,6 @@ class CategoryAdmin extends BaseAdmin
                 // delete reference if hasPage is set to false
             } elseif (!$object->getHasPage() && $object->getPage()) {
                 $object->setPage(null);
-//                $result = $this->getModelManager()->update($object);
-//
-//                if(null != $result) {
-//                    $object = $result;
-//                }
-//
-//                $page = $this->pageManager->findOneBy(array('slug' => $object->getSlug()));
-//                if ($page) {
-//                    $this->pageManager->delete($page);
-//                }
-
             } elseif ($page = $object->getPage()) {
                 $this->setPageDetails($page, $object, $parent);
                 $page->setParent($parent);

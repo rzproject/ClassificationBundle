@@ -43,6 +43,8 @@ class RzClassificationExtension extends Extension
             $loader->load('block.xml');
             $this->configureBlocks($config['blocks'], $container);
         }
+
+        $this->configureClassesToCompile();
     }
 
     /**
@@ -244,5 +246,32 @@ class RzClassificationExtension extends Extension
                 'orphanRemoval' => false,
             ));
         }
+    }
+
+    /**
+     * Add class to compile
+     */
+    public function configureClassesToCompile()
+    {
+        $this->addClassesToCompile(array(
+            "Rz\\ClassificationBundle\\Block\\CategoryBlockService",
+            "Rz\\ClassificationBundle\\Provider\\ClassificationProviderInterface",
+            "Rz\\ClassificationBundle\\Provider\\CategoryProviderInterface",
+            "Rz\\ClassificationBundle\\Provider\\TagProviderInterface",
+            "Rz\\ClassificationBundle\\Provider\\BaseProvider",
+            "Rz\\ClassificationBundle\\Provider\\BaseCategoryProvider",
+            "Rz\\ClassificationBundle\\Provider\\BaseTagProvider",
+            "Rz\\ClassificationBundle\\Provider\\CategoryDefaultProvider",
+            "Rz\\ClassificationBundle\\Provider\\CategoryNewsProvider",
+            "Rz\\ClassificationBundle\\Provider\\TagDefaultProvider",
+            "Rz\\ClassificationBundle\\Provider\\TagNewsProvider",
+            "Rz\\ClassificationBundle\\Provider\\Pool",
+            "Rz\\ClassificationBundle\\Provider\\CategoryPool",
+            "Rz\\ClassificationBundle\\Provider\\TagPool",
+            "Rz\\ClassificationBundle\\Form\\Type\\CategorySelectorType",
+            "Rz\\ClassificationBundle\\Permalink\\PermalinkInterface",
+            "Rz\\ClassificationBundle\\Permalink\\CategoryPermalink",
+            "Rz\\ClassificationBundle\\Twig\\Extension\\CategoryExtension",
+        ));
     }
 }

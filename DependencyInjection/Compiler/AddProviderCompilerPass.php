@@ -18,14 +18,14 @@ class AddProviderCompilerPass implements CompilerPassInterface
     }
 
 
-
     /**
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
      */
     public function attachProviders(ContainerBuilder $container)
     {
-
-        //category
+        ######################
+        # Category Provider
+        ######################
         $pool = $container->getDefinition('rz_classification.pool.category');
         foreach ($container->findTaggedServiceIds('rz_classification.provider.category') as $id => $attributes) {
             $pool->addMethodCall('addProvider', array($id, new Reference($id)));
@@ -63,16 +63,15 @@ class AddProviderCompilerPass implements CompilerPassInterface
             }
         }
 
-        //tag
+        ######################
+        # Tag Provider
+        ######################
         $pool = $container->getDefinition('rz_classification.pool.tag');
         foreach ($container->findTaggedServiceIds('rz_classification.provider.tag') as $id => $attributes) {
             $pool->addMethodCall('addProvider', array($id, new Reference($id)));
         }
 
         $contexts = $container->getParameter('rz_classification.provider.tag.context');
-
-
-
 
         foreach ($contexts as $name => $settings) {
             $templates = array();
