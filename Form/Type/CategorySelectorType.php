@@ -12,6 +12,12 @@ use Symfony\Component\Form\Extension\Core\ChoiceList\SimpleChoiceList;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 
+
+/**
+ * Select a category
+ *
+ * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
+ */
 class CategorySelectorType extends AbstractTypeExtension
 {
     protected $manager;
