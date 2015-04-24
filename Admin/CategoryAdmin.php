@@ -293,6 +293,22 @@ class CategoryAdmin extends BaseAdmin
         $this->controllerEnabled = $controllerEnabled;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getDefaultPageTemplate()
+    {
+        return $this->defaultPageTemplate;
+    }
+
+    /**
+     * @param mixed $defaultPageTemplate
+     */
+    public function setDefaultPageTemplate($defaultPageTemplate)
+    {
+        $this->defaultPageTemplate = $defaultPageTemplate;
+    }
+
     protected function fetchCurrentContext() {
 
         $context_param = $this->getPersistentParameter('context');
@@ -337,6 +353,7 @@ class CategoryAdmin extends BaseAdmin
         if (!$this->controllerEnabled && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
             // create page for collection list default collection is placed on localhost.
             // for multi site is has to be moved via the Page module.
+            #TODO support multi site publishing
             $site = $this->siteManager->findOneBy(array('name' => 'localhost'));
             $parent = null;
             //has parent
@@ -347,7 +364,7 @@ class CategoryAdmin extends BaseAdmin
             }
 
             if (!$parent) {
-                $parent = $this->pageManager->findOneBy(array('name' => 'homepage'));
+                $parent = $this->pageManager->findOneBy(array('url' => '/'));
             }
 
             if ($object->getHasPage() && !$object->getPage()) {
@@ -384,7 +401,6 @@ class CategoryAdmin extends BaseAdmin
         if (!$this->controllerEnabled && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
             // create page for collection list default collection is placed on localhost.
             // for multi site is has to be moved via the Page module.
-
             $site = $this->siteManager->findOneBy(array('name' => 'localhost'));
             $parent = null;
 
@@ -396,7 +412,7 @@ class CategoryAdmin extends BaseAdmin
             }
 
             if (!$parent) {
-                $parent = $this->pageManager->findOneBy(array('name' => 'homepage'));
+                $parent = $this->pageManager->findOneBy(array('url' => '/'));
             }
 
 
@@ -437,7 +453,12 @@ class CategoryAdmin extends BaseAdmin
 
         $slug = $object->getSlug();
         //verify is URL exist
-        $similarPage = $this->pageManager->findDuplicateUrl($parent, $page, $slug);
+        if ($page->getId()) {
+            $similarPage = $this->pageManager->findDuplicateUrl($parent, $page, $slug);
+        } else {
+            $similarPage = null;
+        }
+
 
         $count = count($similarPage);
         if ($count > 1) {
@@ -453,7 +474,7 @@ class CategoryAdmin extends BaseAdmin
         $page->setDecorate(1);
         $page->setRequestMethod('GET|POST|HEAD|DELETE|PUT');
         //TODO set default template on configuration
-        $page->setTemplateCode('rzcms_blog');
+        $page->setTemplateCode($this->defaultPageTemplate ?: 'rzcms_blog_page_category');
         $page->setRouteName('page_slug');
 
         $settings = $object->getSettings();

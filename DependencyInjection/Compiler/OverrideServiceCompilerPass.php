@@ -33,6 +33,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
             $definition->addMethodCall('setPageManager', array(new Reference('sonata.page.manager.page')));
             $definition->addMethodCall('setSiteManager', array(new Reference('sonata.page.manager.site')));
+            $definition->addMethodCall('setDefaultPageTemplate', array($container->getParameter('rz_classification.settings.category.default_category_page_template')));
         }
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
             $definition->addMethodCall('setMediaManager', array(new Reference('sonata.media.manager.media')));

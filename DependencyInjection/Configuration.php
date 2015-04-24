@@ -46,6 +46,7 @@ class Configuration implements ConfigurationInterface
                             ->children()
                                 ->scalarNode('enable_category_canonical_page')->defaultValue(false)->end()
                                 ->scalarNode('parent_category_page_template')->defaultValue('rzcms_blog_category')->end()
+                                ->scalarNode('default_category_page_template')->defaultValue('rzcms_blog_page_category')->end()
                                 ->scalarNode('category_list_max_per_page')->defaultValue(6)->end()
                             ->end()
                         ->end()

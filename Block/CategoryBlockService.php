@@ -78,6 +78,7 @@ class CategoryBlockService extends BaseBlockService
         $fieldDescription->setAssociationAdmin($this->categoryAdmin);
         $fieldDescription->setAdmin($formMapper->getAdmin());
         $fieldDescription->setOption('edit', 'list');
+        $fieldDescription->setOptions(array('link_parameters' => array('context' => 'news', 'hide_context' => true)));
         $fieldDescription->setAssociationMapping(array('fieldName' => 'category',
             'type' => \Doctrine\ORM\Mapping\ClassMetadataInfo::ONE_TO_MANY,
             'targetEntity' => $this->categoryAdmin->getClass(),
