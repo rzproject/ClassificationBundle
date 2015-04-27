@@ -16,6 +16,7 @@
     "require": {
         "rmzamora/classification-bundle": "2.3.*",
         "rz/admin-bundle": "1.0.*",
+        "rz/block-bundle": "1.1.*",
         "rz/doctrine-orm-admin-bundle": "1.0.*"
     },
     "autoload": {

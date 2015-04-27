@@ -20,12 +20,13 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder();
         $node = $treeBuilder->root('rz_classification');
-
         $this->addBundleSettings($node);
         $this->addModelSection($node);
         $this->addManagerClassSection($node);
         $this->addSettingsSection($node);
-
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $this->addBlockSettings($node);
+        }
         return $treeBuilder;
     }
 
@@ -36,26 +37,70 @@ class Configuration implements ConfigurationInterface
     {
         $node
             ->children()
+                ->scalarNode('enable_controllers')->defaultValue('true')->end()
+                ->arrayNode('settings')
+                ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('category')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('enable_category_canonical_page')->defaultValue(false)->end()
+                                ->scalarNode('parent_category_page_template')->defaultValue('rzcms_blog_category')->end()
+                                ->scalarNode('default_category_page_template')->defaultValue('rzcms_blog_page_category')->end()
+                                ->scalarNode('category_list_max_per_page')->defaultValue(6)->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('tag')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('enable_tag_canonical_page')->defaultValue(false)->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+
                 ->arrayNode('providers')
                 ->addDefaultsIfNotSet()
-                ->children()
-                    ->arrayNode('category')
-                        ->addDefaultsIfNotSet()
-                        ->children()
-                            ->scalarNode('default_context')->isRequired()->end()
-                            ->arrayNode('contexts')
-                                ->useAttributeAsKey('id')
-                                ->prototype('array')
-                                    ->children()
-                                        ->scalarNode('provider')->isRequired()->end()
-                                        ->scalarNode('default_template')->isRequired()->end()
-                                        ->arrayNode('templates')
-                                            ->isRequired()
-                                            ->useAttributeAsKey('id')
-                                            ->prototype('array')
-                                                ->children()
-                                                    ->scalarNode('name')->defaultValue('default')->end()
-                                                    ->scalarNode('path')->defaultValue('RzClassificationBundle:Category:list.html.twig')->end()
+                    ->children()
+                        ->arrayNode('category')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('default_context')->isRequired()->end()
+                                ->arrayNode('contexts')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('provider')->isRequired()->end()
+                                            ->scalarNode('default_template')->isRequired()->end()
+                                            ->arrayNode('ajax_templates')
+                                                ->useAttributeAsKey('id')
+                                                ->prototype('array')
+                                                    ->children()
+                                                        ->scalarNode('name')->defaultValue('default')->end()
+                                                        ->scalarNode('path')->defaultValue('RzClassificationBundle:Category:category_ajax.html.twig')->end()
+                                                        ->scalarNode('type')->defaultValue('post')->end()
+                                                    ->end()
+                                                ->end()
+                                            ->end()
+                                            ->arrayNode('ajax_pager_templates')
+                                                ->useAttributeAsKey('id')
+                                                ->prototype('array')
+                                                    ->children()
+                                                        ->scalarNode('name')->defaultValue('default')->end()
+                                                        ->scalarNode('path')->defaultValue('RzClassificationBundle:Category:category_ajax_pager.html.twig')->end()
+                                                        ->scalarNode('type')->defaultValue('post')->end()
+                                                    ->end()
+                                                ->end()
+                                            ->end()
+                                            ->arrayNode('templates')
+                                                ->isRequired()
+                                                ->useAttributeAsKey('id')
+                                                ->prototype('array')
+                                                    ->children()
+                                                        ->scalarNode('name')->defaultValue('default')->end()
+                                                        ->scalarNode('path')->defaultValue('RzClassificationBundle:Category:list.html.twig')->end()
+                                                        ->scalarNode('type')->defaultValue('post')->end()
+                                                    ->end()
                                                 ->end()
                                             ->end()
                                         ->end()
@@ -63,49 +108,42 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                         ->end()
-                    ->end()
-                    ->arrayNode('tag')
-                        ->addDefaultsIfNotSet()
-                        ->children()
-                            ->scalarNode('default_context')->isRequired()->end()
-                            ->arrayNode('contexts')
-                                ->useAttributeAsKey('id')
-                                ->prototype('array')
-                                    ->children()
-                                        ->scalarNode('provider')->isRequired()->end()
-                                        ->scalarNode('default_template')->isRequired()->end()
-                                        ->arrayNode('templates')
-                                            ->isRequired()
-                                            ->useAttributeAsKey('id')
-                                            ->prototype('array')
-                                                ->children()
-                                                    ->scalarNode('name')->defaultValue('default')->end()
-                                                    ->scalarNode('path')->defaultValue('RzClassificationBundle:Tag:list.html.twig')->end()
+                        ->arrayNode('tag')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('default_context')->isRequired()->end()
+                                ->arrayNode('contexts')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('provider')->isRequired()->end()
+                                            ->scalarNode('default_template')->isRequired()->end()
+                                            ->arrayNode('ajax_templates')
+                                                ->useAttributeAsKey('id')
+                                                ->prototype('array')
+                                                    ->children()
+                                                        ->scalarNode('name')->defaultValue('default')->end()
+                                                        ->scalarNode('path')->defaultValue('RzClassificationBundle:Tag:tag_ajax.html.twig')->end()
+                                                    ->end()
                                                 ->end()
                                             ->end()
-                                        ->end()
-                                    ->end()
-                                ->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                    ->arrayNode('collection')
-                        ->addDefaultsIfNotSet()
-                        ->children()
-                            ->scalarNode('default_context')->isRequired()->end()
-                            ->arrayNode('contexts')
-                                ->useAttributeAsKey('id')
-                                ->prototype('array')
-                                    ->children()
-                                        ->scalarNode('provider')->isRequired()->end()
-                                        ->scalarNode('default_template')->isRequired()->end()
-                                        ->arrayNode('templates')
-                                            ->isRequired()
-                                            ->useAttributeAsKey('id')
-                                            ->prototype('array')
-                                                ->children()
-                                                    ->scalarNode('name')->defaultValue('default')->end()
-                                                    ->scalarNode('path')->defaultValue('RzClassificationBundle:Tag:list.html.twig')->end()
+                                            ->arrayNode('ajax_pager_templates')
+                                                ->useAttributeAsKey('id')
+                                                ->prototype('array')
+                                                    ->children()
+                                                        ->scalarNode('name')->defaultValue('default')->end()
+                                                        ->scalarNode('path')->defaultValue('RzClassificationBundle:Tag:tag_ajax_pager.html.twig')->end()
+                                                    ->end()
+                                                ->end()
+                                            ->end()
+                                            ->arrayNode('templates')
+                                                ->isRequired()
+                                                ->useAttributeAsKey('id')
+                                                ->prototype('array')
+                                                    ->children()
+                                                        ->scalarNode('name')->defaultValue('default')->end()
+                                                        ->scalarNode('path')->defaultValue('RzClassificationBundle:Tag:list.html.twig')->end()
+                                                    ->end()
                                                 ->end()
                                             ->end()
                                         ->end()
@@ -119,7 +157,7 @@ class Configuration implements ConfigurationInterface
         ;
     }
 
-       /**
+    /**
      * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
      */
     private function addBundleSettings(ArrayNodeDefinition $node)
@@ -193,7 +231,7 @@ class Configuration implements ConfigurationInterface
         ;
     }
 
-        /**
+    /**
      * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
      */
     private function addModelSection(ArrayNodeDefinition $node)
@@ -208,13 +246,17 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('collection')->defaultValue('Application\\Sonata\\ClassificationBundle\\Entity\\Collection')->end()
                         ->scalarNode('context')->defaultValue('Application\\Sonata\\ClassificationBundle\\Entity\\Context')->end()
                         ->scalarNode('media')->defaultValue('Application\\Sonata\\MediaBundle\\Entity\\Media')->end()
+                        ->scalarNode('page')->defaultValue('Application\\Sonata\\PageBundle\\Entity\\Page')->end()
+                        ->scalarNode('slug_generator')->defaultValue('Rz\\ClassificationBundle\\Entity\\SlugGenerator')->end()
                     ->end()
                 ->end()
             ->end()
         ;
     }
 
-            /**
+
+
+    /**
      * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
      */
     private function addManagerClassSection(ArrayNodeDefinition $node)
@@ -233,4 +275,54 @@ class Configuration implements ConfigurationInterface
             ->end()
         ;
     }
+     /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     */
+    private function addBlockSettings(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode('blocks')
+                ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('category')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('class')->cannotBeEmpty()->defaultValue('Rz\\ClassificationBundle\\Block\\CategoryBlockService')->end()
+                                ->scalarNode('category_pager_max_per_page')->defaultValue(5)->end()
+                                ->arrayNode('ajax_templates')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('name')->defaultValue('default')->end()
+                                            ->scalarNode('path')->defaultValue('RzClassificationBundle:Block:category_ajax.html.twig')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                                ->arrayNode('ajax_pager_templates')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('name')->defaultValue('default')->end()
+                                            ->scalarNode('path')->defaultValue('RzClassificationBundle:Block:category_ajax_pager.html.twig')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                                ->arrayNode('templates')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('name')->defaultValue('default')->end()
+                                            ->scalarNode('path')->defaultValue('RzClassificationBundle:Block:category_list.html.twig')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+
+            ->end();
+    }
+
 }

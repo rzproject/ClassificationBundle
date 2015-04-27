@@ -18,10 +18,11 @@ use Sonata\DatagridBundle\Pager\Doctrine\Pager;
 use Sonata\DatagridBundle\ProxyQuery\Doctrine\ProxyQuery;
 use Rz\ClassificationBundle\Permalink\PermalinkInterface;
 
+use Pagerfanta\Pagerfanta;
+use Pagerfanta\Adapter\DoctrineORMAdapter;
+
 class CategoryManager extends BaseCategoryManager
 {
-
-
     /**
      * @var \Rz\ClassificationBundle\Permalink\PermalinkInterface
      */
@@ -139,6 +140,30 @@ class CategoryManager extends BaseCategoryManager
             ->from($this->class, 'c')
             ->where('c.parent = :categoryId')
             ->setParameter('categoryId', $categoryId);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    /**
+     * @param integer $categoryId
+     * @return PagerInterface
+     *
+     */
+    public function getSubCategoryPager($categoryId)
+    {
+        $query = $this->getObjectManager()->createQueryBuilder()
+            ->select('c')
+            ->from($this->class, 'c')
+            ->where('c.parent = :categoryId')
+            ->orderBy('c.name', 'ASC')
+            ->setParameter('categoryId', $categoryId);
+
+
+        try {
+            return new Pagerfanta(new DoctrineORMAdapter($query));
+        } catch (NoResultException $e) {
+            return null;
+        }
 
         return $queryBuilder->getQuery()->getResult();
     }

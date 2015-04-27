@@ -2,6 +2,7 @@
 
 namespace Rz\ClassificationBundle\Admin;
 
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Sonata\ClassificationBundle\Admin\CollectionAdmin as BaseClass;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
@@ -9,14 +10,17 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\ClassificationBundle\Model\ContextManagerInterface;
 use Rz\ClassificationBundle\Provider\CollectionPool;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CollectionAdmin extends BaseClass
 {
-
     const COLLECTION_DEFAULT_CONTEXT = 'default';
     protected $contextManager;
+    protected $pageManager;
+    protected $siteManager;
+    protected $mediaManager;
     protected $pool;
+    protected $slugGenerator;
+    protected $controllerEnabled = true;
 
     /**
      * {@inheritdoc}
@@ -43,12 +47,12 @@ class CollectionAdmin extends BaseClass
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-
         $collection = $this->getSubject();
+
         $formMapper
             ->with('Collection', array('class' => 'col-md-6'))
                 ->add('enabled', null, array('required' => false))
-                ->add('context', 'sonata_type_model_list', array('required' => false,))
+                //->add('context', 'sonata_type_model_list', array('required' => false,))
                 ->add('name')
                 ->add('description', 'textarea', array('required' => false))
                 ->add('content', 'sonata_formatter_type', array(
@@ -79,15 +83,6 @@ class CollectionAdmin extends BaseClass
                     ))
                 ->end()
             ;
-        }
-
-        if($provider = $this->getPoolProvider()) {
-            if ($collection->getId()) {
-                $provider->load($collection);
-                $provider->buildEditForm($formMapper);
-            } else {
-                $provider->buildCreateForm($formMapper);
-            }
         }
     }
 
@@ -181,6 +176,86 @@ class CollectionAdmin extends BaseClass
     }
 
     /**
+     * @return mixed
+     */
+    public function getPageManager()
+    {
+        return $this->pageManager;
+    }
+
+    /**
+     * @param mixed $pageManager
+     */
+    public function setPageManager($pageManager)
+    {
+        $this->pageManager = $pageManager;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSiteManager()
+    {
+        return $this->siteManager;
+    }
+
+    /**
+     * @param mixed $siteManager
+     */
+    public function setSiteManager($siteManager)
+    {
+        $this->siteManager = $siteManager;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMediaManager()
+    {
+        return $this->mediaManager;
+    }
+
+    /**
+     * @param mixed $mediaManager
+     */
+    public function setMediaManager($mediaManager)
+    {
+        $this->mediaManager = $mediaManager;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSlugGenerator()
+    {
+        return $this->slugGenerator;
+    }
+
+    /**
+     * @param mixed $slugGenerator
+     */
+    public function setSlugGenerator($slugGenerator)
+    {
+        $this->slugGenerator = $slugGenerator;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isControllerEnabled()
+    {
+        return $this->controllerEnabled;
+    }
+
+    /**
+     * @param boolean $controllerEnabled
+     */
+    public function setControllerEnabled($controllerEnabled)
+    {
+        $this->controllerEnabled = $controllerEnabled;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function prePersist($collection)
@@ -232,7 +307,7 @@ class CollectionAdmin extends BaseClass
     public function postUpdate($object)
     {
         parent::postUpdate($object);
-        $this->getPoolProvider()->postUpdate($object);
+        //$this->getPoolProvider()->postUpdate($object);
     }
 
     /**
@@ -241,6 +316,6 @@ class CollectionAdmin extends BaseClass
     public function postPersist($object)
     {
         parent::postPersist($object);
-        $this->getPoolProvider()->postPersist($object);
+        //$this->getPoolProvider()->postPersist($object);
     }
 }

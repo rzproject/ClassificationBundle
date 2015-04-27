@@ -20,7 +20,14 @@ class CategoryAdmin extends BaseAdmin
     const CATEGORY_DEFAULT_CONTEXT = 'default';
     protected $contextManager;
     protected $categoryManager;
+    protected $pageManager;
+    protected $siteManager;
+    protected $mediaManager;
     protected $pool;
+    protected $slugGenerator;
+    protected $controllerEnabled = true;
+    protected $defaultPageTemplate;
+
 
     /**
      * {@inheritdoc}
@@ -48,6 +55,21 @@ class CategoryAdmin extends BaseAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $category = $this->getSubject();
+
+        if (!$this->controllerEnabled && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $formMapper
+                ->with('Category', array('class' => 'col-md-6'))
+                ->add('hasPage', null, array('required' => false))
+                ->end();
+
+            if ($this->getSubject()->getHasPage()) {
+                $formMapper
+                    ->with('Category', array('class' => 'col-md-6'))
+                    ->add('page', 'sonata_type_model_list', array('btn_list' => false, 'btn_add' => false, 'btn_delete' => false))
+                    ->end();
+            }
+        }
+
         $formMapper
             ->with('Category', array('class' => 'col-md-6'))
                 ->add('name')
@@ -89,6 +111,7 @@ class CategoryAdmin extends BaseAdmin
                             'link_parameters' => array(
                                 'provider' => 'sonata.media.provider.image',
                                 'context'  => 'sonata_category',
+                                'hide_context' => true
                             )
                         )
                     )
@@ -98,9 +121,9 @@ class CategoryAdmin extends BaseAdmin
         if($provider = $this->getPoolProvider()) {
             if ($category->getId()) {
                 $provider->load($category);
-                $provider->buildEditForm($formMapper);
+                $provider->buildEditForm($formMapper, $category);
             } else {
-                $provider->buildCreateForm($formMapper);
+                $provider->buildCreateForm($formMapper, $category);
             }
         }
     }
@@ -190,6 +213,102 @@ class CategoryAdmin extends BaseAdmin
         $this->contextManager = $contextManager;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPageManager()
+    {
+        return $this->pageManager;
+    }
+
+    /**
+     * @param mixed $pageManager
+     */
+    public function setPageManager($pageManager)
+    {
+        $this->pageManager = $pageManager;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSiteManager()
+    {
+        return $this->siteManager;
+    }
+
+    /**
+     * @param mixed $siteManager
+     */
+    public function setSiteManager($siteManager)
+    {
+        $this->siteManager = $siteManager;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMediaManager()
+    {
+        return $this->mediaManager;
+    }
+
+    /**
+     * @param mixed $mediaManager
+     */
+    public function setMediaManager($mediaManager)
+    {
+        $this->mediaManager = $mediaManager;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSlugGenerator()
+    {
+        return $this->slugGenerator;
+    }
+
+    /**
+     * @param mixed $slugGenerator
+     */
+    public function setSlugGenerator($slugGenerator)
+    {
+        $this->slugGenerator = $slugGenerator;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isControllerEnabled()
+    {
+        return $this->controllerEnabled;
+    }
+
+    /**
+     * @param boolean $controllerEnabled
+     */
+    public function setControllerEnabled($controllerEnabled)
+    {
+        $this->controllerEnabled = $controllerEnabled;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultPageTemplate()
+    {
+        return $this->defaultPageTemplate;
+    }
+
+    /**
+     * @param mixed $defaultPageTemplate
+     */
+    public function setDefaultPageTemplate($defaultPageTemplate)
+    {
+        $this->defaultPageTemplate = $defaultPageTemplate;
+    }
+
     protected function fetchCurrentContext() {
 
         $context_param = $this->getPersistentParameter('context');
@@ -210,7 +329,6 @@ class CategoryAdmin extends BaseAdmin
     protected function getPoolProvider() {
         $currentContext = $this->fetchCurrentContext();
 
-
         $context = str_replace('-', '_', $currentContext->getId());
 
         if ($this->pool->hasContext($context)) {
@@ -227,8 +345,45 @@ class CategoryAdmin extends BaseAdmin
     public function postUpdate($object)
     {
         parent::postUpdate($object);
-        if($this->getPoolProvider()) {
+
+        if ($this->getPoolProvider()) {
             $this->getPoolProvider()->postUpdate($object);
+        }
+
+        if (!$this->controllerEnabled && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            // create page for collection list default collection is placed on localhost.
+            // for multi site is has to be moved via the Page module.
+            #TODO support multi site publishing
+            $site = $this->siteManager->findOneBy(array('name' => 'localhost'));
+            $parent = null;
+            //has parent
+            if($tier1 = $object->getParent()) {
+                if ($tier1->getPage()) {
+                    $parent = $tier1->getPage();
+                }
+            }
+
+            if (!$parent) {
+                $parent = $this->pageManager->findOneBy(array('url' => '/'));
+            }
+
+            if ($object->getHasPage() && !$object->getPage()) {
+                if ($site) {
+                    $page = $this->pageManager->create();
+                    $this->setPageDetails($page, $object, $parent);
+                    $page->setParent($parent);
+                    $page->setSite($site);
+                    $this->pageManager->save($page);
+                }
+                $object->setPage($page);
+                // delete reference if hasPage is set to false
+            } elseif (!$object->getHasPage() && $object->getPage()) {
+                $object->setPage(null);
+            } elseif ($page = $object->getPage()) {
+                $this->setPageDetails($page, $object, $parent);
+                $page->setParent($parent);
+                $object->setPage($page);
+            }
         }
     }
 
@@ -239,10 +394,40 @@ class CategoryAdmin extends BaseAdmin
     {
         parent::postPersist($object);
 
-        if($this->getPoolProvider()) {
+        if ($this->getPoolProvider()) {
             $this->getPoolProvider()->postPersist($object);
         }
 
+        if (!$this->controllerEnabled && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            // create page for collection list default collection is placed on localhost.
+            // for multi site is has to be moved via the Page module.
+            $site = $this->siteManager->findOneBy(array('name' => 'localhost'));
+            $parent = null;
+
+            //has parent
+            if($tier1 = $object->getParent()) {
+                if ($tier1->getPage()) {
+                    $parent = $tier1->getPage();
+                }
+            }
+
+            if (!$parent) {
+                $parent = $this->pageManager->findOneBy(array('url' => '/'));
+            }
+
+
+            if ($object->getHasPage() && !$object->getPage()) {
+                if ($site) {
+                    $page = $this->pageManager->create();
+                    $this->setPageDetails($page, $object, $parent);
+                    $page->setParent($parent);
+                    $page->setSite($site);
+                    $this->pageManager->save($page);
+                }
+
+                $object->setPage($page);
+            }
+        }
     }
 
     /**
@@ -250,7 +435,6 @@ class CategoryAdmin extends BaseAdmin
      */
     public function preRemove($object)
     {
-
         if($object->getParent()) {
             $children = $object->getChildren();
             if(count($children) > 0) {
@@ -264,4 +448,58 @@ class CategoryAdmin extends BaseAdmin
             }
         }
     }
+
+    protected function setPageDetails($page, $object, $parent) {
+
+        $slug = $object->getSlug();
+        //verify is URL exist
+        if ($page->getId()) {
+            $similarPage = $this->pageManager->findDuplicateUrl($parent, $page, $slug);
+        } else {
+            $similarPage = null;
+        }
+
+
+        $count = count($similarPage);
+        if ($count > 1) {
+            $slug = sprintf('%s-%s', $slug, ++$count);
+        }
+        $url = sprintf('/%s', $slug);
+
+        $page->setSlug($slug);
+        $page->setUrl($url);
+        $page->setName($object->getName());
+        $page->setPageAlias($this->slugGenerator->generateSlug($slug, '_'));
+        $page->setEnabled(true);
+        $page->setDecorate(1);
+        $page->setRequestMethod('GET|POST|HEAD|DELETE|PUT');
+        //TODO set default template on configuration
+        $page->setTemplateCode($this->defaultPageTemplate ?: 'rzcms_blog_page_category');
+        $page->setRouteName('page_slug');
+
+        $settings = $object->getSettings();
+        if ($settings) {
+
+            if(isset($settings['seoTitle'])) {
+                $page->setTitle($settings['seoTitle']);
+            }
+
+            if(isset($settings['seoMetaKeyword'])) {
+                $page->setMetaKeyword($settings['seoMetaKeyword']);
+            }
+
+            if(isset($settings['seoMetaDescription'])) {
+                $page->setMetaDescription($settings['seoMetaDescription']);
+            }
+
+            $page->setOgTitle(isset($settings['ogTitle']) ? $settings['ogTitle'] : null);
+            $page->setOgType(isset($settings['ogType']) ? $settings['ogType'] : null);
+            $page->setOgDescription(isset($settings['ogDescription']) ? $settings['ogDescription'] : null);
+            if(isset($settings['ogImage'])) {
+                $media = $this->mediaManager->findOneBy(array('id'=>$settings['ogImage']));
+                $page->setOgImage($media ?: null);
+            }
+        }
+    }
+
 }

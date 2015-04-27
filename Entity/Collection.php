@@ -14,6 +14,7 @@ abstract class Collection extends BaseCollection
 
     public function __construct(){
         $this->enabled = true;
+        $this->hasPage = false;
     }
 
     /**
