@@ -2,3 +2,8 @@ ClassificationBundle
 ====================
 
 ClassificationBundle
+
+Version
+=======
+
+**DEPRECATED**
