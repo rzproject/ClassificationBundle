@@ -110,6 +110,7 @@ class CategoryController extends Controller
         //redirect to normal controller if not ajax
         if (!$request->isXmlHttpRequest()) {
             //TODO implement central pager for SEO purposes
+            throw new NotFoundHttpException('Unable to find the URL');
             //return $this->redirect($this->generateUrl('rz_news_collection_pager', array('collection'=>$collection->getSlug(), 'page'=>$page)), 301);
         }
 
