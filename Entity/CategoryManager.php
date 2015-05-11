@@ -56,11 +56,11 @@ class CategoryManager extends BaseCategoryManager
                 return null;
             }
 
-            $query->setParameters($parameters)
-                  ->getQuery()
-                  ->useResultCache(true, 3600);
+            $query->setParameters($parameters);
 
-            return $query->getSingleResult();
+            return $query->getQuery()
+                         ->useResultCache(true, 3600)
+                         ->getSingleResult();
 
         } catch (\Doctrine\ORM\NoResultException $e) {
             return null;
