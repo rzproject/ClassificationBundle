@@ -21,7 +21,8 @@ class CollectionManager extends BaseManager
             ->select('c')
             ->where('c.id != :id')
             ->andWhere('c.context = :context')
-            ->getQuery();
+            ->getQuery()
+            ->useResultCache(true, 3600);
 
         $query->setParameters($parameters);
 
