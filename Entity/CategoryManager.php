@@ -6,20 +6,12 @@ namespace Rz\ClassificationBundle\Entity;
 use Sonata\ClassificationBundle\Entity\CategoryManager as BaseCategoryManager;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Sonata\AdminBundle\Datagrid\PagerInterface;
-
 use Sonata\ClassificationBundle\Model\CategoryInterface;
-use Sonata\ClassificationBundle\Model\CategoryManagerInterface;
-
 use Sonata\ClassificationBundle\Model\ContextInterface;
-use Sonata\ClassificationBundle\Model\ContextManagerInterface;
-use Sonata\CoreBundle\Model\BaseEntityManager;
-
-use Sonata\DatagridBundle\Pager\Doctrine\Pager;
-use Sonata\DatagridBundle\ProxyQuery\Doctrine\ProxyQuery;
-use Rz\ClassificationBundle\Permalink\PermalinkInterface;
-
+use Sonata\CoreBundle\Model\BaseEntityManager;;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Rz\ClassificationBundle\Permalink\PermalinkInterface;
 
 class CategoryManager extends BaseCategoryManager
 {
@@ -64,9 +56,11 @@ class CategoryManager extends BaseCategoryManager
                 return null;
             }
 
-            $query->setParameters($parameters);
+            $query->setParameters($parameters)
+                  ->getQuery()
+                  ->useResultCache(true, 3600);
 
-            return $query->getQuery()->getSingleResult();
+            return $query->getSingleResult();
 
         } catch (\Doctrine\ORM\NoResultException $e) {
             return null;
@@ -79,7 +73,8 @@ class CategoryManager extends BaseCategoryManager
         $query = $queryBuilder
             ->select('c')
             ->groupBy('c.context')
-            ->getQuery();
+            ->getQuery()
+            ->useResultCache(true, 3600);
 
         return $query->getResult();
     }
@@ -135,13 +130,14 @@ class CategoryManager extends BaseCategoryManager
      */
     public function getSubCategories($categoryId, $criteria = array())
     {
-        $queryBuilder = $this->getObjectManager()->createQueryBuilder()
+        $query = $this->getObjectManager()->createQueryBuilder()
             ->select('c')
             ->from($this->class, 'c')
             ->where('c.parent = :categoryId')
-            ->setParameter('categoryId', $categoryId);
-
-        return $queryBuilder->getQuery()->getResult();
+            ->setParameter('categoryId', $categoryId)
+            ->getQuery();
+        $query->useResultCache(true, 3600);
+        return $query->getResult();
     }
 
     /**
@@ -156,69 +152,138 @@ class CategoryManager extends BaseCategoryManager
             ->from($this->class, 'c')
             ->where('c.parent = :categoryId')
             ->orderBy('c.name', 'ASC')
-            ->setParameter('categoryId', $categoryId);
+            ->setParameter('categoryId', $categoryId)
+            ->getQuery();
 
+        $query->useResultCache(true, 3600);
 
         try {
             return new Pagerfanta(new DoctrineORMAdapter($query));
         } catch (NoResultException $e) {
             return null;
         }
-
-        return $queryBuilder->getQuery()->getResult();
     }
 
     public function getCategoriesByIds($ids) {
 
-        $queryBuilder = $this->getObjectManager()->createQueryBuilder()
+        $query = $this->getObjectManager()->createQueryBuilder()
             ->select('c')
             ->from($this->class, 'c')
             ->where('c.id in (:ids)')
-            ->setParameter('ids', $ids);
+            ->setParameter('ids', $ids)
+            ->getQuery();
 
-        return $queryBuilder->getQuery()->getResult();
+        $query->useResultCache(true, 3600);
+
+        return $query->getResult();
     }
 
     public function getCategoriesByContextQuery($context) {
-        $queryBuilder = $this->getObjectManager()->createQueryBuilder()
+        $query = $this->getObjectManager()->createQueryBuilder()
             ->select('c')
             ->from($this->class, 'c')
             ->where('c.context = :context')
-            ->setParameter('context', $context);
+            ->setParameter('context', $context)
+            ->getQuery();
 
-        return $queryBuilder->getQuery();
+        $query->useResultCache(true, 3600);
+
+        return $query;
     }
 
     public function getSubCategoriesByContextExceptRoot($context, $criteria = null) {
 
         $parameters['context'] = $context;
-        $queryBuilder = $this->getObjectManager()->createQueryBuilder()
+
+        $query = $this->getObjectManager()->createQueryBuilder()
             ->select('c')
             ->from($this->class, 'c')
             ->where('c.context = :context')
             ->andWhere('c.parent IS NOT null');
 
         if (isset($criteria['category'])) {
-            $queryBuilder->andWhere('c.id != :category');
+            $query->andWhere('c.id != :category');
             $parameters['category'] = $criteria['category'];
         }
 
-        $queryBuilder->setParameters($parameters);
+        $query->setParameters($parameters)
+              ->getQuery();
 
-        return $queryBuilder->getQuery()->getResult();
+        $query->useResultCache(true, 3600);
+
+        return $query->getResult();
     }
 
     public function getFirstSubCategoryByContext($context) {
 
         $parameters['context'] = $context;
-        $queryBuilder = $this->getObjectManager()->createQueryBuilder()
+
+        $query = $this->getObjectManager()->createQueryBuilder()
             ->select('c')
             ->from($this->class, 'c')
             ->where('c.context = :context')
             ->andWhere('c.parent IS NOT null')
             ->setMaxResults(1)
-            ->setParameters($parameters);
+            ->setParameters($parameters)
+            ->getQuery();
 
-        return $queryBuilder->getQuery()->getSingleResult();
+        $query->useResultCache(true, 3600);
+
+        return $query->getSingleResult();
+    }
+
+    /**
+     * Load all categories from the database, the current method is very efficient for < 256 categories
+     *
+     */
+    protected function loadCategories(ContextInterface $context)
+    {
+        if (array_key_exists($context->getId(), $this->categories)) {
+            return;
+        }
+
+        $class = $this->getClass();
+
+        $categories = $this->getObjectManager()->createQuery(sprintf('SELECT c FROM %s c WHERE c.context = :context ORDER BY c.parent ASC', $class))
+            ->setParameter('context', $context->getId())
+            ->useResultCache(true, 3600)
+            ->execute();
+
+        if (count($categories) == 0) {
+            // no category, create one for the provided context
+            $category = $this->create();
+            $category->setName($context->getName());
+            $category->setEnabled(true);
+            $category->setContext($context);
+            $category->setDescription($context->getName());
+
+            $this->save($category);
+
+            $categories = array($category);
+        }
+
+        foreach ($categories as $pos => $category) {
+            if ($pos === 0 && $category->getParent()) {
+                throw new \RuntimeException('The first category must be the root');
+            }
+
+            if ($pos == 0) {
+                $root = $category;
+            }
+
+            $this->categories[$context->getId()][$category->getId()] = $category;
+
+            $parent = $category->getParent();
+
+            $category->disableChildrenLazyLoading();
+
+            if ($parent) {
+                $parent->addChild($category);
+            }
+        }
+
+        $this->categories[$context->getId()] = array(
+            0 => $root
+        );
     }
 }
