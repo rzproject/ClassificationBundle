@@ -56,10 +56,10 @@ class CategoryManager extends BaseCategoryManager
                 return null;
             }
 
-            $query->setParameters($parameters);
+            $query = $query->setParameters($parameters)
+                  ->getQuery();
 
-            return $query->getQuery()
-                         ->useResultCache(true, 3600)
+            return $query->useResultCache(true, 3600)
                          ->getSingleResult();
 
         } catch (\Doctrine\ORM\NoResultException $e) {
@@ -73,8 +73,9 @@ class CategoryManager extends BaseCategoryManager
         $query = $queryBuilder
             ->select('c')
             ->groupBy('c.context')
-            ->getQuery()
-            ->useResultCache(true, 3600);
+            ->getQuery();
+
+        $query->useResultCache(true, 3600);
 
         return $query->getResult();
     }
@@ -206,8 +207,8 @@ class CategoryManager extends BaseCategoryManager
             $parameters['category'] = $criteria['category'];
         }
 
-        $query->setParameters($parameters)
-              ->getQuery();
+        $query = $query->setParameters($parameters)
+                       ->getQuery();
 
         $query->useResultCache(true, 3600);
 
