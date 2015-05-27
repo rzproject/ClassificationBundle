@@ -28,4 +28,24 @@ class CollectionManager extends BaseManager
 
         return $query->getResult();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findOneByConextAndSlug($context, $slug)
+    {
+        $queryBuilder = $this->em->getRepository($this->class)->createQueryBuilder('col');
+        $query = $queryBuilder
+            ->select('col')
+            ->leftJoin('col.context', 'con')
+            ->where('col.slug = :slug')
+            ->andWhere('con.id = :context')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->useResultCache(true, 3600);
+
+        $query->setParameters(array('context'=>$context, 'slug'=>$slug));
+
+        return $query->getSingleResult();
+    }
 }
