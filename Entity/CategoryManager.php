@@ -125,18 +125,38 @@ class CategoryManager extends BaseCategoryManager
 
     /**
      * @param integer $categoryId
-     * @param array $criteria
+     * @param array $sort
      *
      * @return PagerInterface
+     *
      */
-    public function getSubCategories($categoryId, $criteria = array())
+    public function getSubCategories($categoryId, $criteria = array('enabled'=>true),$sort = array('createdAt'=>'DESC'))
     {
         $query = $this->getObjectManager()->createQueryBuilder()
             ->select('c')
             ->from($this->class, 'c')
             ->where('c.parent = :categoryId')
-            ->setParameter('categoryId', $categoryId)
-            ->getQuery();
+            ->andwhere('c.enabled = :enabled')
+            ->setParameter('categoryId', $categoryId);
+
+        if(array_key_exists('enabled',$criteria)) {
+            $query->setParameter('enabled', $criteria['enabled']);
+        }
+
+        if($sort) {
+            $count = 0;
+            foreach($sort as $field=>$order) {
+                if($count == 0) {
+                    $query->orderBy(sprintf('c.%s', $field), $order);
+                } else {
+                    $query->addOrderBy(sprintf('c.%s', $field), $order);
+                }
+            }
+        } else {
+            $query->orderBy('c.name', 'ASC');
+        }
+        $query = $query->getQuery();
+
         $query->useResultCache(true, 3600);
         return $query->getResult();
     }
