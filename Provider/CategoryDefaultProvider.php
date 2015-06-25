@@ -47,7 +47,6 @@ class CategoryDefaultProvider extends BaseCategoryProvider
     public function getFormSettingsKeys(FormMapper $formMapper, $object = null)
     {
         $settings = array(
-            array('order', 'integer', array('required' => false, 'attr'=>array('class'=>'span4'))),
             array('seoTitle', 'text', array('required' => false, 'attr'=>array('class'=>'span8'))),
             array('seoMetaKeyword', 'textarea', array('required' => false, 'attr'=>array('class'=>'span8', 'rows'=>5))),
             array('seoMetaDescription', 'textarea', array('required' => false, 'attr'=>array('class'=>'span8', 'rows'=>5))),

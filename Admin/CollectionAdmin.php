@@ -84,6 +84,15 @@ class CollectionAdmin extends BaseClass
                 ->end()
             ;
         }
+
+        if($provider = $this->getPoolProvider()) {
+            if ($collection->getId()) {
+                $provider->load($collection);
+                $provider->buildEditForm($formMapper);
+            } else {
+                $provider->buildCreateForm($formMapper);
+            }
+        }
     }
 
     /**

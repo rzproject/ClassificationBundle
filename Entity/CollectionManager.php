@@ -32,6 +32,23 @@ class CollectionManager extends BaseManager
     /**
      * {@inheritdoc}
      */
+    public function findByContextId($contextId)
+    {
+        $queryBuilder = $this->em->getRepository($this->class)->createQueryBuilder('c');
+        $query = $queryBuilder
+            ->select('c')
+            ->where('c.context = :context')
+            ->getQuery()
+            ->useResultCache(true, 3600);
+
+        $query->setParameters(array('context'=>$contextId));
+
+        return $query->getResult();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function findOneByConextAndSlug($context, $slug)
     {
         $queryBuilder = $this->em->getRepository($this->class)->createQueryBuilder('col');

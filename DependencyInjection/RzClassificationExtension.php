@@ -36,7 +36,7 @@ class RzClassificationExtension extends Extension
         $this->configureRzTemplates($config, $container);
         $this->configureSettings($container, $config);
         $this->configureCategoryProviders($container, $config['providers']['category']);
-        //$this->configureCollectionProviders($container, $config['providers']['collection']);
+        $this->configureCollectionProviders($container, $config['providers']['collection']);
         $this->configureTagProviders($container, $config['providers']['tag']);
 
         if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
@@ -77,16 +77,15 @@ class RzClassificationExtension extends Extension
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
      * @param array                                                   $config
      */
-//    public function configureCollectionProviders(ContainerBuilder $container, $config) {
-//
-//        //collection
-//        $pool = $container->getDefinition('rz_classification.pool.collection');
-//        $pool->replaceArgument(0, $config['default_context']);
-//
-//        $container->setParameter('rz_classification.collection.default_context', $config['default_context']);
-//        $container->setParameter('rz_classification.provider.collection.context', $config['contexts']);
-//
-//    }
+    public function configureCollectionProviders(ContainerBuilder $container, $config) {
+
+        //collection
+        $pool = $container->getDefinition('rz_classification.pool.collection');
+        $pool->replaceArgument(0, $config['default_context']);
+        $container->setParameter('rz_classification.collection.default_context', $config['default_context']);
+        $container->setParameter('rz_classification.provider.collection.context', $config['contexts']);
+
+    }
 
     /**
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container

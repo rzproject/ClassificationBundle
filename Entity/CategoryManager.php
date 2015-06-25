@@ -8,7 +8,7 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 use Sonata\AdminBundle\Datagrid\PagerInterface;
 use Sonata\ClassificationBundle\Model\CategoryInterface;
 use Sonata\ClassificationBundle\Model\ContextInterface;
-use Sonata\CoreBundle\Model\BaseEntityManager;;
+use Sonata\CoreBundle\Model\BaseEntityManager;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Rz\ClassificationBundle\Permalink\PermalinkInterface;
@@ -66,7 +66,6 @@ class CategoryManager extends BaseCategoryManager
             return null;
         }
     }
-
 
     public function getContexts() {
         $queryBuilder = $this->em->getRepository($this->class)->createQueryBuilder('c');
@@ -178,8 +177,6 @@ class CategoryManager extends BaseCategoryManager
         } else {
             return $query->getResult();
         }
-
-
     }
 
     /**
@@ -328,4 +325,12 @@ class CategoryManager extends BaseCategoryManager
             0 => $root
         );
     }
+
+	public function parseCategoryIds(CategoryInterface $category, &$categories) {
+		$categories[] = $category->getId();
+		#TODO settings for news parent category
+		if($category->getParent() && $category->getParent()->getSlug() !== 'news') {
+			$this->parseCategoryIds($category->getParent(), $categories);
+		}
+	}
 }

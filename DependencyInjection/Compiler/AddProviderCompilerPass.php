@@ -104,5 +104,32 @@ class AddProviderCompilerPass implements CompilerPassInterface
                 $provider->addMethodCall('setControllerEnabled', array($container->getParameter('rz_classification.enable_controllers')));
             }
         }
+
+        ######################
+        # Collection Provider
+        ######################
+        $pool = $container->getDefinition('rz_classification.pool.collection');
+        foreach ($container->findTaggedServiceIds('rz_classification.provider.collection') as $id => $attributes) {
+            $pool->addMethodCall('addProvider', array($id, new Reference($id)));
+        }
+
+        $contexts = $container->getParameter('rz_classification.provider.collection.context');
+        foreach ($contexts as $name => $settings) {
+            $pool->addMethodCall('addContext', array($name, $settings['provider']));
+
+            if ($container->hasDefinition($settings['provider'])) {
+                $provider = $container->getDefinition($settings['provider']);
+                if($provider->hasMethodCall('setMediaAdmin')) {
+                    $provider->addMethodCall('setMediaAdmin', array(new Reference('sonata.media.admin.media')));
+                }
+
+                if($provider->hasMethodCall('setMediaManager')) {
+                    $provider->addMethodCall('setMediaManager', array(new Reference('sonata.media.manager.media')));
+                }
+                if($provider->hasMethodCall('setMetatagChoices')) {
+                    $provider->addMethodCall('setMetatagChoices', array($container->getParameter('rz_seo.metatags')));
+                }
+            }
+        }
     }
 }
