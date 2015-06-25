@@ -125,12 +125,13 @@ class CategoryManager extends BaseCategoryManager
 
     /**
      * @param integer $categoryId
+     * @param array $criteria
      * @param array $sort
+     * @param bool $sortResult
      *
      * @return PagerInterface
-     *
      */
-    public function getSubCategories($categoryId, $criteria = array('enabled'=>true),$sort = array('createdAt'=>'DESC'))
+    public function getSubCategories($categoryId, $criteria = array('enabled'=>true),$sort = array('createdAt'=>'DESC'), $sortResult = true)
     {
         $query = $this->getObjectManager()->createQueryBuilder()
             ->select('c')
@@ -156,9 +157,29 @@ class CategoryManager extends BaseCategoryManager
             $query->orderBy('c.name', 'ASC');
         }
         $query = $query->getQuery();
-
         $query->useResultCache(true, 3600);
-        return $query->getResult();
+
+        if($sortResult) {
+            $temp = $query->getResult();
+            $categories = array();
+            if($temp) {
+                foreach($temp as $cat) {
+                    if($cat->getSetting('order')) {
+                        $categories[$cat->getSetting('order')] = $cat;
+                    } else {
+                        $categories[] = $cat;
+                    }
+                }
+            }
+            if($categories){
+                ksort($categories);
+            }
+            return $categories;
+        } else {
+            return $query->getResult();
+        }
+
+
     }
 
     /**
