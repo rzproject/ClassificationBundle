@@ -326,11 +326,13 @@ class CategoryManager extends BaseCategoryManager
         );
     }
 
-	public function parseCategoryIds(CategoryInterface $category, &$categories) {
+	public function parseCategoryIds(CategoryInterface $category, &$categories, $recurse = false) {
 		$categories[] = $category->getId();
 		#TODO settings for news parent category
-		if($category->getParent() && $category->getParent()->getSlug() !== 'news') {
-			$this->parseCategoryIds($category->getParent(), $categories);
-		}
+        if($recurse) {
+            if($category->getParent() && $category->getParent()->getSlug() !== 'news') {
+                $this->parseCategoryIds($category->getParent(), $categories);
+            }
+        }
 	}
 }
