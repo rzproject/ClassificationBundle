@@ -5,14 +5,17 @@ namespace Rz\ClassificationBundle\Entity;
 use Sonata\ClassificationBundle\Entity\BaseCategory as BaseCategory;
 
 
-class Category extends BaseCategory
+abstract class Category extends BaseCategory
 {
     protected $content;
     protected $rawContent;
     protected $contentFormatter;
+    protected $settings;
+    protected $page;
+    protected $hasPage;
 
     public function __construct(){
-        $this->enabled = false;
+        $this->enabled = true;
     }
 
     /**
@@ -61,5 +64,69 @@ class Category extends BaseCategory
     public function getRawContent()
     {
         return $this->rawContent;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSettings()
+    {
+        return $this->settings;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSetting($name, $value)
+    {
+        $this->settings[$name] = $value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSettings($settings)
+    {
+        $this->settings = $settings;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSetting($name, $default = null)
+    {
+        return isset($this->settings[$name]) ? $this->settings[$name] : $default;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPage()
+    {
+        return $this->page;
+    }
+
+    /**
+     * @param mixed $page
+     */
+    public function setPage($page)
+    {
+        $this->page = $page;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHasPage()
+    {
+        return $this->hasPage;
+    }
+
+    /**
+     * @param mixed $hasPage
+     */
+    public function setHasPage($hasPage = false)
+    {
+        $this->hasPage = $hasPage;
     }
 }

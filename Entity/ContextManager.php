@@ -22,7 +22,8 @@ class ContextManager extends BaseManager
         $query = $queryBuilder
             ->select('c')
             ->where('c.id != :id')
-            ->getQuery();
+            ->getQuery()
+            ->useResultCache(true, 3600);
 
         $query->setParameters($parameters);
 

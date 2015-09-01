@@ -5,6 +5,7 @@ namespace Rz\ClassificationBundle\Form\Type;
 use Sonata\ClassificationBundle\Model\CategoryInterface;
 use Sonata\CoreBundle\Model\ManagerInterface;
 use Symfony\Component\OptionsResolver\Options;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\ChoiceList\SimpleChoiceList;
@@ -49,42 +50,58 @@ class CategorySelectorType extends AbstractTypeExtension
 
     /**
      * {@inheritdoc}
+     *
+     * @todo Remove it when bumping requirements to SF 2.7+
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
+        $this->configureOptions($resolver);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
         $that = $this;
 
-         $resolver->setOptional(array('selectpicker_enabled',
-                                     'selectpicker_data_style',
-                                     'selectpicker_title',
-                                     'selectpicker_selected_text_format',
-                                     'selectpicker_show_tick',
-                                     'selectpicker_data_width',
-                                     'selectpicker_data_size',
-                                     'selectpicker_disabled',
-                                     'selectpicker_dropup',
-                                     'select2',
-                                     'chosen_data_placeholder',
-                                     'chosen_no_results_text',
-                                     'multiselect_enabled',
-                                     'multiselect_search_enabled',
-                                    )
-                                );
+        $optionalOptions = array('selectpicker_enabled',
+                'selectpicker_data_style',
+                'selectpicker_title',
+                'selectpicker_selected_text_format',
+                'selectpicker_show_tick',
+                'selectpicker_data_width',
+                'selectpicker_data_size',
+                'selectpicker_disabled',
+                'selectpicker_dropup',
+                'select2',
+                'chosen_data_placeholder',
+                'chosen_no_results_text',
+                'multiselect_enabled',
+                'multiselect_search_enabled'
+        );
+
+        if (method_exists($resolver, 'setDefined')) {
+            $resolver->setDefined($optionalOptions);
+        } else {
+            // To keep Symfony <2.6 support
+            $resolver->setOptional($optionalOptions);
+        }
 
         $resolver->setDefaults(array('compound' => function (Options $options) {
-                                       return isset($options['expanded']) ? ($options['expanded'] ? true: false) : false;
-                                     },
-                                     'select2' => false,
-                                     'selectpicker_enabled' => true,
-                                     'multiselect_enabled' => false,
-                                     'multiselect_search_enabled' => false,
-                                     'error_bubbling'=> true,
-                                     'context'           => null,
-                                     'category'          => null,
-                                     'choice_list'       => function (Options $opts, $previousValue) use ($that) {
-                                             return new SimpleChoiceList($that->getChoices($opts));
-                                         }
-                               )
+                return isset($options['expanded']) ? ($options['expanded'] ? true: false) : false;
+            },
+                'select2' => false,
+                'selectpicker_enabled' => true,
+                'multiselect_enabled' => false,
+                'multiselect_search_enabled' => false,
+                'error_bubbling'=> true,
+                'context'           => null,
+                'category'          => null,
+                'choice_list'       => function (Options $opts, $previousValue) use ($that) {
+                    return new SimpleChoiceList($that->getChoices($opts));
+                }
+            )
         );
     }
 
@@ -95,12 +112,9 @@ class CategorySelectorType extends AbstractTypeExtension
      */
     public function getChoices(Options $options)
     {
-
-
         if (!$options['category'] instanceof CategoryInterface) {
             return array();
         }
-
 
         if ($options['context'] === null) {
             $categories = $this->manager->getRootCategories();

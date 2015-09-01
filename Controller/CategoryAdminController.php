@@ -8,11 +8,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
-/**
- * Page Admin Controller
- *
- * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
- */
 class CategoryAdminController extends Controller
 {
     /**
@@ -33,7 +28,7 @@ class CategoryAdminController extends Controller
 
         if (!$currentContext) {
             $contexts = $this->getContextManager()->findAll();
-            $currentContext = current($contexts);
+            $currentContext = array_shift($contexts);
         } else {
             $contexts = $this->getContextManager()->findAllExcept(array('id'=>$currentContext->getId()));
         }
@@ -65,17 +60,16 @@ class CategoryAdminController extends Controller
     /**
      * @internal param Request $request
      *
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function listAction()
+    public function listAction(Request $request = null)
     {
-        $request = $this->get('request_stack')->getCurrentRequest();
-
-        if ((!$this->getRequest()->get('filter') && !$this->getRequest()->get('filters')) || ($this->isXmlHttpRequest() && $request->get('mode') =='tree')) {
+        if ((!$request->get('filter') && !$request->get('filters')) || ($this->isXmlHttpRequest() && $request->get('mode') =='tree')) {
             return new RedirectResponse($this->admin->generateUrl('tree'));
         }
 
-        if ($listMode = $this->getRequest()->get('_list_mode')) {
+        if ($listMode = $request->get('_list_mode')) {
             $this->admin->setListMode($listMode);
         }
 
