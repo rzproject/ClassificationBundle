@@ -37,8 +37,8 @@ class CategoryExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            'rz_classification_category_permalink'    => new \Twig_Function_Method($this, 'generatePermalink'),
-            'rz_classification_category_object'    => new \Twig_Function_Method($this, 'getCategoryObject')
+            new \Twig_SimpleFunction('rz_classification_category_permalink', array($this, 'generatePermalink')),
+            new \Twig_SimpleFunction('rz_classification_category_object', array($this, 'getCategoryObject'))
         );
     }
 
