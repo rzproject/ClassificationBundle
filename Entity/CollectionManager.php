@@ -49,7 +49,7 @@ class CollectionManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function findOneByConextAndSlug($context, $slug)
+    public function findOneByContextAndSlug($context, $slug)
     {
         $queryBuilder = $this->em->getRepository($this->class)->createQueryBuilder('col');
         $query = $queryBuilder
@@ -64,5 +64,29 @@ class CollectionManager extends BaseManager
         $query->setParameters(array('context'=>$context, 'slug'=>$slug));
 
         return $query->getSingleResult();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findOneByContextAndSlugs($context, $slug=array())
+    {
+        if(empty($slug)) {
+            return;
+        }
+
+
+        $queryBuilder = $this->em->getRepository($this->class)->createQueryBuilder('col');
+        $query = $queryBuilder
+            ->select('col')
+            ->leftJoin('col.context', 'con')
+            ->where('col.slug in (:slug)')
+            ->andWhere('con.id = :context')
+            ->getQuery()
+            ->useResultCache(true, 3600);
+
+        $query->setParameters(array('context'=>$context, 'slug'=>$slug));
+
+        return $query->getResult();
     }
 }
