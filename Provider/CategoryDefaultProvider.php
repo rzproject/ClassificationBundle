@@ -174,7 +174,7 @@ class CategoryDefaultProvider extends BaseCategoryProvider
      */
     public function getTemplateChoices($object = null)
     {
-        if($object->getParent() != null && $object->getParent()->getSlug() == 'news') {
+        if($object && $object->getParent() != null && $object->getParent()->getSlug() == 'news') {
             return $this->getCategoryChoices($this->templates, 'category');
         } else {
             return $this->getCategoryChoices($this->templates, 'post');
@@ -186,7 +186,7 @@ class CategoryDefaultProvider extends BaseCategoryProvider
      */
     public function getAjaxTemplateChoices($object = null)
     {
-        if($object->getParent() != null && $object->getParent()->getSlug() == 'news') {
+        if($object && $object->getParent() != null && $object->getParent()->getSlug() == 'news') {
             return $this->getCategoryChoices($this->ajaxTemplates, 'category');
         } else {
             return $this->getCategoryChoices($this->ajaxTemplates, 'post');
@@ -199,7 +199,7 @@ class CategoryDefaultProvider extends BaseCategoryProvider
      */
     public function getAjaxPagerTemplateChoices($object = null)
     {
-        if($object->getParent() != null && $object->getParent()->getSlug() == 'news') {
+        if($object && $object->getParent() != null && $object->getParent()->getSlug() == 'news') {
             return $this->getCategoryChoices($this->ajaxPagerTemplates, 'category');
         } else {
             return $this->getCategoryChoices($this->ajaxPagerTemplates, 'post');
