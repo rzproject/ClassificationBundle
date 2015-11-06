@@ -1,32 +1,31 @@
 <?php
 
-
-
 namespace Rz\ClassificationBundle\Entity;
 
-use Sonata\ClassificationBundle\Entity\ContextManager as BaseManager;
-use Sonata\ClassificationBundle\Model\ContextInterface;
-use Sonata\CoreBundle\Model\BaseEntityManager;
+use Sonata\ClassificationBundle\Entity\ContextManager as BaseContextManager;
 
-use Sonata\DatagridBundle\Pager\Doctrine\pager;
-use Sonata\DatagridBundle\ProxyQuery\Doctrine\ProxyQuery;
-
-class ContextManager extends BaseManager
+class ContextManager extends BaseContextManager
 {
     /**
-     * {@inheritdoc}
+     * @param array $contexts
+     * @param bool $enabled
+     *
+     * @return Array
      */
-    public function findAllExcept($parameters)
+    public function getDefunctContext(array $contexts, $enabled = true)
     {
-        $queryBuilder = $this->em->getRepository($this->class)->createQueryBuilder('c');
-        $query = $queryBuilder
+        $query = $this->getObjectManager()->createQueryBuilder()
             ->select('c')
-            ->where('c.id != :id')
+            ->from( $this->getClass(), 'c')
+            ->where('c.id NOT IN (:context)')
+            ->andWhere('c.enabled = :enabled')
+            ->setParameter('context', $contexts)
+            ->setParameter('enabled', $enabled)
             ->getQuery()
             ->useResultCache(true, 3600);
 
-        $query->setParameters($parameters);
+        $defunctContexts = $query->getResult();
 
-        return $query->getResult();
+        return $defunctContexts;
     }
 }

@@ -2,78 +2,29 @@
 
 namespace Rz\ClassificationBundle\Admin;
 
-use Sonata\ClassificationBundle\Admin\TagAdmin as BaseAdmin;
-use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\ClassificationBundle\Admin\TagAdmin as Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Show\ShowMapper;
-use Sonata\ClassificationBundle\Model\ContextManagerInterface;
-use Rz\ClassificationBundle\Provider\TagPool;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class TagAdmin extends BaseAdmin
+class TagAdmin extends Admin
 {
-    const TAG_DEFAULT_CONTEXT = 'default';
     protected $contextManager;
-    protected $pool;
 
     /**
      * {@inheritdoc}
      */
-    protected function configureListFields(ListMapper $listMapper)
+    protected function configureFormFields(FormMapper $formMapper)
     {
-        $listMapper
-            ->add('name', null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
-            ->add('enabled', null, array('editable' => true, 'footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
-            ->add('createdAt', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
-            ->add('updatedAt', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet'))))
-            ->add('_action', 'actions', array(
-                'actions' => array(
-                    'Show' => array('template' => 'SonataAdminBundle:CRUD:list__action_show.html.twig'),
-                    'Edit' => array('template' => 'SonataAdminBundle:CRUD:list__action_edit.html.twig'),
-                    'Delete' => array('template' => 'SonataAdminBundle:CRUD:list__action_delete.html.twig')),
-                'footable'=>array('attr'=>array('data_hide'=>'phone,tablet')),
-            ))
-        ;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function configureShowFields(ShowMapper $showMapper)
-    {
-        $showMapper
+        $formMapper
             ->add('name')
-            ->add('slug')
-            ->add('enabled')
-            ->add('createdAt')
-            ->add('updatedAt')
         ;
-    }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getNewInstance()
-    {
-        $instance = parent::getNewInstance();
-
-        if ($contextId = $this->getPersistentParameter('context')) {
-            $context = $this->contextManager->find($contextId);
-
-            if (!$context) {
-                $context = $this->contextManager->create();
-                $context->setEnabled(true);
-                $context->setId($context);
-                $context->setName($context);
-
-                $this->contextManager->save($context);
-            }
-
-            $instance->setContext($context);
+        if ($this->hasSubject() && $this->getSubject()->getId()) {
+            $formMapper->add('slug');
         }
 
-        return $instance;
+        $formMapper->add('enabled', null, array('required' => false));
     }
 
     /**
@@ -91,27 +42,34 @@ class TagAdmin extends BaseAdmin
     /**
      * {@inheritdoc}
      */
+    protected function configureListFields(ListMapper $listMapper)
+    {
+        $listMapper
+            ->addIdentifier('name')
+            ->add('slug', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('xs', 'sm', 'md')))))
+            ->add('enabled', null, array('editable' => true, 'footable'=>array('attr'=>array('data-breakpoints'=>array('xs')))))
+            ->add('createdAt', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('all')))))
+            ->add('updatedAt', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('all')))))
+        ;
+    }
+    /**
+     * {@inheritdoc}
+     */
     public function getPersistentParameters()
     {
-        $defaultContext = $this->contextManager->find('default');
-
-        if (!$defaultContext) {
-            throw new NotFoundHttpException('Default context should be defined');
-        }
-
         $parameters = array(
-            'context'      => $defaultContext->getId(),
-            'hide_context' => (int)$this->getRequest()->get('hide_context', 0)
+            'context'      => '',
+            'hide_context' => $this->hasRequest() ? (int) $this->getRequest()->get('hide_context', 0) : 0,
         );
 
-
         if ($this->getSubject()) {
-            $parameters['context'] = $this->getSubject()->getContext() ? $this->getSubject()->getContext()->getId() : $defaultContext->getId();
+            $parameters['context'] = $this->getSubject()->getContext() ? $this->getSubject()->getContext()->getId() : '';
+
             return $parameters;
         }
 
         if ($this->hasRequest()) {
-            $parameters['context'] = $this->getRequest()->get('context') ?: $defaultContext->getId();
+            $parameters['context'] = $this->getRequest()->get('context');
 
             return $parameters;
         }
@@ -119,102 +77,44 @@ class TagAdmin extends BaseAdmin
         return $parameters;
     }
 
-    public function setContextManager(ContextManagerInterface $contextManager) {
-        $this->contextManager = $contextManager;
-    }
-
     /**
      * {@inheritdoc}
      */
-    public function prePersist($tag)
+    public function getNewInstance()
     {
-        $parameters = $this->getPersistentParameters();
-        $parameters['context'] = $parameters['context']?:'default';
-        $context = $this->contextManager->find($parameters['context']);
-        $tag->setContext($context);
-    }
+        $instance = parent::getNewInstance();
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function configureFormFields(FormMapper $formMapper)
-    {
-        $tag = $this->getSubject();
+        if ($contextId = $this->getPersistentParameter('context')) {
 
+            $context = $this->contextManager->find($contextId);
+            if (!$context) {
+                $context = $this->contextManager->create();
+                $context->setEnabled(true);
+                $context->setId($context);
+                $context->setName($context);
 
-        $formMapper
-            ->with('Tag', array('class' => 'col-md-6'))
-                ->add('name')
-            ->end();
-
-        if ($this->hasSubject() && $this->getSubject()->getId()) {
-            $formMapper
-                ->with('Tag', array('class' => 'col-md-6'))
-                    ->add('slug')
-                ->end();
-        }
-
-        $formMapper
-            ->with('Tag', array('class' => 'col-md-6'))
-                ->add('enabled', null, array('required' => false))
-            ->end();
-
-        if($provider = $this->getPoolProvider()) {
-            if ($tag->getId()) {
-                $provider->load($tag);
-                $provider->buildEditForm($formMapper);
-            } else {
-                $provider->buildCreateForm($formMapper);
+                $this->contextManager->save($context);
             }
-        }
-    }
 
-    public function setPool(TagPool $pool) {
-        $this->pool = $pool;
-    }
-
-    protected function fetchCurrentContext() {
-
-        $context_param = $this->getPersistentParameter('context');
-        $context = null;
-        if($context_param) {
-            $context = $this->contextManager->find($context_param);
-        } else {
-            $context = $this->contextManager->findOneBy(array('id'=>self::TAG_DEFAULT_CONTEXT));
+            $instance->setContext($context);
         }
 
-        if($context) {
-            return $context;
-        } else {
-            return;
-        }
-    }
-
-    protected function getPoolProvider() {
-        $currentContext = $this->fetchCurrentContext();
-        if ($this->pool->hasContext($currentContext->getId())) {
-            $providerName = $this->pool->getProviderNameByContext($currentContext->getId());
-            return $this->pool->getProvider($providerName);
-        }
-
-        return;
+        return $instance;
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed
      */
-    public function postUpdate($object)
+    public function getContextManager()
     {
-        parent::postUpdate($object);
-        $this->getPoolProvider()->postUpdate($object);
+        return $this->contextManager;
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $contextManager
      */
-    public function postPersist($object)
+    public function setContextManager($contextManager)
     {
-        parent::postPersist($object);
-        $this->getPoolProvider()->postPersist($object);
+        $this->contextManager = $contextManager;
     }
 }

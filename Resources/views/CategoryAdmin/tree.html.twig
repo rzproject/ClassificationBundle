@@ -1,113 +1,71 @@
-{% extends 'RzAdminBundle:CRUD:base_list.html.twig' %}
+{% extends 'RzClassificationBundle:CategoryAdmin:list.html.twig' %}
 
 {% import _self as tree %}
-{% macro navigate_child(collection, admin, root) %}
-    <ul{% if root %} class="page-tree"{% endif %}>
+{% macro navigate_child(collection, admin, root, depth) %}
+    <ul{% if root %} class="sonata-tree sonata-tree--toggleable js-treeview"{% endif %}>
         {% for element in collection %}
-            <li  objectId="{{ element.id }}" >
-                <div class="page-tree__item sonata-ba-list-field" objectid="{{ element.id }}">
-                    {% if element.parent %}<i class="icon-chevron-right" data-treeview-toggler></i>{% endif %}
-                    <a class="{% if not app.request.isxmlhttprequest %}page-tree__item__edit{% else %}rz-admin-filter-reset-button{% endif %}" href="{{ admin.generateObjectUrl('edit', element) }}">{{ element.name }}</a>
+            <li class="sonata-ba-list-field" objectId="{{ element.id }}" >
+                <div class="sonata-tree__item"{% if depth < 2 %} data-treeview-toggled{% endif %}>
+                    {% if element.parent or root %}<i class="fa fa-caret-right" data-treeview-toggler></i>{% endif %}
+                    <a class="sonata-tree__item__edit" href="{{ admin.generateObjectUrl('edit', element) }}">{{ element.name }}</a>
                     <i class="text-muted">{{ element.description }}</i>
                     {#<a class="label label-default pull-right" href="{{ admin.generateObjectUrl('edit', element) }}">edit <i class="fa fa-magic"></i></a>#}
-                    {% if element.enabled %}<span class="label label-success pull-right">active <i class="icon-check"></i></span>{% endif %}
+                    {% if element.enabled %}<span class="label label-success pull-right"><i class="fa fa-check"></i> {{ admin.trans('active', {}, admin.translationDomain) }}</span>{% endif %}
+                    {% if not element.enabled %}<span class="label label-danger pull-right"><i class="fa fa-times"> {{ admin.trans('disabled', {}, admin.translationDomain) }}</i></span>{% endif %}
                 </div>
 
                 {% if element.children|length %}
-                    {{ _self.navigate_child(element.children, admin, false) }}
+                    {{ _self.navigate_child(element.children, admin, false, depth + 1) }}
                 {% endif %}
             </li>
         {% endfor %}
     </ul>
 {% endmacro %}
 
-{% block actions %}
-    <div class="row-fluid admin-action-buttons">
-        <div class="span12">
-            <div class="sonata-actions btn-group hidden-phone hidden-tablet visible-desktop pull-right">
-                {% include 'RzClassificationBundle:CategoryAdmin:list_tab_menu.html.twig' with {
-                'mode':   'tree',
-                'action': action,
-                'admin':  admin
-                } only %}
-                {% include 'SonataAdminBundle:Button:create_button.html.twig' %}
-                {#<a type="button" class="btn btn-primary sonata-action-element" href="{{ admin.generateUrl('createParent', {'is_parent': 1, 'context': ''})}}">#}
-                    {#<i class="icon-sitemap"></i> {{ 'category_create_parent'|trans({}, 'RzClassificationBundle') }}#}
-                {#</a>#}
-            </div>
-            <div class="btn-group visible-phone visible-tablet hidden-desktop">
-                <button class="btn btn-primary admin-actions admin-actions-group">Select an action to perform</button>
-                <button data-toggle="dropdown" class="btn btn-primary dropdown-toggle admin-actions"><i class=" icon-chevron-down"></i></button>
-                <ul class="dropdown-menu">
-                    {% include 'RzClassificationBundle:CategoryAdmin:list_tab_menu_mobile.html.twig' with {
-                    'mode':   'tree',
-                    'action': action,
-                    'admin':  admin
-                    } only %}
-                    {% include 'SonataAdminBundle:Button:create_button_mobile.html.twig' %}
-                    {#<li>#}
-                        {#<a type="button" class="btn btn-primary sonata-action-element" href="{{ admin.generateUrl('createParent', {'is_parent': 1, 'context': ''})}}">#}
-                            {#<i class="icon-sitemap"></i> {{ 'category_create_parent'|trans({}, 'RzClassificationBundle') }}#}
-                        {#</a>#}
-                    {#</li>#}
-                </ul>
-            </div>
-        </div>
-    </div>
+{% block tab_menu %}
+    {% include 'RzClassificationBundle:CategoryAdmin:list_tab_menu.html.twig' with {
+        'mode':   'tree',
+        'action': action,
+        'admin':  admin,
+    } only %}
 {% endblock %}
 
-{% block list_table_standard %}
-    <div class="box box-color box-bordered">
-        <div class="box-title">
-            <h3>
-                <i class="icon-table"></i>
-                {# TODO: set on configuration #}
-            </h3>
-        </div>
-        <div class="box-content nopadding">
-            <div class="row-fluid">
-                <div class="span12 page-tree-selector">
-                    {{ admin.trans('tree_catalog_title') }}
+{% block list_table %}
+    <div class="col-xs-12 col-md-12">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h1 class="box-title">
+                    {{ admin.trans('tree_catalog_title', {}, admin.translationdomain) }}&nbsp;
                     {% if not app.request.get('hide_context') %}
                         <div class="btn-group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                <strong class="text-info">{{ current_context.name|trans({}, admin.translationdomain) }}</strong> <span class="caret"></span>
+                                <strong class="text-info">{{ current_context.name }}</strong> <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
-                                {% for context in contexts %}
+                                {% for category in root_categories %}
                                     <li>
-                                        {% if not app.request.isxmlhttprequest %}
-                                            {% set link_url = admin.generateUrl('list', { 'context': context.id }  ) %}
-                                        {% else %}
-                                            {% set link_url = admin.generateUrl('list', { 'context': context.id,  'mode':'tree'}  ) %}
-                                        {% endif %}
-
-                                        <a class="rz-admin-filter-reset-button" href="{% if current_context and context.id == current_context.id %}#{% else %}{{ link_url }}{% endif %}">
-                                            {% if current_context and context.id == current_context.id %}
-                                                <i class="icon-circle"></i>
+                                        <a href="{{ admin.generateUrl('tree', { 'context': category.context.id }) }}">
+                                            {% if current_context and category.context.id == current_context.id %}
+                                            <span class="pull-left">
+                                                <i class="fa fa-check-square-o"></i>
+                                            </span>
                                             {% else %}
-                                                <i class="icon-circle-blank"></i>
+                                            <span class="pull-left">
+                                                <i class="fa fa-square-o"></i>
+                                            </span>
                                             {% endif %}
-                                            {{ context.name|trans({}, admin.translationdomain) }}
+                                            &nbsp;{{ category.name }}
                                         </a>
                                     </li>
                                 {% endfor %}
                             </ul>
                         </div>
-                    {% else %}
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                <strong class="text-info">{{ current_context.name|trans({}, admin.translationdomain) }}</strong> <span class="caret"></span>
-                            </button>
-                        </div>
                     {% endif %}
-                </div>
+                </h1>
             </div>
-            {% if main_category %}
-            {{ tree.navigate_child(main_category.children, admin, true) }}
-            {% endif %}
+            <div class="box-content">
+                {{ tree.navigate_child([main_category], admin, true, 0) }}
+            </div>
         </div>
     </div>
 {% endblock %}
-
-{% block list_filters_standard %}{% endblock %}

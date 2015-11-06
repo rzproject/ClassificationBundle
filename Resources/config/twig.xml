@@ -5,9 +5,10 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="rz_classificaiton.category.twig.extension" class="Rz\ClassificationBundle\Twig\Extension\CategoryExtension" public="false">
+        <service id="rz_classification.classification.twig.extension" class="Rz\ClassificationBundle\Twig\Extension\ClassificationExtension">
             <tag name="twig.extension" />
-            <argument type="service" id="router" />
+
+            <argument type="service" id="sonata.classification.manager.context" />
             <argument type="service" id="sonata.classification.manager.category" />
         </service>
     </services>

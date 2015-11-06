@@ -2,44 +2,25 @@
 
 namespace Rz\ClassificationBundle\Admin;
 
-use Sonata\ClassificationBundle\Admin\ContextAdmin as BaseClass;
-use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\ClassificationBundle\Admin\ContextAdmin as Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Show\ShowMapper;
 
-class ContextAdmin extends BaseClass
+class ContextAdmin extends Admin
 {
-
     /**
      * {@inheritdoc}
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-
-        if($this->getSubject()->getId() === null) {
-            $formMapper->add('id');
-        }
         $formMapper
+            ->ifTrue(!($this->hasSubject() && $this->getSubject()->getId() !== null))
+                ->add('id')
+            ->ifEnd()
             ->add('name')
-            ->add('enabled', null, array('required' => false))
-        ;
-    }
-    /**
-     * {@inheritdoc}
-     */
-    protected function configureListFields(ListMapper $listMapper)
-    {
-        $listMapper
-            ->add('name',null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
-            ->add('id', null,  array('footable'=>array('attr'=>array('data_hide'=>'phone'))))
-            ->add('enabled', null, array('editable' => true, 'footable'=>array('attr'=>array('data_hide'=>'phone'))))
-            ->add('_action', 'actions', array(
-                'actions' => array(
-                    'Show' => array('template' => 'SonataAdminBundle:CRUD:list__action_show.html.twig'),
-                    'Edit' => array('template' => 'SonataAdminBundle:CRUD:list__action_edit.html.twig'),
-                    'Delete' => array('template' => 'SonataAdminBundle:CRUD:list__action_delete.html.twig')),
-                'footable'=>array('attr'=>array('data_hide'=>'phone,tablet')),
+            ->add('enabled', null, array(
+                'required' => false,
             ))
         ;
     }
@@ -47,13 +28,26 @@ class ContextAdmin extends BaseClass
     /**
      * {@inheritdoc}
      */
-    protected function configureShowFields(ShowMapper $showMapper)
+    protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
-        $showMapper
+        $datagridMapper
+            ->add('id')
             ->add('name')
             ->add('enabled')
-            ->add('createdAt')
-            ->add('updatedAt')
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configureListFields(ListMapper $listMapper)
+    {
+        $listMapper
+            ->addIdentifier('id')
+            ->addIdentifier('name', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('xs', 'sm')))))
+            ->add('enabled', null, array('editable' => true, 'footable'=>array('attr'=>array('data-breakpoints'=>array('xs')))))
+            ->add('createdAt', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('all')))))
+            ->add('updatedAt', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('all')))))
         ;
     }
 }
