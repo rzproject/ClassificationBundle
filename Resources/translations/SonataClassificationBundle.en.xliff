@@ -26,6 +26,10 @@
                 <source>link_action_create_from_context</source>
                 <target>Add New from Context</target>
             </trans-unit>
+            <trans-unit id="list.label__action">
+                <source>list.label__action</source>
+                <target>Actions</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

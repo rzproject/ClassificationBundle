@@ -4,7 +4,7 @@ namespace Rz\ClassificationBundle\Twig\Extension;
 
 use Sonata\CoreBundle\Model\ManagerInterface;
 
-class ClassificationExtension extends \Twig_Extension
+class ClassificationExtension extends \Twig_Extension  implements \Twig_Extension_InitRuntimeInterface
 {
     /**
      * @var CmsManagerSelectorInterface

@@ -63,6 +63,15 @@ class CollectionAdmin extends Admin
         $listMapper
             ->addIdentifier('name')
             ->add('enabled', null, array('editable' => true, 'footable'=>array('attr'=>array('data-breakpoints'=>array('xs')))))
+
+            // You may also specify the actions you want to be displayed in the list
+            ->add('_action', 'actions', array(
+                'footable'=>array('attr'=>array('data-breakpoints'=>array('all'))),
+                'actions' => array(
+                    'show' => array(),
+                    'edit' => array(),
+                )
+            ))
         ;
     }
 
