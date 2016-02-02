@@ -51,6 +51,7 @@
 
         <service id="rz_classification.provider.collection.default" class="%rz_classification.provider.collection.default.class%" scope="prototype">
             <tag name="rz_classification.provider.collection" />
+            <tag name="rz_classification.provider.has_media" />
             <argument>rz_classification.provider.collection.default</argument>
         </service>
 
