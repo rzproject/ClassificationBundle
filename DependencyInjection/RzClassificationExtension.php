@@ -58,6 +58,11 @@ class RzClassificationExtension extends Extension
         $container->setParameter('rz_classification.settings.category.default_category_page_template', $config['settings']['category']['default_category_page_template']);
         $container->setParameter('rz_classification.settings.category.category_list_max_per_page', $config['settings']['category']['category_list_max_per_page']);
         $container->setParameter('rz_classification.settings.tag.enable_tag_canonical_page', $config['settings']['tag']['enable_tag_canonical_page']);
+
+        //admin default context
+        $container->setParameter('rz_classification.settings.category_admin_default_context', $config['settings']['category']['admin_default_context']);
+        $container->setParameter('rz_classification.settings.collection_admin_default_context', $config['settings']['collection']['admin_default_context']);
+        $container->setParameter('rz_classification.settings.tag_admin_default_context', $config['settings']['tag']['admin_default_context']);
     }
 
     /**

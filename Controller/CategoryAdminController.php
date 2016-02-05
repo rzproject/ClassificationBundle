@@ -65,8 +65,18 @@ class CategoryAdminController extends Controller
      */
     public function listAction(Request $request = null)
     {
+        $defaultContext = null;
+        if(!$request->get('context')) {
+            $defaultContext = $this->container->hasParameter('rz_classification.settings.category_admin_default_context') ? $this->container->getParameter('rz_classification.settings.category_admin_default_context') : 'default';
+        }
+
         if ((!$request->get('filter') && !$request->get('filters')) || ($this->isXmlHttpRequest() && $request->get('mode') =='tree')) {
-            return new RedirectResponse($this->admin->generateUrl('tree'));
+            if ($defaultContext) {
+                return new RedirectResponse($this->admin->generateUrl('tree', array('context'=>$defaultContext)));
+            } else {
+                return new RedirectResponse($this->admin->generateUrl('tree'));
+            }
+
         }
 
         if ($listMode = $request->get('_list_mode')) {

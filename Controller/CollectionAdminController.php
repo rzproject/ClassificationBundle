@@ -21,6 +21,9 @@ class CollectionAdminController extends Controller
         $currentContext = false;
         if ($context = $request->get('context')) {
             $currentContext = $this->getContextManager()->find($context);
+        } else {
+            $defaultContext = $this->container->hasParameter('rz_classification.settings.collection_admin_default_context') ? $this->container->getParameter('rz_classification.settings.collection_admin_default_context') : 'default';
+            $currentContext = $this->getContextManager()->find($defaultContext);
         }
 
         if (!$currentContext) {
