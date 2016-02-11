@@ -36,11 +36,11 @@ class CollectionAdminController extends Controller
         $datagrid = $this->admin->getDatagrid();
 
 
-        if ($this->admin->getPersistentParameter('context')) {
-            $datagrid->setValue('context', ChoiceType::TYPE_EQUAL, $this->admin->getPersistentParameter('context'));
-        } else {
+//        if ($this->admin->getPersistentParameter('context')) {
+//            $datagrid->setValue('context', ChoiceType::TYPE_EQUAL, $this->admin->getPersistentParameter('context'));
+//        } else {
             $datagrid->setValue('context', ChoiceType::TYPE_EQUAL, $currentContext->getId());
-        }
+//        }
 
         $formView = $datagrid->getForm()->createView();
 
