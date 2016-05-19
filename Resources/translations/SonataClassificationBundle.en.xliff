@@ -30,6 +30,22 @@
                 <source>list.label__action</source>
                 <target>Actions</target>
             </trans-unit>
+            <trans-unit id="collection_context_menu_header">
+                <source>collection_context_menu_header</source>
+                <target>Collection</target>
+            </trans-unit>
+            <trans-unit id="collection_context_menu_header_description">
+                <source>collection_context_menu_header_description</source>
+                <target>Contexts</target>
+            </trans-unit>
+            <trans-unit id="tag_context_menu_header">
+                <source>tag_context_menu_header</source>
+                <target>Tag</target>
+            </trans-unit>
+            <trans-unit id="tag_context_menu_header_description">
+                <source>tag_context_menu_header_description</source>
+                <target>Contexts</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
