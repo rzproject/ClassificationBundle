@@ -76,6 +76,10 @@ class CategoryAdmin extends Admin
                     )
                 ->end();
         }
+
+        $formMapper->setHelps(array(
+            'description' => $this->trans('help_page_name'),
+        ));
     }
 
     /**
