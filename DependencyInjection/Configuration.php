@@ -20,9 +20,26 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder();
         $node = $treeBuilder->root('rz_classification');
+        $this->addSettingsSection($node);
         $this->addManagerSection($node);
         return $treeBuilder;
     }
+
+    /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     */
+    private function addSettingsSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->scalarNode('slugify_service')
+                    ->info('You should use: sonata.core.slugify.cocur, but for BC we keep \'sonata.core.slugify.native\' as default')
+                    ->defaultValue('sonata.core.slugify.cocur')
+                ->end()
+            ->end()
+        ;
+    }
+
      /**
      * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
      */

@@ -24,6 +24,16 @@ class RzClassificationExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('twig.xml');
         $this->configureManagerClass($config, $container);
+        $this->configureSettings($config, $container);
+    }
+
+    /**
+     * @param array            $config
+     * @param ContainerBuilder $container
+     */
+    public function configureSettings($config, ContainerBuilder $container)
+    {
+        $container->setParameter('rz.classification.slugify_service', $config['slugify_service']);
     }
 
     /**

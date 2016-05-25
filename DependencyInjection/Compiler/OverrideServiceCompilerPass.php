@@ -21,9 +21,16 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
 
         $definition = $container->getDefinition('sonata.classification.manager.collection');
         $definition->setClass($container->getParameter('rz.classification.entity.manager.collection.class'));
+        #set slugify service
+        $serviceId = $container->getParameter('rz.classification.slugify_service');
+        $definition->addMethodCall('setSlugify', array(new Reference($serviceId)));
 
         $definition = $container->getDefinition('sonata.classification.manager.context');
         $definition->setClass($container->getParameter('rz.classification.entity.manager.context.class'));
+        #set slugify service
+        $serviceId = $container->getParameter('rz.classification.slugify_service');
+        $definition->addMethodCall('setSlugify', array(new Reference($serviceId)));
+
 
         #####################################
         ## Override Collection Admin
