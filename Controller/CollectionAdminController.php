@@ -18,13 +18,14 @@ class CollectionAdminController extends Controller
     {
 
         $contextManager = $this->get('sonata.classification.manager.context');
+        $defaultContext  = $this->container->getParameter('rz.classification.collection.default_context');
 
         $currentContext = null;
 
         if ($context = $request->get('context')) {
             $currentContext = $contextManager->find($context);
         } else {
-            $currentContext = $contextManager->find('default');
+            $currentContext = $contextManager->find($defaultContext);
         }
 
         $contexts = $contextManager->findAll();

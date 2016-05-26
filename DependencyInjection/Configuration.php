@@ -22,6 +22,7 @@ class Configuration implements ConfigurationInterface
         $node = $treeBuilder->root('rz_classification');
         $this->addSettingsSection($node);
         $this->addManagerSection($node);
+        $this->addProviderSection($node);
         return $treeBuilder;
     }
 
@@ -64,4 +65,65 @@ class Configuration implements ConfigurationInterface
             ->end()
         ;
     }
+
+    /**
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $node
+     */
+    private function addProviderSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode('providers')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('category')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('default_context')->isRequired()->end()
+                                ->scalarNode('default_provider_context')->isRequired()->end()
+                                ->arrayNode('context')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('provider')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('collection')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('default_context')->isRequired()->end()
+                                ->scalarNode('default_provider_context')->isRequired()->end()
+                                ->arrayNode('context')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('provider')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('tag')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('default_context')->isRequired()->end()
+                                ->scalarNode('default_provider_context')->isRequired()->end()
+                                ->arrayNode('context')
+                                    ->useAttributeAsKey('id')
+                                    ->prototype('array')
+                                        ->children()
+                                            ->scalarNode('provider')->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+    }
+
 }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="rz.classification.category.pool.class">Rz\ClassificationBundle\Provider\Category\Pool</parameter>
+        <parameter key="rz.classification.collection.pool.class">Rz\ClassificationBundle\Provider\Collection\Pool</parameter>
+        <parameter key="rz.classification.tag.pool.class">Rz\ClassificationBundle\Provider\Tag\Pool</parameter>
+        <parameter key="rz.classification.category.provider.default.class">Rz\ClassificationBundle\Provider\Category\DefaultProvider</parameter>
+        <parameter key="rz.classification.collection.provider.default.class">Rz\ClassificationBundle\Provider\Collection\DefaultProvider</parameter>
+        <parameter key="rz.classification.tag.provider.default.class">Rz\ClassificationBundle\Provider\Tag\DefaultProvider</parameter>
+    </parameters>
+
+    <services>
+        <service id="rz.classification.category.pool" class="%rz.classification.category.pool.class%" shared="true">
+            <argument />
+        </service>
+
+        <service id="rz.classification.collection.pool" class="%rz.classification.collection.pool.class%" shared="true">
+            <argument />
+        </service>
+
+        <service id="rz.classification.tag.pool" class="%rz.classification.tag.pool.class%" shared="true">
+            <argument />
+        </service>
+
+        <service id="rz.classification.category.provider.default" class="%rz.classification.category.provider.default.class%" shared="true">
+            <tag name="rz.classification.category.provider" />
+            <argument>rz.classification.category.provider.default</argument>
+            <call method="setTranslator">
+                <argument type="service" id="translator" />
+            </call>
+        </service>
+
+        <service id="rz.classification.collection.provider.default" class="%rz.classification.collection.provider.default.class%" shared="true">
+            <tag name="rz.classification.collection.provider" />
+            <argument>rz.classification.collection.provider.default</argument>
+            <call method="setTranslator">
+                <argument type="service" id="translator" />
+            </call>
+        </service>
+
+        <service id="rz.classification.tag.provider.default" class="%rz.classification.tag.provider.default.class%" shared="true">
+            <tag name="rz.classification.tag.provider" />
+            <argument>rz.classification.tag.provider.default</argument>
+            <call method="setTranslator">
+                <argument type="service" id="translator" />
+            </call>
+        </service>
+    </services>
+
+</container>

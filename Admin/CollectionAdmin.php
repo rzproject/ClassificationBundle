@@ -9,37 +9,63 @@ use Sonata\AdminBundle\Form\FormMapper;
 
 class CollectionAdmin extends Admin
 {
+    protected $pool;
+    protected $defaultContext;
+    protected $contextManager;
+
     protected $formOptions = array(
         'cascade_validation' => true,
     );
-
-    protected $contextManager;
 
     /**
      * {@inheritdoc}
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
+
+        $provider = $this->getPoolProvider($this->pool);
+
+        if($provider) {
+            $tabSettings = array('class' => 'col-md-4');
+        } else {
+            $tabSettings = array('class' => 'col-md-8');
+        }
+
+        $formMapper->with('tab.group.rz_classification_collection_general', $tabSettings)->end();
+
+        if($provider) {
+            $formMapper->with('tab.group.rz_classification_collection_settings', array('class' => 'col-md-8'))->end();
+        }
+
         $formMapper
-            ->add('name')
-            ->add('description', 'textarea', array(
-                'required' => false,
-            ))
-            ->add('enabled', null, array(
-                'required' => false,
-            ))
+            ->with('tab.group.rz_classification_collection_general')
+                ->add('name')
+                ->add('description', 'textarea', array('required' => false, 'attr'=>array('rows'=>8)))
+                ->add('enabled', null, array('required' => false))
+            ->end()
         ;
 
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
-            $formMapper->add('media', 'sonata_type_model_list',
-                array('required' => false),
-                array(
-                    'link_parameters' => array(
-                        'provider' => 'sonata.media.provider.image',
-                        'context'  => 'sonata_collection',
-                    ),
-                )
-            );
+            $formMapper
+                ->with('tab.group.rz_classification_collection_general')
+                    ->add('media', 'sonata_type_model_list',
+                            array('required' => false),
+                            array('link_parameters' => array(
+                                      'provider' => 'sonata.media.provider.image',
+                                      'context'  => 'sonata_collection')
+                                  )
+                            )
+                ->end();
+        }
+
+        if($provider) {
+            $instance = $this->getSubject();
+            if ($instance && $instance->getId()) {
+                $provider->load($instance);
+                $provider->buildEditForm($formMapper);
+            } else {
+                $provider->buildCreateForm($formMapper);
+            }
         }
     }
 
@@ -81,12 +107,12 @@ class CollectionAdmin extends Admin
     public function getPersistentParameters()
     {
         $parameters = array(
-            'context'      => '',
+            'context'      => $this->getDefaultContext(),
             'hide_context' => $this->hasRequest() ? (int) $this->getRequest()->get('hide_context', 0) : 0,
         );
 
         if ($this->getSubject()) {
-            $parameters['context'] = $this->getSubject()->getContext() ? $this->getSubject()->getContext()->getId() : '';
+            $parameters['context'] = $this->getSubject()->getContext() ? $this->getSubject()->getContext()->getId() : $this->getDefaultContext();
 
             return $parameters;
         }
@@ -123,6 +149,67 @@ class CollectionAdmin extends Admin
         }
 
         return $instance;
+    }
+
+    protected function fetchCurrentContext() {
+
+        $contextCode = $this->getPersistentParameter('context');
+
+        $context = null;
+        if($contextCode) {
+            $context = $this->contextManager->find($contextCode);
+        } else {
+            $context = $this->contextManager->find($this->getDefaultContext());
+        }
+
+        if($context) {
+            return $context;
+        } else {
+            return;
+        }
+    }
+
+    protected function getPoolProvider() {
+        $currentContext = $this->fetchCurrentContext();
+
+        if ($this->pool->hasContext($currentContext->getId())) {
+            $providerName = $this->pool->getProviderNameByContext($currentContext->getId());
+            return $this->pool->getProvider($providerName);
+        }
+
+        return;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPool()
+    {
+        return $this->pool;
+    }
+
+    /**
+     * @param mixed $pool
+     */
+    public function setPool($pool)
+    {
+        $this->pool = $pool;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultContext()
+    {
+        return $this->defaultContext;
+    }
+
+    /**
+     * @param mixed $defaultContext
+     */
+    public function setDefaultContext($defaultContext)
+    {
+        $this->defaultContext = $defaultContext;
     }
 
     /**

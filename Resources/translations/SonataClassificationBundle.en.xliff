@@ -46,6 +46,54 @@
                 <source>tag_context_menu_header_description</source>
                 <target>Contexts</target>
             </trans-unit>
+            <trans-unit id="tab.rz_classification_category_general">
+                <source>tab.rz_classification_category_general</source>
+                <target>Category</target>
+            </trans-unit>
+            <trans-unit id="tab.group.rz_classification_category_general">
+                <source>tab.group.rz_classification_category_general</source>
+                <target>Details</target>
+            </trans-unit>
+           <trans-unit id="tab.group.rz_classification_category_options">
+               <source>tab.group.rz_classification_category_options</source>
+               <target>Options</target>
+           </trans-unit>
+            <trans-unit id="tab.rz_classification_category_settings">
+                <source>tab.rz_classification_category_settings</source>
+                <target>Settings</target>
+            </trans-unit>
+            <trans-unit id="tab.group.rz_classification_category_settings">
+                <source>tab.group.rz_classification_category_settings</source>
+                <target>Details</target>
+            </trans-unit>
+            <trans-unit id="tab.group.rz_classification_collection_general">
+                <source>tab.group.rz_classification_collection_general</source>
+                <target>Collection</target>
+            </trans-unit>
+            <trans-unit id="tab.group.rz_classification_collection_settings">
+                <source>tab.group.rz_classification_collection_settings</source>
+                <target>Settings</target>
+            </trans-unit>
+            <trans-unit id="breadcrumb.link_category_create">
+                <source>breadcrumb.link_category_create</source>
+                <target>Create</target>
+            </trans-unit>
+            <trans-unit id="breadcrumb.link_collection_create">
+                <source>breadcrumb.link_collection_create</source>
+                <target>Create</target>
+            </trans-unit>
+            <trans-unit id="breadcrumb.link_tag_create">
+                <source>breadcrumb.link_tag_create</source>
+                <target>Create</target>
+            </trans-unit>
+            <trans-unit id="tab.group.rz_classification_tag_general">
+                <source>tab.group.rz_classification_tag_general</source>
+                <target>Tag</target>
+            </trans-unit>
+            <trans-unit id="tab.group.rz_classification_tag_settings">
+                <source>tab.group.rz_classification_tag_settings</source>
+                <target>Settings</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

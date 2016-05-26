@@ -9,6 +9,24 @@ use Sonata\ClassificationBundle\Model\ContextInterface;
 class CategoryManager extends BaseCategoryManager
 {
 
+    protected $slugify;
+
+    /**
+     * @return mixed
+     */
+    public function getSlugify()
+    {
+        return $this->slugify;
+    }
+
+    /**
+     * @param mixed $slugify
+     */
+    public function setSlugify($slugify)
+    {
+        $this->slugify = $slugify;
+    }
+
     /**
      * @return CategoryInterface[]
      */
@@ -105,5 +123,20 @@ class CategoryManager extends BaseCategoryManager
         }
 
         return $contexts;
+    }
+
+    public function generateParentCategory(ContextInterface $context, $slug, $enabled = true)
+    {
+        $slug = $this->getSlugify()->slugify($slug);
+        $name = ucwords(str_replace('-', ' ',$slug));
+
+        //create collection
+        $category = $this->create();
+        $category->setContext($context);
+        $category->setName($name);
+        $category->setDescription($name);
+        $category->setEnabled($enabled);
+        $this->save($category);
+        return $category;
     }
 }
