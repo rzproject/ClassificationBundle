@@ -26,7 +26,7 @@ class CollectionManager extends BaseCollectionManager
         $this->slugify = $slugify;
     }
 
-    public function generateDefaultColection(ContextInterface $context, $slug, $enabled = true)
+    public function generateDefaultCollection(ContextInterface $context, $slug, $enabled = true)
     {
         $slug = $this->getSlugify()->slugify($slug);
         $name = ucwords(str_replace('-', ' ',$slug));
