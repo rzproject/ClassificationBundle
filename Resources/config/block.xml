@@ -11,7 +11,7 @@
     <services>
 
 
-        <service id="rz_classification.block.category" class="%rz_classification.block.category.class%">
+        <service id="rz_classification.block.category" class="%rz_classification.block.category.class%" scope="prototype">
             <tag name="sonata.block"/>
             <argument>rz_classification.block.category</argument>
             <argument type="service" id="templating" />
