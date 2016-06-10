@@ -8,6 +8,8 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\ClassificationBundle\Entity\ContextManager;
+use Sonata\CoreBundle\Validator\ErrorElement;
+
 
 class CategoryAdmin extends Admin
 {
@@ -31,7 +33,7 @@ class CategoryAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
 
-        $provider = $this->getPoolProvider($this->pool);
+        $provider = $this->getPoolProvider();
 
         $formMapper
             ->tab('tab.rz_classification_category_general')
@@ -256,5 +258,61 @@ class CategoryAdmin extends Admin
         }
 
         return;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prePersist($object)
+    {
+        parent::prePersist($object);
+        if($provider = $this->getPoolProvider()) {
+            $provider->prePersist($object);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function preUpdate($object)
+    {
+        parent::preUpdate($object);
+        if($provider = $this->getPoolProvider()) {
+            $provider->preUpdate($object);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postUpdate($object)
+    {
+        parent::postUpdate($object);
+        if($provider = $this->getPoolProvider()) {
+            $provider->postUpdate($object);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postPersist($object)
+    {
+        parent::postPersist($object);
+        if($provider = $this->getPoolProvider()) {
+            $provider->postPersist($object);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validate(ErrorElement $errorElement, $object)
+    {
+        parent::validate($errorElement, $object);
+
+        if($provider = $this->getPoolProvider()) {
+            $provider->validate($errorElement, $object);
+        }
     }
 }
