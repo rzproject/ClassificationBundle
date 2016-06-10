@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Sonata\ClassificationBundle\Model\CategoryInterface;
-use Rz\ClassificationBundle\Provider\BaseProvider;
+use Rz\ClassificationBundle\Provider\Category\BaseProvider;
 
 class DefaultProvider extends BaseProvider
 {
