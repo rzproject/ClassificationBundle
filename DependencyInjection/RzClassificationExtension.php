@@ -26,7 +26,7 @@ class RzClassificationExtension extends Extension
         $this->configureManagerClass($config, $container);
         $this->configureSettings($config, $container);
         $loader->load('provider.xml');
-        $this->configureProviders($config['providers'], $container);
+        $this->configureProviders($config, $container);
     }
 
     /**
@@ -36,6 +36,10 @@ class RzClassificationExtension extends Extension
     public function configureSettings($config, ContainerBuilder $container)
     {
         $container->setParameter('rz.classification.slugify_service', $config['slugify_service']);
+
+        $container->setParameter('rz.classification.category.default_context',    $config['settings']['category']['default_context']);
+        $container->setParameter('rz.classification.collection.default_context',  $config['settings']['collection']['default_context']);
+        $container->setParameter('rz.classification.tag.default_context',         $config['settings']['tag']['default_context']);
     }
 
     /**
@@ -58,28 +62,22 @@ class RzClassificationExtension extends Extension
     {
         #Category Provider
         $categoryPool = $container->getDefinition('rz.classification.category.pool');
-        $categoryPool->replaceArgument(0, $config['category']['default_provider_context']);
+        $categoryPool->replaceArgument(0, $config['settings']['category']['default_context']);
 
-        $container->setParameter('rz.classification.category.default_context',                    $config['category']['default_context']);
-        $container->setParameter('rz.classification.category.provider.default_provider_context',  $config['category']['default_provider_context']);
-        $container->setParameter('rz.classification.category.provider.context',                   $config['category']['context']);
+        $container->setParameter('rz.classification.category.provider.context',                     $config['providers']['category']['context']);
 
 
         #Collection Provider
         $collectionPool = $container->getDefinition('rz.classification.collection.pool');
-        $collectionPool->replaceArgument(0, $config['collection']['default_provider_context']);
+        $collectionPool->replaceArgument(0, $config['settings']['collection']['default_context']);
 
-        $container->setParameter('rz.classification.collection.default_context',                    $config['collection']['default_context']);
-        $container->setParameter('rz.classification.collection.provider.default_provider_context',  $config['collection']['default_provider_context']);
-        $container->setParameter('rz.classification.collection.provider.context',                   $config['collection']['context']);
+        $container->setParameter('rz.classification.collection.provider.context',                   $config['providers']['collection']['context']);
 
         #Tag Provider
         $collectionPool = $container->getDefinition('rz.classification.tag.pool');
-        $collectionPool->replaceArgument(0, $config['tag']['default_provider_context']);
+        $collectionPool->replaceArgument(0, $config['settings']['tag']['default_context']);
 
-        $container->setParameter('rz.classification.tag.default_context',                    $config['tag']['default_context']);
-        $container->setParameter('rz.classification.tag.provider.default_provider_context',  $config['tag']['default_provider_context']);
-        $container->setParameter('rz.classification.tag.provider.context',                   $config['tag']['context']);
+        $container->setParameter('rz.classification.tag.provider.context',                          $config['providers']['tag']['context']);
 
     }
 }

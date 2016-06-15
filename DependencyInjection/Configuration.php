@@ -37,6 +37,30 @@ class Configuration implements ConfigurationInterface
                     ->info('You should use: sonata.core.slugify.cocur, but for BC we keep \'sonata.core.slugify.native\' as default')
                     ->defaultValue('sonata.core.slugify.cocur')
                 ->end()
+                ->arrayNode('settings')
+                    ->cannotBeEmpty()
+                    ->children()
+                        ->arrayNode('category')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('default_context')->cannotBeEmpty()->end()
+                            ->end()  #--end category children
+                        ->end() #--end category
+                        ->arrayNode('collection')
+                            ->cannotBeEmpty()
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('default_context')->cannotBeEmpty()->end()
+                            ->end()  #--end collection children
+                        ->end() #--end collection
+                        ->arrayNode('tag')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('default_context')->cannotBeEmpty()->end()
+                            ->end()  #--end tag children
+                        ->end()#--end tag
+                    ->end()#--end children settings
+                ->end()#--end settings
             ->end()
         ;
     }
@@ -76,11 +100,31 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('providers')
                     ->addDefaultsIfNotSet()
                     ->children()
+                        ->arrayNode('class')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->arrayNode('pool')
+                                    ->addDefaultsIfNotSet()
+                                    ->children()
+                                        ->scalarNode('category')->cannotBeEmpty()->defaultValue('Rz\\ClassificationBundle\\Provider\\Category\\Pool')->end()
+                                        ->scalarNode('collection')->cannotBeEmpty()->defaultValue('Rz\\ClassificationBundle\\Provider\\Collection\\Pool')->end()
+                                        ->scalarNode('tag')->cannotBeEmpty()->defaultValue('Rz\\ClassificationBundle\\Provider\\Tag\\Pool')->end()
+                                    ->end()
+                                ->end()
+                                ->arrayNode('default_provider')
+                                    ->addDefaultsIfNotSet()
+                                    ->children()
+                                        ->scalarNode('category')->cannotBeEmpty()->defaultValue('Rz\\ClassificationBundle\\Provider\\Category\\DefaultProvider')->end()
+                                        ->scalarNode('collection')->cannotBeEmpty()->defaultValue('Rz\\ClassificationBundle\\Provider\\Collection\\DefaultProvider')->end()
+                                        ->scalarNode('tag')->cannotBeEmpty()->defaultValue('Rz\\ClassificationBundle\\Provider\\Tag\\DefaultProvider')->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+
                         ->arrayNode('category')
                             ->addDefaultsIfNotSet()
                             ->children()
-                                ->scalarNode('default_context')->isRequired()->end()
-                                ->scalarNode('default_provider_context')->isRequired()->end()
                                 ->arrayNode('context')
                                     ->useAttributeAsKey('id')
                                     ->prototype('array')
@@ -94,8 +138,6 @@ class Configuration implements ConfigurationInterface
                         ->arrayNode('collection')
                             ->addDefaultsIfNotSet()
                             ->children()
-                                ->scalarNode('default_context')->isRequired()->end()
-                                ->scalarNode('default_provider_context')->isRequired()->end()
                                 ->arrayNode('context')
                                     ->useAttributeAsKey('id')
                                     ->prototype('array')
@@ -109,8 +151,6 @@ class Configuration implements ConfigurationInterface
                         ->arrayNode('tag')
                             ->addDefaultsIfNotSet()
                             ->children()
-                                ->scalarNode('default_context')->isRequired()->end()
-                                ->scalarNode('default_provider_context')->isRequired()->end()
                                 ->arrayNode('context')
                                     ->useAttributeAsKey('id')
                                     ->prototype('array')
@@ -125,5 +165,4 @@ class Configuration implements ConfigurationInterface
                 ->end()
             ->end();
     }
-
 }

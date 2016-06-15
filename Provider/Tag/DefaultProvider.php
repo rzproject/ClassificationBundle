@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Sonata\ClassificationBundle\Model\TagInterface;
-use Rz\ClassificationBundle\Provider\BaseProvider;
+use Rz\ClassificationBundle\Provider\Tag\BaseProvider;
 
 class DefaultProvider extends BaseProvider
 {

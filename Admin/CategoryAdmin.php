@@ -2,20 +2,27 @@
 
 namespace Rz\ClassificationBundle\Admin;
 
-use Sonata\ClassificationBundle\Admin\CategoryAdmin as Admin;
+use Rz\ClassificationBundle\Admin\AbstractCategoryAdmin as Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\ClassificationBundle\Entity\ContextManager;
+use Rz\CoreBundle\Admin\AdminProviderInterface;
+use Rz\CoreBundle\Provider\PoolInterface;
 use Sonata\CoreBundle\Validator\ErrorElement;
 
-
-class CategoryAdmin extends Admin
+class CategoryAdmin extends Admin implements AdminProviderInterface
 {
-    protected $pool;
-    protected $defaultContext;
-    protected $contextManager;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSubject($subject)
+    {
+        parent::setSubject($subject);
+        $this->provider = $this->getPoolProvider($this->getPool());
+    }
 
 
     /**
@@ -33,15 +40,13 @@ class CategoryAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
 
-        $provider = $this->getPoolProvider();
-
         $formMapper
             ->tab('tab.rz_classification_category_general')
                 ->with('tab.group.rz_classification_category_general', array('class' => 'col-md-8'))->end()
                 ->with('tab.group.rz_classification_category_options', array('class' => 'col-md-4'))->end()
             ->end();
 
-        if($provider) {
+        if($this->hasProvider()) {
             $formMapper
                 ->tab('tab.rz_classification_category_settings')
                     ->with('tab.group.rz_classification_category_settings', array('class' => 'col-md-8'))->end()
@@ -109,13 +114,13 @@ class CategoryAdmin extends Admin
                 ->end();
         }
 
-        if($provider) {
+        if($this->hasProvider()) {
             $instance = $this->getSubject();
             if ($instance && $instance->getId()) {
-                $provider->load($instance);
-                $provider->buildEditForm($formMapper);
+                $this->provider->load($instance);
+                $this->provider->buildEditForm($formMapper);
             } else {
-                $provider->buildCreateForm($formMapper);
+                $this->provider->buildCreateForm($formMapper);
             }
         }
 
@@ -159,54 +164,6 @@ class CategoryAdmin extends Admin
     }
 
     /**
-     * @return mixed
-     */
-    public function getPool()
-    {
-        return $this->pool;
-    }
-
-    /**
-     * @param mixed $pool
-     */
-    public function setPool($pool)
-    {
-        $this->pool = $pool;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDefaultContext()
-    {
-        return $this->defaultContext;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getContextManager()
-    {
-        return $this->contextManager;
-    }
-
-    /**
-     * @param mixed $contextManager
-     */
-    public function setContextManager($contextManager)
-    {
-        $this->contextManager = $contextManager;
-    }
-
-    /**
-     * @param mixed $defaultContext
-     */
-    public function setDefaultContext($defaultContext)
-    {
-        $this->defaultContext = $defaultContext;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getPersistentParameters()
@@ -231,7 +188,7 @@ class CategoryAdmin extends Admin
         return $parameters;
     }
 
-    protected function fetchCurrentContext() {
+    public function fetchProviderKey() {
 
         $contextCode = $this->getPersistentParameter('context');
 
@@ -249,15 +206,27 @@ class CategoryAdmin extends Admin
         }
     }
 
-    protected function getPoolProvider() {
-        $currentContext = $this->fetchCurrentContext();
+    public function getPoolProvider(PoolInterface $pool) {
+        $currentContext = $this->fetchProviderKey();
 
-        if ($this->pool->hasContext($currentContext->getId())) {
-            $providerName = $this->pool->getProviderNameByContext($currentContext->getId());
-            return $this->pool->getProvider($providerName);
+        if ($pool->hasContext($currentContext->getId())) {
+            $providerName = $pool->getProviderNameByContext($currentContext->getId());
+            return $pool->getProvider($providerName);
         }
 
-        return;
+        return null;
+    }
+
+    public function getProviderName(PoolInterface $pool, $providerKey = null) {
+        if(!$providerKey) {
+            $providerKey = $this->fetchProviderKey();
+        }
+
+        if ($providerKey && $pool->hasCollection($providerKey->getSlug())) {
+            return $pool->getProviderNameByCollection($providerKey->getSlug());
+        }
+
+        return null;
     }
 
     /**
@@ -266,8 +235,8 @@ class CategoryAdmin extends Admin
     public function prePersist($object)
     {
         parent::prePersist($object);
-        if($provider = $this->getPoolProvider()) {
-            $provider->prePersist($object);
+        if($this->hasProvider()) {
+            $this->getProvider()->prePersist($object);
         }
     }
 
@@ -277,8 +246,9 @@ class CategoryAdmin extends Admin
     public function preUpdate($object)
     {
         parent::preUpdate($object);
-        if($provider = $this->getPoolProvider()) {
-            $provider->preUpdate($object);
+
+        if($this->hasProvider()) {
+            $this->getProvider()->preUpdate($object);
         }
     }
 
@@ -288,8 +258,8 @@ class CategoryAdmin extends Admin
     public function postUpdate($object)
     {
         parent::postUpdate($object);
-        if($provider = $this->getPoolProvider()) {
-            $provider->postUpdate($object);
+        if($this->hasProvider()) {
+            $this->getProvider()->postUpdate($object);
         }
     }
 
@@ -299,8 +269,8 @@ class CategoryAdmin extends Admin
     public function postPersist($object)
     {
         parent::postPersist($object);
-        if($provider = $this->getPoolProvider()) {
-            $provider->postPersist($object);
+        if($this->hasProvider()) {
+            $this->getProvider()->postPersist($object);
         }
     }
 
@@ -310,9 +280,8 @@ class CategoryAdmin extends Admin
     public function validate(ErrorElement $errorElement, $object)
     {
         parent::validate($errorElement, $object);
-
-        if($provider = $this->getPoolProvider()) {
-            $provider->validate($errorElement, $object);
+        if($this->hasProvider()) {
+            $this->getProvider()->validate($errorElement, $object);
         }
     }
 }

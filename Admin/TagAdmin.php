@@ -2,16 +2,25 @@
 
 namespace Rz\ClassificationBundle\Admin;
 
-use Sonata\ClassificationBundle\Admin\TagAdmin as Admin;
+use Rz\ClassificationBundle\Admin\AbstractTagAdmin as Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Rz\CoreBundle\Admin\AdminProviderInterface;
+use Rz\CoreBundle\Provider\PoolInterface;
+use Sonata\CoreBundle\Validator\ErrorElement;
 
 class TagAdmin extends Admin
 {
-    protected $pool;
-    protected $defaultContext;
-    protected $contextManager;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSubject($subject)
+    {
+        parent::setSubject($subject);
+        $this->provider = $this->getPoolProvider($this->getPool());
+    }
 
     /**
      * {@inheritdoc}
@@ -19,9 +28,7 @@ class TagAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
 
-        $provider = $this->getPoolProvider($this->pool);
-
-        if($provider) {
+        if($this->hasProvider()) {
             $tabSettings = array('class' => 'col-md-4');
         } else {
             $tabSettings = array('class' => 'col-md-8');
@@ -29,7 +36,7 @@ class TagAdmin extends Admin
 
         $formMapper->with('tab.group.rz_classification_tag_general', $tabSettings)->end();
 
-        if($provider) {
+        if($this->hasProvider()) {
             $formMapper->with('tab.group.rz_classification_tag_settings', array('class' => 'col-md-8'))->end();
         }
 
@@ -52,13 +59,13 @@ class TagAdmin extends Admin
                 ->add('enabled', null, array('required' => false))
             ->end();
 
-        if($provider) {
+        if($this->hasProvider()) {
             $instance = $this->getSubject();
             if ($instance && $instance->getId()) {
-                $provider->load($instance);
-                $provider->buildEditForm($formMapper);
+                $this->provider->load($instance);
+                $this->provider->buildEditForm($formMapper);
             } else {
-                $provider->buildCreateForm($formMapper);
+                $this->provider->buildCreateForm($formMapper);
             }
         }
     }
@@ -138,7 +145,7 @@ class TagAdmin extends Admin
         return $instance;
     }
 
-    protected function fetchCurrentContext() {
+    public function fetchProviderKey() {
 
         $contextCode = $this->getPersistentParameter('context');
 
@@ -156,8 +163,8 @@ class TagAdmin extends Admin
         }
     }
 
-    protected function getPoolProvider() {
-        $currentContext = $this->fetchCurrentContext();
+    public function getPoolProvider(PoolInterface $pool) {
+        $currentContext = $this->fetchProviderKey();
 
         if ($this->pool->hasContext($currentContext->getId())) {
             $providerName = $this->pool->getProviderNameByContext($currentContext->getId());
@@ -167,51 +174,71 @@ class TagAdmin extends Admin
         return;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getPool()
-    {
-        return $this->pool;
+    public function getProviderName(PoolInterface $pool, $providerKey = null) {
+        if(!$providerKey) {
+            $providerKey = $this->fetchProviderKey();
+        }
+
+        if ($providerKey && $pool->hasCollection($providerKey->getSlug())) {
+            return $pool->getProviderNameByCollection($providerKey->getSlug());
+        }
+
+        return null;
     }
 
     /**
-     * @param mixed $pool
+     * {@inheritdoc}
      */
-    public function setPool($pool)
+    public function prePersist($object)
     {
-        $this->pool = $pool;
+        parent::prePersist($object);
+        if($this->hasProvider()) {
+            $this->getProvider()->prePersist($object);
+        }
     }
 
     /**
-     * @return mixed
+     * {@inheritdoc}
      */
-    public function getDefaultContext()
+    public function preUpdate($object)
     {
-        return $this->defaultContext;
+        parent::preUpdate($object);
+
+        if($this->hasProvider()) {
+            $this->getProvider()->preUpdate($object);
+        }
     }
 
     /**
-     * @param mixed $defaultContext
+     * {@inheritdoc}
      */
-    public function setDefaultContext($defaultContext)
+    public function postUpdate($object)
     {
-        $this->defaultContext = $defaultContext;
+        parent::postUpdate($object);
+        if($this->hasProvider()) {
+            $this->getProvider()->postUpdate($object);
+        }
     }
 
     /**
-     * @return mixed
+     * {@inheritdoc}
      */
-    public function getContextManager()
+    public function postPersist($object)
     {
-        return $this->contextManager;
+        parent::postPersist($object);
+        if($this->hasProvider()) {
+            $this->getProvider()->postPersist($object);
+        }
     }
 
     /**
-     * @param mixed $contextManager
+     * {@inheritdoc}
      */
-    public function setContextManager($contextManager)
+    public function validate(ErrorElement $errorElement, $object)
     {
-        $this->contextManager = $contextManager;
+        parent::validate($errorElement, $object);
+        if($this->hasProvider()) {
+            $this->getProvider()->validate($errorElement, $object);
+        }
     }
 }

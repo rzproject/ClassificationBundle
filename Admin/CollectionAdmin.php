@@ -2,20 +2,28 @@
 
 namespace Rz\ClassificationBundle\Admin;
 
-use Sonata\ClassificationBundle\Admin\CollectionAdmin as Admin;
+use Rz\ClassificationBundle\Admin\AbstractCollectionAdmin as Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Rz\CoreBundle\Admin\AdminProviderInterface;
+use Rz\CoreBundle\Provider\PoolInterface;
+use Sonata\CoreBundle\Validator\ErrorElement;
 
-class CollectionAdmin extends Admin
+class CollectionAdmin extends Admin implements AdminProviderInterface
 {
-    protected $pool;
-    protected $defaultContext;
-    protected $contextManager;
-
     protected $formOptions = array(
         'cascade_validation' => true,
     );
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSubject($subject)
+    {
+        parent::setSubject($subject);
+        $this->provider = $this->getPoolProvider($this->getPool());
+    }
 
     /**
      * {@inheritdoc}
@@ -151,7 +159,7 @@ class CollectionAdmin extends Admin
         return $instance;
     }
 
-    protected function fetchCurrentContext() {
+    public function fetchProviderKey() {
 
         $contextCode = $this->getPersistentParameter('context');
 
@@ -169,62 +177,82 @@ class CollectionAdmin extends Admin
         }
     }
 
-    protected function getPoolProvider() {
-        $currentContext = $this->fetchCurrentContext();
+    public function getPoolProvider(PoolInterface $pool) {
+        $currentContext = $this->fetchProviderKey();
 
-        if ($this->pool->hasContext($currentContext->getId())) {
-            $providerName = $this->pool->getProviderNameByContext($currentContext->getId());
-            return $this->pool->getProvider($providerName);
+        if ($pool->hasContext($currentContext->getId())) {
+            $providerName = $pool->getProviderNameByContext($currentContext->getId());
+            return $pool->getProvider($providerName);
         }
 
         return;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getPool()
-    {
-        return $this->pool;
+    public function getProviderName(PoolInterface $pool, $providerKey = null) {
+        if(!$providerKey) {
+            $providerKey = $this->fetchProviderKey();
+        }
+
+        if ($providerKey && $pool->hasCollection($providerKey->getSlug())) {
+            return $pool->getProviderNameByCollection($providerKey->getSlug());
+        }
+
+        return null;
     }
 
     /**
-     * @param mixed $pool
+     * {@inheritdoc}
      */
-    public function setPool($pool)
+    public function prePersist($object)
     {
-        $this->pool = $pool;
+        parent::prePersist($object);
+        if($this->hasProvider()) {
+            $this->getProvider()->prePersist($object);
+        }
     }
 
     /**
-     * @return mixed
+     * {@inheritdoc}
      */
-    public function getDefaultContext()
+    public function preUpdate($object)
     {
-        return $this->defaultContext;
+        parent::preUpdate($object);
+
+        if($this->hasProvider()) {
+            $this->getProvider()->preUpdate($object);
+        }
     }
 
     /**
-     * @param mixed $defaultContext
+     * {@inheritdoc}
      */
-    public function setDefaultContext($defaultContext)
+    public function postUpdate($object)
     {
-        $this->defaultContext = $defaultContext;
+        parent::postUpdate($object);
+        if($this->hasProvider()) {
+            $this->getProvider()->postUpdate($object);
+        }
     }
 
     /**
-     * @return mixed
+     * {@inheritdoc}
      */
-    public function getContextManager()
+    public function postPersist($object)
     {
-        return $this->contextManager;
+        parent::postPersist($object);
+        if($this->hasProvider()) {
+            $this->getProvider()->postPersist($object);
+        }
     }
 
     /**
-     * @param mixed $contextManager
+     * {@inheritdoc}
      */
-    public function setContextManager($contextManager)
+    public function validate(ErrorElement $errorElement, $object)
     {
-        $this->contextManager = $contextManager;
+        parent::validate($errorElement, $object);
+        if($this->hasProvider()) {
+            $this->getProvider()->validate($errorElement, $object);
+        }
     }
 }
