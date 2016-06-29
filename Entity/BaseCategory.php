@@ -39,4 +39,14 @@ abstract class BaseCategory extends Category
     {
         $this->settings[$name] = $value;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString()
+    {
+        $description = $this->getParent() ? $this->getParent()->getName().' - ' : null;
+        $description .= $this->getName() ?: 'n/a';
+        return $description;
+    }
 }
