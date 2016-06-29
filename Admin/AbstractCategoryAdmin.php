@@ -143,4 +143,20 @@ abstract class AbstractCategoryAdmin extends Admin
 
         return false;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getProvider()
+    {
+        return $this->provider;
+    }
+
+    /**
+     * @param mixed $provider
+     */
+    public function setProvider($provider)
+    {
+        $this->provider = $provider;
+    }
 }
