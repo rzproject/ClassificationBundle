@@ -146,11 +146,11 @@ abstract class AbstractCollectionAdmin extends Admin
      */
     public function hasProvider($interface = null)
     {
-        if(!$interface) {
+        if (!$interface) {
             return isset($this->provider);
         }
 
-        if($this->provider instanceof $interface) {
+        if ($this->provider instanceof $interface) {
             return true;
         }
 

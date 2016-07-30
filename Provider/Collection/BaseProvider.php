@@ -49,29 +49,41 @@ abstract class BaseProvider extends Provider
     /**
      * {@inheritdoc}
      */
-    public function prePersist(CollectionInterface $object){}
+    public function prePersist(CollectionInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function preUpdate(CollectionInterface $object){}
+    public function preUpdate(CollectionInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function postPersist(CollectionInterface $object){}
+    public function postPersist(CollectionInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function postUpdate(CollectionInterface $object){}
+    public function postUpdate(CollectionInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function validate(ErrorElement $errorElement, CollectionInterface $object){}
+    public function validate(ErrorElement $errorElement, CollectionInterface $object)
+    {
+    }
 
-    public function load(CollectionInterface $object) {}
+    public function load(CollectionInterface $object)
+    {
+    }
 
     /**
      * @return mixed

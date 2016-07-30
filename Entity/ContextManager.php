@@ -34,7 +34,7 @@ class ContextManager extends BaseContextManager
     {
         $query = $this->getObjectManager()->createQueryBuilder()
             ->select('c')
-            ->from( $this->getClass(), 'c')
+            ->from($this->getClass(), 'c')
             ->where('c.id NOT IN (:context)')
             ->andWhere('c.enabled = :enabled')
             ->setParameter('context', $contexts)
@@ -49,15 +49,15 @@ class ContextManager extends BaseContextManager
 
     public function generateDefaultContext($code='default', $name = null, $enabled = true)
     {
-        if(!$name) {
+        if (!$name) {
             $code = $this->getSlugify()->slugify($code);
-            $name = ucwords(str_replace('-', ' ',$code));
+            $name = ucwords(str_replace('-', ' ', $code));
         }
         $id = $this->getSlugify()->slugify($name);
         $context = $this->create();
         $context->setEnabled($enabled);
         $context->setId($code);
-        $context->setName(substr($name,0,255));
+        $context->setName(substr($name, 0, 255));
         $this->save($context);
         return $context;
     }

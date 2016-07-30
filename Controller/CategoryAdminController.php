@@ -54,7 +54,6 @@ class CategoryAdminController extends Controller
      */
     public function listAction(Request $request = null)
     {
-
         if (!$request->get('filter') && !$request->get('filters')) {
             return new RedirectResponse($this->admin->generateUrl('tree'));
         }
@@ -69,7 +68,7 @@ class CategoryAdminController extends Controller
         $currentContext = null;
         $filters = $request->get('filter');
 
-        if($filters && array_key_exists('context', $filters) && $filters['context']['value']) {
+        if ($filters && array_key_exists('context', $filters) && $filters['context']['value']) {
             $currentContext = $contextManager->find($filters['context']['value']);
         } elseif ($context = $request->get('context')) {
             $currentContext = $contextManager->find($context);
@@ -153,7 +152,7 @@ class CategoryAdminController extends Controller
             }
         }
 
-        if(!$mainCategory) {
+        if (!$mainCategory) {
             $mainCategory = $categoryManager->generateParentCategory($currentContext, $defaultContext);
         }
 

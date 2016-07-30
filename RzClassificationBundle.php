@@ -7,7 +7,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Rz\ClassificationBundle\DependencyInjection\Compiler\OverrideServiceCompilerPass;
 use Rz\ClassificationBundle\DependencyInjection\Compiler\AddProviderCompilerPass;
 
-
 class RzClassificationBundle extends Bundle
 {
     /**

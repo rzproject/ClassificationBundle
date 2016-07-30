@@ -78,6 +78,5 @@ class RzClassificationExtension extends Extension
         $collectionPool->replaceArgument(0, $config['settings']['tag']['default_context']);
 
         $container->setParameter('rz.classification.tag.provider.context',                          $config['providers']['tag']['context']);
-
     }
 }

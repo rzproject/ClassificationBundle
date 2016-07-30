@@ -50,29 +50,41 @@ abstract class BaseProvider extends Provider
     /**
      * {@inheritdoc}
      */
-    public function prePersist(TagInterface $object){}
+    public function prePersist(TagInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function preUpdate(TagInterface $object){}
+    public function preUpdate(TagInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function postPersist(TagInterface $object){}
+    public function postPersist(TagInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function postUpdate(TagInterface $object){}
+    public function postUpdate(TagInterface $object)
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function validate(ErrorElement $errorElement, TagInterface $object){}
+    public function validate(ErrorElement $errorElement, TagInterface $object)
+    {
+    }
 
-    public function load(TagInterface $object) {}
+    public function load(TagInterface $object)
+    {
+    }
 
     /**
      * @return mixed

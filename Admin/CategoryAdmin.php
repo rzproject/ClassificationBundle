@@ -39,14 +39,13 @@ class CategoryAdmin extends Admin implements AdminProviderInterface
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-
         $formMapper
             ->tab('tab.rz_classification_category_general')
                 ->with('tab.group.rz_classification_category_general', array('class' => 'col-md-8'))->end()
                 ->with('tab.group.rz_classification_category_options', array('class' => 'col-md-4'))->end()
             ->end();
 
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $formMapper
                 ->tab('tab.rz_classification_category_settings')
                     ->with('tab.group.rz_classification_category_settings', array('class' => 'col-md-8'))->end()
@@ -114,7 +113,7 @@ class CategoryAdmin extends Admin implements AdminProviderInterface
                 ->end();
         }
 
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $instance = $this->getSubject();
             if ($instance && $instance->getId()) {
                 $this->provider->load($instance);
@@ -123,7 +122,6 @@ class CategoryAdmin extends Admin implements AdminProviderInterface
                 $this->provider->buildCreateForm($formMapper);
             }
         }
-
     }
 
     /**
@@ -188,25 +186,26 @@ class CategoryAdmin extends Admin implements AdminProviderInterface
         return $parameters;
     }
 
-    public function fetchProviderKey() {
-
+    public function fetchProviderKey()
+    {
         $contextCode = $this->getPersistentParameter('context');
 
         $context = null;
-        if($contextCode) {
+        if ($contextCode) {
             $context = $this->contextManager->find($contextCode);
         } else {
             $context = $this->contextManager->find($this->getDefaultContext());
         }
 
-        if($context) {
+        if ($context) {
             return $context;
         } else {
             return;
         }
     }
 
-    public function getPoolProvider(PoolInterface $pool) {
+    public function getPoolProvider(PoolInterface $pool)
+    {
         $currentContext = $this->fetchProviderKey();
 
         if ($pool->hasContext($currentContext->getId())) {
@@ -217,8 +216,9 @@ class CategoryAdmin extends Admin implements AdminProviderInterface
         return null;
     }
 
-    public function getProviderName(PoolInterface $pool, $providerKey = null) {
-        if(!$providerKey) {
+    public function getProviderName(PoolInterface $pool, $providerKey = null)
+    {
+        if (!$providerKey) {
             $providerKey = $this->fetchProviderKey();
         }
 
@@ -235,7 +235,7 @@ class CategoryAdmin extends Admin implements AdminProviderInterface
     public function prePersist($object)
     {
         parent::prePersist($object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->prePersist($object);
         }
     }
@@ -247,7 +247,7 @@ class CategoryAdmin extends Admin implements AdminProviderInterface
     {
         parent::preUpdate($object);
 
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->preUpdate($object);
         }
     }
@@ -258,7 +258,7 @@ class CategoryAdmin extends Admin implements AdminProviderInterface
     public function postUpdate($object)
     {
         parent::postUpdate($object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->postUpdate($object);
         }
     }
@@ -269,7 +269,7 @@ class CategoryAdmin extends Admin implements AdminProviderInterface
     public function postPersist($object)
     {
         parent::postPersist($object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->postPersist($object);
         }
     }
@@ -280,7 +280,7 @@ class CategoryAdmin extends Admin implements AdminProviderInterface
     public function validate(ErrorElement $errorElement, $object)
     {
         parent::validate($errorElement, $object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->validate($errorElement, $object);
         }
     }

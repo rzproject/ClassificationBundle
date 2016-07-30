@@ -27,8 +27,7 @@ class TagAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $tabSettings = array('class' => 'col-md-4');
         } else {
             $tabSettings = array('class' => 'col-md-8');
@@ -36,7 +35,7 @@ class TagAdmin extends Admin
 
         $formMapper->with('tab.group.rz_classification_tag_general', $tabSettings)->end();
 
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $formMapper->with('tab.group.rz_classification_tag_settings', array('class' => 'col-md-8'))->end();
         }
 
@@ -59,7 +58,7 @@ class TagAdmin extends Admin
                 ->add('enabled', null, array('required' => false))
             ->end();
 
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $instance = $this->getSubject();
             if ($instance && $instance->getId()) {
                 $this->provider->load($instance);
@@ -128,7 +127,6 @@ class TagAdmin extends Admin
         $instance = parent::getNewInstance();
 
         if ($contextId = $this->getPersistentParameter('context')) {
-
             $context = $this->contextManager->find($contextId);
             if (!$context) {
                 $context = $this->contextManager->create();
@@ -145,25 +143,26 @@ class TagAdmin extends Admin
         return $instance;
     }
 
-    public function fetchProviderKey() {
-
+    public function fetchProviderKey()
+    {
         $contextCode = $this->getPersistentParameter('context');
 
         $context = null;
-        if($contextCode) {
+        if ($contextCode) {
             $context = $this->contextManager->find($contextCode);
         } else {
             $context = $this->contextManager->find($this->getDefaultContext());
         }
 
-        if($context) {
+        if ($context) {
             return $context;
         } else {
             return;
         }
     }
 
-    public function getPoolProvider(PoolInterface $pool) {
+    public function getPoolProvider(PoolInterface $pool)
+    {
         $currentContext = $this->fetchProviderKey();
 
         if ($this->pool->hasContext($currentContext->getId())) {
@@ -174,8 +173,9 @@ class TagAdmin extends Admin
         return;
     }
 
-    public function getProviderName(PoolInterface $pool, $providerKey = null) {
-        if(!$providerKey) {
+    public function getProviderName(PoolInterface $pool, $providerKey = null)
+    {
+        if (!$providerKey) {
             $providerKey = $this->fetchProviderKey();
         }
 
@@ -192,7 +192,7 @@ class TagAdmin extends Admin
     public function prePersist($object)
     {
         parent::prePersist($object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->prePersist($object);
         }
     }
@@ -204,7 +204,7 @@ class TagAdmin extends Admin
     {
         parent::preUpdate($object);
 
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->preUpdate($object);
         }
     }
@@ -215,7 +215,7 @@ class TagAdmin extends Admin
     public function postUpdate($object)
     {
         parent::postUpdate($object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->postUpdate($object);
         }
     }
@@ -226,7 +226,7 @@ class TagAdmin extends Admin
     public function postPersist($object)
     {
         parent::postPersist($object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->postPersist($object);
         }
     }
@@ -237,7 +237,7 @@ class TagAdmin extends Admin
     public function validate(ErrorElement $errorElement, $object)
     {
         parent::validate($errorElement, $object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->validate($errorElement, $object);
         }
     }
