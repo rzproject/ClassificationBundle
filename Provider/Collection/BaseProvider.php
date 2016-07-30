@@ -3,6 +3,7 @@
 namespace Rz\ClassificationBundle\Provider\Collection;
 
 use Sonata\CoreBundle\Validator\ErrorElement;
+use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\ClassificationBundle\Model\CollectionInterface;
 use Rz\ClassificationBundle\Provider\BaseProvider as Provider;
 
@@ -24,6 +25,25 @@ abstract class BaseProvider extends Provider
     public function setRawSettings($rawSettings)
     {
         parent::setRawSettings($rawSettings);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildEditForm(FormMapper $formMapper, $object = null)
+    {
+        $this->buildCreateForm($formMapper, $object);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildCreateForm(FormMapper $formMapper, $object = null)
+    {
+        $formMapper
+            ->with('tab.group.rz_classification_collection_settings')
+                ->add('settings', 'sonata_type_immutable_array', array('keys' => $this->getFormSettingsKeys($formMapper, $object), 'required'=>false, 'label'=>false, 'attr'=>array('class'=>'rz-immutable-container')))
+            ->end();
     }
 
     /**

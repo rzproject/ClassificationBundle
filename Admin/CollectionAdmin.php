@@ -179,9 +179,10 @@ class CollectionAdmin extends Admin implements AdminProviderInterface
 
     public function getPoolProvider(PoolInterface $pool) {
         $currentContext = $this->fetchProviderKey();
-
-        if ($pool->hasContext($currentContext->getId())) {
-            $providerName = $pool->getProviderNameByContext($currentContext->getId());
+        #fix for non-standard context ID.
+        $contextKey = $this->getSlugify()->slugify($currentContext->getId(), '_');
+        if ($pool->hasContext($contextKey)) {
+            $providerName = $pool->getProviderNameByContext($contextKey);
             return $pool->getProvider($providerName);
         }
 
@@ -193,8 +194,10 @@ class CollectionAdmin extends Admin implements AdminProviderInterface
             $providerKey = $this->fetchProviderKey();
         }
 
-        if ($providerKey && $pool->hasCollection($providerKey->getSlug())) {
-            return $pool->getProviderNameByCollection($providerKey->getSlug());
+        $contextKey = $this->getSlugify()->slugify($providerKey->getSlug(), '_');
+
+        if ($providerKey && $pool->hasCollection($contextKey)) {
+            return $pool->getProviderNameByCollection($contextKey);
         }
 
         return null;

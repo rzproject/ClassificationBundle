@@ -40,6 +40,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         $definition->addMethodCall('setContextManager', array(new Reference('sonata.classification.manager.context')));
         $definition->addMethodCall('setPool', array(new Reference('rz.classification.category.pool')));
         $definition->addMethodCall('setDefaultContext', array($container->getParameter('rz.classification.category.default_context')));
+        $definition->addMethodCall('setSlugify', array(new Reference($serviceId)));
 
         #####################################
         ## Override Collection Admin
@@ -48,6 +49,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         $definition->addMethodCall('setContextManager', array(new Reference('sonata.classification.manager.context')));
         $definition->addMethodCall('setPool', array(new Reference('rz.classification.collection.pool')));
         $definition->addMethodCall('setDefaultContext', array($container->getParameter('rz.classification.collection.default_context')));
+        $definition->addMethodCall('setSlugify', array(new Reference($serviceId)));
 
         #####################################
         ## Override Tag Admin
@@ -56,5 +58,6 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         $definition->addMethodCall('setContextManager', array(new Reference('sonata.classification.manager.context')));
         $definition->addMethodCall('setPool', array(new Reference('rz.classification.tag.pool')));
         $definition->addMethodCall('setDefaultContext', array($container->getParameter('rz.classification.tag.default_context')));
+        $definition->addMethodCall('setSlugify', array(new Reference($serviceId)));
     }
 }

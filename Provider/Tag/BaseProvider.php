@@ -2,6 +2,7 @@
 
 namespace Rz\ClassificationBundle\Provider\Tag;
 
+use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\CoreBundle\Validator\ErrorElement;
 use Sonata\ClassificationBundle\Model\TagInterface;
 use Rz\ClassificationBundle\Provider\BaseProvider as Provider;
@@ -25,6 +26,26 @@ abstract class BaseProvider extends Provider
     {
         parent::setRawSettings($rawSettings);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildEditForm(FormMapper $formMapper, $object = null)
+    {
+        $this->buildCreateForm($formMapper, $object);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildCreateForm(FormMapper $formMapper, $object = null)
+    {
+        $formMapper
+            ->with('tab.group.rz_classification_tag_settings')
+                ->add('settings', 'sonata_type_immutable_array', array('keys' => $this->getFormSettingsKeys($formMapper, $object), 'required'=>false, 'label'=>false, 'attr'=>array('class'=>'rz-immutable-container')))
+            ->end();
+    }
+
 
     /**
      * {@inheritdoc}
