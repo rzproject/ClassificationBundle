@@ -13,25 +13,6 @@ use Rz\ClassificationBundle\Provider\Tag\BaseProvider;
 class DefaultProvider extends BaseProvider
 {
     /**
-     * {@inheritdoc}
-     */
-    public function buildEditForm(FormMapper $formMapper, $object = null)
-    {
-        $this->buildCreateForm($formMapper, $object);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function buildCreateForm(FormMapper $formMapper, $object = null)
-    {
-        $formMapper
-                ->with('tab.group.rz_classification_tag_settings')
-                    ->add('settings', 'sonata_type_immutable_array', array('keys' => $this->getFormSettingsKeys($formMapper, $object), 'required'=>false, 'label'=>false, 'attr'=>array('class'=>'rz-immutable-container')))
-                ->end();
-    }
-
-    /**
      * @param FormMapper $formMapper
      * @param null $object
      * @return array
