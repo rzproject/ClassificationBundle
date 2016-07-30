@@ -66,7 +66,7 @@ class ClassificationExtension extends \Twig_Extension  implements \Twig_Extensio
             } else {
                 return false;
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
     }

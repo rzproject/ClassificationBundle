@@ -33,7 +33,11 @@ class DefaultProvider extends BaseProvider
         return $settings;
     }
 
-    public function load(CollectionInterface $object) {}
+    public function load(CollectionInterface $object)
+    {
+    }
 
-    public function validate(ErrorElement $errorElement, CollectionInterface $object){}
+    public function validate(ErrorElement $errorElement, CollectionInterface $object)
+    {
+    }
 }

@@ -16,7 +16,6 @@ class CollectionAdminController extends Controller
      */
     public function listAction(Request $request = null)
     {
-
         $contextManager = $this->get('sonata.classification.manager.context');
         $defaultContext  = $this->container->getParameter('rz.classification.collection.default_context');
 

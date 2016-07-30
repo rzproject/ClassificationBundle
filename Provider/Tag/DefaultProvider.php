@@ -33,7 +33,11 @@ class DefaultProvider extends BaseProvider
         return $settings;
     }
 
-    public function load(TagInterface $object) {}
+    public function load(TagInterface $object)
+    {
+    }
 
-    public function validate(ErrorElement $errorElement, TagInterface $object){}
+    public function validate(ErrorElement $errorElement, TagInterface $object)
+    {
+    }
 }

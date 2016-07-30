@@ -34,6 +34,6 @@ abstract class Pool extends BasePool
 
     public function getProviderNameByContext($name)
     {
-       return $this->getProviderNameByGroup($name);
+        return $this->getProviderNameByGroup($name);
     }
 }

@@ -17,7 +17,6 @@ class TagAdminController extends Controller
      */
     public function listAction(Request $request = null)
     {
-
         $contextManager = $this->get('sonata.classification.manager.context');
         $defaultContext  = $this->container->getParameter('rz.classification.tag.default_context');
 

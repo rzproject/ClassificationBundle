@@ -128,7 +128,7 @@ class CategoryManager extends BaseCategoryManager
     public function generateParentCategory(ContextInterface $context, $slug, $enabled = true)
     {
         $slug = $this->getSlugify()->slugify($slug);
-        $name = ucwords(str_replace('-', ' ',$slug));
+        $name = ucwords(str_replace('-', ' ', $slug));
 
         //create collection
         $category = $this->create();

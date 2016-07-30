@@ -30,10 +30,9 @@ class CollectionAdmin extends Admin implements AdminProviderInterface
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-
         $provider = $this->getPoolProvider($this->pool);
 
-        if($provider) {
+        if ($provider) {
             $tabSettings = array('class' => 'col-md-4');
         } else {
             $tabSettings = array('class' => 'col-md-8');
@@ -41,7 +40,7 @@ class CollectionAdmin extends Admin implements AdminProviderInterface
 
         $formMapper->with('tab.group.rz_classification_collection_general', $tabSettings)->end();
 
-        if($provider) {
+        if ($provider) {
             $formMapper->with('tab.group.rz_classification_collection_settings', array('class' => 'col-md-8'))->end();
         }
 
@@ -66,7 +65,7 @@ class CollectionAdmin extends Admin implements AdminProviderInterface
                 ->end();
         }
 
-        if($provider) {
+        if ($provider) {
             $instance = $this->getSubject();
             if ($instance && $instance->getId()) {
                 $provider->load($instance);
@@ -159,25 +158,26 @@ class CollectionAdmin extends Admin implements AdminProviderInterface
         return $instance;
     }
 
-    public function fetchProviderKey() {
-
+    public function fetchProviderKey()
+    {
         $contextCode = $this->getPersistentParameter('context');
 
         $context = null;
-        if($contextCode) {
+        if ($contextCode) {
             $context = $this->contextManager->find($contextCode);
         } else {
             $context = $this->contextManager->find($this->getDefaultContext());
         }
 
-        if($context) {
+        if ($context) {
             return $context;
         } else {
             return;
         }
     }
 
-    public function getPoolProvider(PoolInterface $pool) {
+    public function getPoolProvider(PoolInterface $pool)
+    {
         $currentContext = $this->fetchProviderKey();
         #fix for non-standard context ID.
         $contextKey = $this->getSlugify()->slugify($currentContext->getId(), '_');
@@ -189,8 +189,9 @@ class CollectionAdmin extends Admin implements AdminProviderInterface
         return;
     }
 
-    public function getProviderName(PoolInterface $pool, $providerKey = null) {
-        if(!$providerKey) {
+    public function getProviderName(PoolInterface $pool, $providerKey = null)
+    {
+        if (!$providerKey) {
             $providerKey = $this->fetchProviderKey();
         }
 
@@ -209,7 +210,7 @@ class CollectionAdmin extends Admin implements AdminProviderInterface
     public function prePersist($object)
     {
         parent::prePersist($object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->prePersist($object);
         }
     }
@@ -221,7 +222,7 @@ class CollectionAdmin extends Admin implements AdminProviderInterface
     {
         parent::preUpdate($object);
 
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->preUpdate($object);
         }
     }
@@ -232,7 +233,7 @@ class CollectionAdmin extends Admin implements AdminProviderInterface
     public function postUpdate($object)
     {
         parent::postUpdate($object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->postUpdate($object);
         }
     }
@@ -243,7 +244,7 @@ class CollectionAdmin extends Admin implements AdminProviderInterface
     public function postPersist($object)
     {
         parent::postPersist($object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->postPersist($object);
         }
     }
@@ -254,7 +255,7 @@ class CollectionAdmin extends Admin implements AdminProviderInterface
     public function validate(ErrorElement $errorElement, $object)
     {
         parent::validate($errorElement, $object);
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             $this->getProvider()->validate($errorElement, $object);
         }
     }
